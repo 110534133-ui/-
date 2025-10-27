@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日暮拉麵 - ひくれラーメン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), 
+                        url("./img/日暮拉麵2.jpg");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Hero Logo */
+        .hero-logo {
+            position: absolute;
+            top: 12%;
+            left: 8%;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            z-index: 4;
+            animation: fadeInLeft 1.5s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-logo-circle {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-logo-circle:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .hero-title {
+            position: absolute;
+            top: 18%;
+            right: 8%;
+            text-align: left;
+            z-index: 4;
+            animation: fadeInRight 1.5s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInRight {
+            from { 
+                opacity: 0; 
+                transform: translateX(50px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+        }
+
+        .hero-title h1 {
+            font-size: 7rem;
+            color: #fff;
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            line-height: 1.1;
+            text-shadow: 3px 3px 0px #000, 6px 6px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero-title p {
+            font-size: 2.2rem;
+            color: #fff;
+            margin: 1.5rem 0;
+            letter-spacing: 0.3em;
+            text-shadow: 2px 2px 0px #000, 4px 4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Popular Section */
+        .popular-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .popular-section h2 {
+            font-size: 2.5rem;
+            color: rgb(233, 52, 41);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
+        .popular-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(233, 52, 41, 0.2);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, rgb(224, 190, 129), rgb(200, 170, 110));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-image::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: var(--item-img);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .item-name {
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: rgb(0, 0, 0);
+            text-align: center;
+        }
+
+        /* Activity Banner */
+        .activity-banner {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            margin: 4rem auto;
+            border-radius: 20px;
+            max-width: 1200px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .activity-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(233, 52, 41, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-weight: bold;
+            z-index: 10;
+            font-size: 1rem;
+        }
+
+        .activity-slides {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .activity-slide {
+            width: 25%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+        }
+
+        .activity-slide img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .activity-slide h3 {
+            font-size: 2.5rem;
+            margin: 0.5rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            font-weight: bold;
+        }
+
+        .activity-slide p {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .activity-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            color: rgb(233, 52, 41);
+            font-weight: bold;
+        }
+
+        .activity-controls:hover {
+            background: rgba(255,255,255,0.95);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .activity-prev { left: 20px; }
+        .activity-next { right: 20px; }
+
+        .activity-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: rgb(233, 52, 41);
+            transform: scale(1.2);
+        }
+
+        /* Menu Section */
+        .menu {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .menu h2 {
+            font-size: 2rem;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 15px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .menu-section h3 {
+            background: rgb(224, 190, 129);
+            color: rgb(0, 0, 0);
+            padding: 0.8rem;
+            margin: -2rem -2rem 1.5rem -2rem;
+            border-radius: 15px 15px 0 0;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(224, 190, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(233, 52, 41, 0.05);
+            padding-left: 1rem;
+            border-radius: 8px;
+        }
+
+        .menu-item:last-child { border-bottom: none; }
+
+        .item-info h4 {
+            color: rgb(0, 0, 0);
+            margin-bottom: 0.2rem;
+        }
+
+        .item-info p {
+            color: rgb(100, 100, 100);
+            font-size: 0.9rem;
+        }
+
+        .price {
+            color: rgb(233, 52, 41);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Floating Button */
+        .floating-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgb(233, 52, 41);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(233, 52, 41, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(233, 52, 41, 0.4);
+        }
+
+        .floating-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title h1 { font-size: 4rem; }
+            .hero-title p { font-size: 1.5rem; }
+            
+            .hero-logo {
+                top: 15%;
+                left: 5%;
+            }
+            
+            .hero-title {
+                top: 50%;
+                right: 5%;
+                transform: translateY(-50%);
+            }
+            
+            .hero-logo-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .activity-banner {
+                height: 300px;
+                margin: 2rem 1rem;
+            }
+            
+            .activity-slide h3 { font-size: 2rem; }
+            
+            .menu-grid { grid-template-columns: 1fr; }
+            .popular-items { grid-template-columns: 1fr; }
+        }
+        /* 日式櫻花圖案背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                /* 櫻花圖案 */
+                radial-gradient(circle at 15% 25%, rgba(255, 182, 193, 0.15) 2px, transparent 3px),
+                radial-gradient(circle at 85% 15%, rgba(255, 192, 203, 0.12) 3px, transparent 4px),
+                radial-gradient(circle at 45% 85%, rgba(255, 218, 185, 0.1) 2px, transparent 3px),
+                radial-gradient(circle at 75% 75%, rgba(255, 182, 193, 0.08) 2.5px, transparent 3.5px),
+                radial-gradient(circle at 25% 65%, rgba(255, 192, 203, 0.1) 2px, transparent 3px),
+                radial-gradient(circle at 65% 35%, rgba(255, 218, 185, 0.12) 3px, transparent 4px),
+                /* 波紋圖案 */
+                repeating-radial-gradient(circle at 30% 40%, 
+                    transparent 0px, 
+                    transparent 20px, 
+                    rgba(212, 105, 44, 0.03) 21px, 
+                    rgba(212, 105, 44, 0.03) 22px,
+                    transparent 23px,
+                    transparent 50px
+                ),
+                repeating-radial-gradient(circle at 70% 60%, 
+                    transparent 0px, 
+                    transparent 30px, 
+                    rgba(184, 134, 110, 0.02) 31px, 
+                    rgba(184, 134, 110, 0.02) 32px,
+                    transparent 33px,
+                    transparent 60px
+                );
+            pointer-events: none;
+            z-index: -3;
+        }
+
+        /* 日式幾何圖案 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                /* 傳統六邊形圖案 */
+                repeating-linear-gradient(
+                    30deg,
+                    transparent,
+                    transparent 35px,
+                    rgba(139, 121, 94, 0.02) 35px,
+                    rgba(139, 121, 94, 0.02) 36px,
+                    transparent 36px,
+                    transparent 70px
+                ),
+                repeating-linear-gradient(
+                    -30deg,
+                    transparent,
+                    transparent 35px,
+                    rgba(139, 121, 94, 0.02) 35px,
+                    rgba(139, 121, 94, 0.02) 36px,
+                    transparent 36px,
+                    transparent 70px
+                ),
+                /* 竹子圖案 */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 120px,
+                    rgba(106, 90, 66, 0.03) 120px,
+                    rgba(106, 90, 66, 0.03) 122px,
+                    transparent 122px,
+                    transparent 240px
+                );
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        /* 額外的日式裝飾元素 */
+        .japanese-pattern {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-image:
+                /* 扇子圖案 */
+                radial-gradient(ellipse 40px 20px at 10% 20%, rgba(212, 105, 44, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 30px 15px at 90% 80%, rgba(184, 134, 110, 0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 35px 18px at 60% 10%, rgba(139, 121, 94, 0.04) 0%, transparent 70%),
+                radial-gradient(ellipse 25px 12px at 20% 90%, rgba(212, 105, 44, 0.03) 0%, transparent 70%);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-logo">
+                <div class="hero-logo-circle">
+                    <img src="./img/日暮logo.png" alt="日暮拉麵 Logo" class="hero-logo-image">
+                </div>
+            </div>
+            <div class="hero-title">
+                <h1>日暮拉麵</h1>
+                <p>ひくれラーメン</p>
+            </div>
+        </section>
+
+        <section class="popular-section">
+            <h2>人氣食品</h2>
+            <div class="popular-items">
+                <div class="item-card">
+                    <div class="item-image" style="--item-img: url('./img/日暮4.png')"></div>
+                    <div class="item-name">極上日暮拉麵</div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image" style="--item-img: url('./img/日暮4.png')"></div>
+                    <div class="item-name">濃厚豚骨拉麵</div>
+                </div>
+                <div class="item-card">
+                    <div class="item-image" style="--item-img: url('./img/日暮4.png')"></div>
+                    <div class="item-name">炙燒叉燒拉麵</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="activity-banner">
+            <div class="activity-info">活動資訊</div>
+            <button class="activity-controls activity-prev" onclick="changeSlide(-1)">‹</button>
+            <button class="activity-controls activity-next" onclick="changeSlide(1)">›</button>
+            
+            <div class="activity-slides" id="activitySlides">
+                <div class="activity-slide">
+                    <img src="./img/日暮拉麵2.jpg" alt="開幕活動">
+                    <h3>NOW OPEN</h3>
+                    <h3>GRAND OPENING</h3>
+                    <p>歡迎光臨！全新開幕優惠進行中</p>
+                </div>
+                <div class="activity-slide">
+                    <img src="./img/日暮拉麵2.jpg">
+                    <h3>限時優惠</h3>
+                    <h3>SPECIAL OFFER</h3>
+                    <p>本週所有拉麵8折優惠！</p>
+                </div>
+                <div class="activity-slide">
+                    <img src="./img/日暮拉麵2.jpg">
+                    <h3>新品上市</h3>
+                    <h3>NEW ARRIVAL</h3>
+                    <p>炙燒叉燒拉麵隆重登場！</p>
+                </div>
+                <div class="activity-slide">
+                    <img src="./img/日暮拉麵2.jpg">
+                    <h3>新品上市</h3>
+                    <h3>NEW ARRIVAL</h3>
+                    <p>炙燒叉燒拉麵隆重登場！</p>
+                </div>
+            </div>
+            
+            <div class="activity-indicators">
+                <div class="indicator active" onclick="goToSlide(0)"></div>
+                <div class="indicator" onclick="goToSlide(1)"></div>
+                <div class="indicator" onclick="goToSlide(2)"></div>
+                <div class="indicator" onclick="goToSlide(3)"></div>
+            </div>
+        </section>
+
+        <section id="menu" class="menu">
+            <h2>菜單</h2>
+            <div class="menu-grid">
+                <div class="menu-section">
+                    <h3>拉麵</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>極上日暮拉麵</h4>
+                            <p>單點 268元</p>
+                        </div>
+                        <div class="price">套餐 318元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>特感叉燒拉麵</h4>
+                            <p>單點 248元</p>
+                        </div>
+                        <div class="price">套餐 298元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>雪濃豚骨拉麵</h4>
+                            <p>單點 198元</p>
+                        </div>
+                        <div class="price">套餐 248元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>火紅麻辣拉麵</h4>
+                            <p>單點 228元</p>
+                        </div>
+                        <div class="price">套餐 278元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>暗黑鮮辣拉麵</h4>
+                            <p>單點 228元</p>
+                        </div>
+                        <div class="price">套餐 278元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>金黃海鮮拉麵</h4>
+                            <p>單點 278元</p>
+                        </div>
+                        <div class="price">套餐 328元</div>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <h3>套餐</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>胡麻醬時蔬 + 飲料</h4>
+                        </div>
+                        <div class="price">+50元</div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">單點</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>替玉（加麵）</h4>
+                        </div>
+                        <div class="price">30元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>溏心蛋</h4>
+                        </div>
+                        <div class="price">30元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>叉燒</h4>
+                        </div>
+                        <div class="price">50元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>胡麻醬時蔬</h4>
+                        </div>
+                        <div class="price">30元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>唐揚炸雞</h4>
+                        </div>
+                        <div class="price">100元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>炸蝦3隻</h4>
+                        </div>
+                        <div class="price">120元</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <h4>薯條</h4>
+                        </div>
+                        <div class="price">80元</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 日暮拉麵 ひくれラーメン. All rights reserved.</p>
+        <p>歡迎年輕朋友們來品嚐最道地的日式拉麵！</p>
+    </footer>
+
+    <button class="floating-btn" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // 活動輪播功能
+        let currentSlide = 0;
+        const totalSlides = 4;
+
+        function changeSlide(direction) {
+            const slides = document.getElementById('activitySlides');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            indicators[currentSlide].classList.remove('active');
+            currentSlide += direction;
+            
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            
+            slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+            indicators[currentSlide].classList.add('active');
+        }
+
+        function goToSlide(slideIndex) {
+            const slides = document.getElementById('activitySlides');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            indicators[currentSlide].classList.remove('active');
+            currentSlide = slideIndex;
+            slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+            indicators[currentSlide].classList.add('active');
+        }
+
+        // 自動輪播
+        let slideInterval = setInterval(() => changeSlide(1), 5000);
+
+        // 回到頂部功能
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 滾動時顯示/隱藏浮動按鈕
+        window.addEventListener('scroll', function() {
+            const floatingBtn = document.querySelector('.floating-btn');
+            if (window.pageYOffset > 300) {
+                floatingBtn.classList.add('show');
+            } else {
+                floatingBtn.classList.remove('show');
+            }
+        });
+
+        // 卡片點擊效果
+        document.querySelectorAll('.item-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

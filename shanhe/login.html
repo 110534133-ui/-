@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>會員登入</title>
+  <link rel="stylesheet" href="main.css"> <!-- 引入外部 CSS 檔案 -->
+  <style>
+    body {
+      font-family: 'Microsoft JhengHei', Arial, sans-serif;
+      background: linear-gradient(135deg, #fff6ec 50%, #dfe0df 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    .form-group input {
+      width: 90%;
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #f8f9fa;
+    }
+    .form-group input:focus {
+      border-color: #667eea;
+      background: white;
+      outline: none;
+    }
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+    }
+    .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .links a {
+      color: #667eea;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    /* 忘記密碼的彈出視窗樣式 */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .popup-content {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+    }
+    .close-btn {
+      cursor: pointer;
+      float: right;
+      font-size: 20px;
+    }
+    /* 使彈出視窗的內容不會跑版 */
+    .form-title {
+      margin: 10px 0;
+    }
+    .form-group {
+      margin-bottom: 15px; /* 調整間距 */
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>會員登入</h2>
+    <form method="post" action="login.php">
+      <div class="form-group">
+        <label for="phone">帳號 (電話）：</label>
+        <input type="text" id="phone" name="phone" placeholder="請輸入帳號" required>
+      </div>
+      <div class="form-group">
+        <label for="password">密碼：</label>
+        <input type="password" id="password" name="password" placeholder="請輸入密碼" required>
+      </div>
+      <button type="submit" class="btn">登入</button>
+    </form>
+    <div class="links">
+      <a href="index.html#popup">還不是會員？立即加入</a> ｜ 
+      <a href="#" id="forgot-password-link">忘記密碼？</a>
+    </div>
+  </div>
+
+  <!-- 忘記密碼的彈出視窗 -->
+  <div id="forgot-password-popup" class="popup">
+    <div class="popup-content">
+      <span class="close-btn" id="close-popup">&times;</span>
+      <h2 class="form-title">重設密碼</h2>
+      
+      <form method="post" action="send_sms.php"> <!-- 設置為處理發送驗證碼的 PHP 文件 -->
+        <div class="form-group">
+          <label for="reset-phone">手機號碼：</label>
+          <input type="tel" id="reset-phone" name="reset-phone" placeholder="請輸入您的手機號碼" required>
+          <button type="submit" class="btn" style="margin-top: 10px;">發送驗證碼</button> <!-- 發送驗證碼的按鈕 -->
+        </div>
+      </form>
+
+      <form method="post" action="verify_code.php"> <!-- 設置為處理更新密碼的 PHP 文件 -->
+        <div class="form-group">
+          <label for="verification-code">驗證碼：</label>
+          <input type="text" id="verification-code" name="verification-code" placeholder="請輸入驗證碼" required>
+          <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>"> <!-- 隱藏手機號碼 -->
+        </div>
+        <button type="submit" class="btn">驗證</button> <!-- 送出驗證碼的按鈕 -->
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+    const forgotPasswordPopup = document.getElementById("forgot-password-popup");
+    const closePopup = document.getElementById("close-popup");
+
+    // 顯示忘記密碼彈出視窗
+    forgotPasswordLink.onclick = function(event) {
+        event.preventDefault(); // 防止鏈接跳轉
+        forgotPasswordPopup.style.display = "flex"; // 顯示忘記密碼視窗
+    }
+
+    // 關閉彈出視窗
+    closePopup.onclick = function() {
+        forgotPasswordPopup.style.display = "none"; // 隱藏忘記密碼視窗
+    }
+
+    // 點擊視窗外部關閉視窗
+    window.onclick = function(event) {
+        if (event.target == forgotPasswordPopup) {
+            forgotPasswordPopup.style.display = "none";
+        }
+    }
+  </script>
+</body>
+</html>

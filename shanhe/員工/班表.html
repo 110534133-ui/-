@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>班表管理 - 員工管理系統</title>
+
+  <!-- 與其他頁一致 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <!-- 將表格轉成圖片 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
+      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
+      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
+      --border-radius: 20px;
+      --transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    * { transition: var(--transition); }
+    body {
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* 頂欄 */
+    .sb-topnav{background:var(--dark-bg)!important; border:none; box-shadow:var(--card-shadow); backdrop-filter:blur(10px)}
+    .navbar-brand{
+      font-weight:700; font-size:1.5rem;
+      background: linear-gradient(45deg,#ffffff,#ffffff);
+      background-clip:text; -webkit-background-clip:text;
+      color:transparent; -webkit-text-fill-color:transparent;
+    }
+
+    /* 側欄（與首頁一致） */
+    .sb-sidenav{background:linear-gradient(180deg,#fbb97ce4 0%,#ff00006a 100%)!important; box-shadow:var(--card-shadow); backdrop-filter:blur(10px)}
+    .sb-sidenav-menu-heading{color:rgba(255,255,255,.7)!important; font-weight:600; font-size:.85rem; text-transform:uppercase; letter-spacing:1px; padding:20px 15px 10px!important; margin-top:15px}
+    .sb-sidenav .nav-link{border-radius:15px; margin:5px 15px; padding:12px 15px; position:relative; overflow:hidden; color:rgba(255,255,255,.9)!important; font-weight:500; backdrop-filter:blur(10px)}
+    .sb-sidenav .nav-link:hover{background:rgba(255,255,255,.15)!important; transform:translateX(8px); box-shadow:0 8px 25px rgba(0,0,0,.2); color:#fff!important}
+    .sb-sidenav .nav-link.active{background:rgba(255,255,255,.2)!important; color:#fff!important; font-weight:600; box-shadow:0 8px 25px rgba(0,0,0,.15)}
+    .sb-sidenav .nav-link::before{content:''; position:absolute; left:0; top:0; height:100%; width:4px; background:linear-gradient(45deg,#ffffff,#ffffff); transform:scaleY(0); border-radius:0 10px 10px 0}
+    .sb-sidenav .nav-link:hover::before,.sb-sidenav .nav-link.active::before{transform:scaleY(1)}
+    .sb-sidenav .nav-link i{width:20px; text-align:center; margin-right:10px; font-size:1rem}
+    .sb-sidenav-footer{background:rgba(255,255,255,.1)!important; color:#fff!important; border-top:1px solid rgba(255,255,255,.2); padding:20px 15px; margin-top:20px}
+
+    /* 內容區 */
+    .container-fluid { padding: 30px !important; }
+    h1 {
+      background: var(--primary-gradient);
+      background-clip: text; -webkit-background-clip: text;
+      color: transparent; -webkit-text-fill-color: transparent;
+      font-weight: 700; font-size: 2.5rem; margin-bottom: 30px;
+    }
+    .breadcrumb { background: rgba(255,255,255,.8); border-radius: var(--border-radius); padding: 15px 20px; box-shadow: var(--card-shadow); backdrop-filter: blur(10px); }
+
+    .card { border: none; border-radius: var(--border-radius); box-shadow: var(--card-shadow); background: #fff; overflow: hidden; }
+    .card-header { background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.7)); font-weight: 600; }
+
+    .table { border-radius: var(--border-radius); overflow: hidden; background: #fff; box-shadow: var(--card-shadow); }
+    .table thead th { background: var(--primary-gradient); color: #000; border: none; font-weight: 600; padding: 15px; }
+    .table tbody td, .table tbody th { padding: 12px; vertical-align: middle; border-color: rgba(0,0,0,.05); }
+    .table-hover tbody tr:hover { background: rgba(227,23,111,.05); transform: scale(1.01); }
+
+    .badge-shift { display:inline-block; min-width:72px; padding:.35rem .6rem; border-radius: 999px; background: rgba(102,126,234,.12); border:1px solid rgba(102,126,234,.25); }
+    .badge-off   { display:inline-block; padding:.35rem .6rem; border-radius: 999px; background: rgba(0,0,0,.05); border:1px dashed rgba(0,0,0,.15); }
+
+    /* 頂欄搜尋框只在頂欄變白字 */
+    .sb-topnav .form-control{border-radius:25px; border:2px solid transparent; background:rgba(255,255,255,.2); color:#fff}
+    .sb-topnav .form-control:focus{background:rgba(255,255,255,.3); border-color:rgba(255,255,255,.5); box-shadow:0 0 20px rgba(255,255,255,.2); color:#fff}
+
+    .btn-primary{background:var(--primary-gradient); border:none; border-radius:25px}
+    .btn-primary:hover{transform:scale(1.05); box-shadow:0 10px 25px rgba(102,126,234,.976)}
+
+    /* 可排時段輸入的小樣式 */
+    .range-item .input-group-text{min-width:2.5rem; justify-content:center}
+    .range-item .form-control{min-width:6.5rem}
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Navbar -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand ps-3" href="index.html">員工管理系統</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button"><i class="fas fa-bars"></i></button>
+
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+      <div class="input-group">
+        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" />
+        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-user fa-fw"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="#!">Settings</a></li>
+          <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="#!">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="layoutSidenav">
+    <!-- Side Nav -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="index.html">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>首頁
+            </a>
+
+            <div class="sb-sidenav-menu-heading">Pages</div>
+<a class="nav-link" href="班表.html">
+  <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>班表表格
+</a>
+
+<a class="nav-link" href="薪資記錄.html">
+  <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>薪資總計
+</a>
+
+
+<a class="nav-link" href="請假申請.html">
+  <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>請假申請
+</a>
+
+<a class="nav-link" href="打卡記錄.html">
+  <div class="sb-nav-link-icon"></div>打卡紀錄
+</a>
+
+        <div class="sb-sidenav-footer">
+          <div class="small">Logged in as:</div>
+          員工
+        </div>
+      </nav>
+    </div>
+
+    <!-- Content -->
+    <div id="layoutSidenav_content">
+      <main>
+        <div class="container-fluid">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>班表管理</h1>
+            <div class="text-muted"><i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span></div>
+          </div>
+
+          <!-- 麵包屑 -->
+          <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">首頁</a></li>
+            <li class="breadcrumb-item active">班表管理</li>
+          </ol>
+
+          <!-- 週切換與下載圖片 -->
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="btn-group" role="group" aria-label="week switch">
+              <button class="btn btn-outline-secondary" id="btnPrevWeek"><i class="fas fa-chevron-left me-1"></i>上週</button>
+              <button class="btn btn-outline-secondary" id="btnThisWeek">本週</button>
+              <button class="btn btn-outline-secondary" id="btnNextWeek">下週<i class="fas fa-chevron-right ms-1"></i></button>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+              <span class="text-muted">週期：</span>
+              <strong id="weekRangeText">--</strong>
+              <button class="btn btn-primary ms-3" id="btnDownloadPng"><i class="fas fa-image me-2"></i>下載班表圖片</button>
+            </div>
+          </div>
+
+          <!-- 只讀：本週班表（可下載為圖片） -->
+          <div class="card mb-4" id="scheduleViewCard">
+            <div class="card-header"><i class="fas fa-calendar-alt me-2"></i>本週班表（唯讀）</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle" id="readonlyTable">
+                  <thead id="viewHeader"><!-- 動態 --></thead>
+                  <tbody id="viewBody"><!-- 動態 --></tbody>
+                </table>
+              </div>
+              <div class="small text-muted">※ 本區塊僅供瀏覽，不可編輯。</div>
+            </div>
+          </div>
+
+          <!-- 員工填報：每週可排時段（可自訂時間，多段） -->
+          <div class="card">
+            <div class="card-header"><i class="fas fa-clipboard-list me-2"></i>本週可排時段填報</div>
+            <div class="card-body">
+              <form id="availabilityForm">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4">
+                    <label class="form-label">填報週（自動為本週一）</label>
+                    <input type="date" class="form-control" id="weekStartInput" required />
+                    <div class="form-text">系統以這天為「週一」，往後產生 7 天。</div>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-bordered align-middle">
+                    <thead class="table-light" id="availHeader"><!-- 動態 --></thead>
+                    <tbody id="availBody"><!-- 動態 --></tbody>
+                  </table>
+                </div>
+
+                <div class="text-end">
+                  <button type="button" class="btn btn-outline-secondary" id="btnClear">清除全部</button>
+                  <button type="submit" class="btn btn-primary ms-2">送出可排時段</button>
+                </div>
+              </form>
+              <div id="formMsg" class="mt-3"></div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; </div>
+            <div>
+              <a href="#">Privacy Policy</a> &middot; <a href="#">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    /* ====== 你之後只要改這裡就能串 DB / API ====== */
+    const BASE_URL = '/api';
+    const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
+
+    async function fetchJSON(path, options = {}) {
+      try {
+        const res = await fetch(BASE_URL + path, { headers: DEFAULT_HEADERS, credentials: 'include', ...options });
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        return await res.json();
+      } catch (err) {
+        console.warn('[API ERROR]', path, err);
+        return null;
+      }
+    }
+
+    // 今日日期
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+    document.getElementById('sidebarToggle').addEventListener('click', e => { e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled'); });
+
+    /* ====== 週期計算 ====== */
+    function getMonday(d = new Date()) {
+      const date = new Date(d);
+      const day = (date.getDay() + 6) % 7; // 0=Mon
+      date.setHours(0,0,0,0);
+      date.setDate(date.getDate() - day);
+      return date;
+    }
+    function fmt(d) { return d.toISOString().slice(0,10); }
+    function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+    function rangeMonToSun(monday){
+      const arr = [];
+      for(let i=0;i<7;i++){ arr.push(addDays(monday,i)); }
+      return arr;
+    }
+
+    /* ====== 唯讀班表（瀏覽＋下載圖片） ====== */
+    async function loadReadonlySchedule(monday){
+      // 期望：GET /schedule/week?start=YYYY-MM-DD
+      // 回傳示例：
+      // { rows: [ { name:"小明", shifts:["10:00-14:00","-","-","16:00-22:00","-","-","-"] }, ... ] }
+      const data = await fetchJSON(`/schedule/week?start=${fmt(monday)}`);
+      const days = rangeMonToSun(monday);
+      const head = document.getElementById('viewHeader');
+      const body = document.getElementById('viewBody');
+
+      // 表頭
+      const weekday = ['一','二','三','四','五','六','日'];
+      head.innerHTML = `
+        <tr>
+          <th style="min-width:120px">員工</th>
+          ${days.map((d,i)=>`<th>${d.getMonth()+1}/${d.getDate()}<br>星期${weekday[i]}</th>`).join('')}
+        </tr>`;
+
+      // 內容
+      if(!data || !Array.isArray(data.rows) || data.rows.length===0){
+        body.innerHTML = `<tr><td colspan="8" class="text-center text-muted">目前沒有班表資料。</td></tr>`;
+        return;
+      }
+      body.innerHTML = data.rows.map(r => `
+        <tr>
+          <th class="bg-light text-start">${r.name ?? ''}</th>
+          ${(r.shifts ?? Array(7).fill('')).map(s => s && s !== '-' ?
+            `<td><span class="badge-shift">${s}</span></td>` :
+            `<td><span class="badge-off">休</span></td>`).join('')}
+        </tr>
+      `).join('');
+    }
+
+    // 下載圖片（把唯讀班表卡片截成 PNG）
+    async function downloadSchedulePng(){
+      const el = document.getElementById('scheduleViewCard');
+      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `班表_${document.getElementById('weekRangeText').textContent}.png`;
+      a.click();
+    }
+
+    /* ====== 可排時段填報（自由時間段，多段可加） ====== */
+    function renderAvailabilityTable(monday){
+      const days = rangeMonToSun(monday);
+      const weekdayFull = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+      const head = document.getElementById('availHeader');
+      const body = document.getElementById('availBody');
+
+      // 表頭：日期 + 星期
+      head.innerHTML = `
+        <tr>
+          ${days.map((d,i)=>`<th class="text-center">${weekdayFull[i]}<br>${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}</th>`).join('')}
+        </tr>`;
+
+      // 內容：每格可新增多組「起-迄」時間
+      const row = document.createElement('tr');
+      days.forEach((d, i) => {
+        const dateStr = fmt(d);
+        const td = document.createElement('td');
+        td.style.minWidth = '220px';
+        td.innerHTML = `
+          <div class="ranges" data-date="${dateStr}"></div>
+          <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-action="add-range" data-date="${dateStr}">
+            <i class="fas fa-plus me-1"></i>新增時段
+          </button>
+          <div class="form-text mt-1">可新增多段時間</div>
+        `;
+        row.appendChild(td);
+      });
+      body.innerHTML = '';
+      body.appendChild(row);
+
+      // 預設每一天先放一組空的時間
+      document.querySelectorAll('.ranges').forEach(r => addRangeRow(r.dataset.date));
+    }
+
+    function addRangeRow(dateStr){
+      const container = document.querySelector(`.ranges[data-date="${dateStr}"]`);
+      const idx = container.querySelectorAll('.range-item').length;
+      const idStart = `s_${dateStr}_${idx}`;
+      const idEnd   = `e_${dateStr}_${idx}`;
+      const div = document.createElement('div');
+      div.className = 'range-item input-group input-group-sm mb-2';
+      div.innerHTML = `
+        <span class="input-group-text">起</span>
+        <input type="time" class="form-control start" id="${idStart}" aria-label="start">
+        <span class="input-group-text">迄</span>
+        <input type="time" class="form-control end" id="${idEnd}" aria-label="end">
+        <button class="btn btn-outline-danger" type="button" title="移除" data-action="remove-range">&times;</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function clearAllRanges(){
+      document.querySelectorAll('.ranges').forEach(r => r.innerHTML = '');
+    }
+
+    // 事件委派：新增/移除 時段
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if(!btn) return;
+      const action = btn.dataset.action;
+      if(action === 'add-range'){
+        addRangeRow(btn.dataset.date);
+      } else if(action === 'remove-range'){
+        const item = btn.closest('.range-item');
+        if(item) item.remove();
+      }
+    });
+
+    function showFormMsg(text, type='secondary'){
+      const slot = document.getElementById('formMsg');
+      slot.innerHTML = `<div class="alert alert-${type} mb-0" role="alert">${text}</div>`;
+    }
+
+    async function submitAvailability(e){
+      e.preventDefault();
+      const weekStartStr = document.getElementById('weekStartInput').value;
+      if(!weekStartStr){
+        showFormMsg('請先選擇「填報週」', 'danger'); return;
+      }
+      const weekStart = getMonday(new Date(weekStartStr));
+
+      // 收集每一天的多段時間
+      const availability = {};
+      let invalid = false;
+
+      document.querySelectorAll('.ranges').forEach(r => {
+        const date = r.dataset.date;
+        const items = Array.from(r.querySelectorAll('.range-item'));
+        const ranges = [];
+        items.forEach(it => {
+          const s = it.querySelector('.start')?.value || '';
+          const e = it.querySelector('.end')?.value || '';
+          if(!s && !e){ return; }           // 空白就忽略
+          if(!s || !e || s >= e){ invalid = true; return; } // 基本驗證
+          ranges.push({ start: s, end: e });
+        });
+        availability[date] = ranges; // 可能為空陣列
+      });
+
+      if(invalid){
+        showFormMsg('有不合法的時間段（起需早於迄，或欄位不可空白）。請修正後再送出。', 'danger');
+        return;
+      }
+
+      // 期望：後端從登入態辨識員工，不需傳姓名
+      // POST /availability/weekly
+      // body: { week_start: "YYYY-MM-DD", availability: { "YYYY-MM-DD": [ {start:"10:00", end:"14:00"}, ... ] } }
+      const payload = { week_start: fmt(weekStart), availability };
+      const ok = await fetchJSON('/availability/weekly', { method:'POST', body: JSON.stringify(payload) });
+      if(ok){
+        showFormMsg('已送出，感謝填報！', 'success');
+      }else{
+        showFormMsg('送出失敗，請稍後再試。', 'danger');
+      }
+    }
+
+    function clearForm(){
+      clearAllRanges();
+      // 重新補一組空的
+      document.querySelectorAll('.ranges').forEach(r => addRangeRow(r.dataset.date));
+      showFormMsg('已清除全部時間段。', 'secondary');
+    }
+
+    /* ====== 週切換控制 ====== */
+    let currentMonday = getMonday(new Date());
+    function updateWeekRangeText(monday){
+      const sun = addDays(monday, 6);
+      const s = `${monday.getFullYear()}/${String(monday.getMonth()+1).padStart(2,'0')}/${String(monday.getDate()).padStart(2,'0')}`;
+      const e = `${sun.getFullYear()}/${String(sun.getMonth()+1).padStart(2,'0')}/${String(sun.getDate()).padStart(2,'0')}`;
+      document.getElementById('weekRangeText').textContent = `${s} - ${e}`;
+    }
+
+    async function refreshAll(){
+      updateWeekRangeText(currentMonday);
+      await loadReadonlySchedule(currentMonday);
+      renderAvailabilityTable(currentMonday);
+      document.getElementById('weekStartInput').value = fmt(currentMonday);
+    }
+
+    /* ====== 初始化 ====== */
+    window.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('btnPrevWeek').addEventListener('click', async () => { currentMonday = addDays(currentMonday, -7); await refreshAll(); });
+      document.getElementById('btnThisWeek').addEventListener('click', async () => { currentMonday = getMonday(new Date()); await refreshAll(); });
+      document.getElementById('btnNextWeek').addEventListener('click', async () => { currentMonday = addDays(currentMonday, 7); await refreshAll(); });
+      document.getElementById('btnDownloadPng').addEventListener('click', downloadSchedulePng);
+
+      document.getElementById('availabilityForm').addEventListener('submit', submitAvailability);
+      document.getElementById('btnClear').addEventListener('click', clearForm);
+
+      // 讓「填報週」變更時，整個表格跟著換週
+      document.getElementById('weekStartInput').addEventListener('change', async (e) => {
+        const d = new Date(e.target.value);
+        currentMonday = getMonday(d);
+        await refreshAll();
+      });
+
+      await refreshAll();
+    });
+  </script>
+</body>
+</html>

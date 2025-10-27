@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>班表管理 - 員工管理系統</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%); /* 首頁同色 */
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
+      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
+      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
+      --border-radius: 20px;
+      --transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    * { transition: var(--transition); }
+    body {
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* 頂欄（跟首頁一致） */
+    .sb-topnav {
+      background: var(--dark-bg) !important;
+      border: none;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(45deg, #ffffff, #ffffff);
+      /* 修復 Lint：標準屬性 + 前綴 + 透明文字 */
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+
+    /* 側欄（跟首頁一致） */
+    .sb-sidenav {
+      background: linear-gradient(180deg, #fbb97ce4 0%, #ff00006a 100%) !important;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav-menu-heading {
+      color: rgba(255,255,255,.7) !important;
+      font-weight: 600;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 20px 15px 10px 15px !important;
+      margin-top: 15px;
+    }
+    .sb-sidenav .nav-link {
+      border-radius: 15px;
+      margin: 5px 15px;
+      padding: 12px 15px;
+      position: relative;
+      overflow: hidden;
+      color: rgba(255,255,255,.9) !important;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav .nav-link:hover {
+      background: rgba(255,255,255,.15) !important;
+      transform: translateX(8px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+      color: #fff !important;
+    }
+    .sb-sidenav .nav-link.active {
+      background: rgba(255,255,255,.2) !important;
+      color: #fff !important;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+    .sb-sidenav .nav-link::before {
+      content: '';
+      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: linear-gradient(45deg, #ffffff, #ffffff); /* 和首頁相同：白色亮條 */
+      transform: scaleY(0);
+      transition: var(--transition);
+      border-radius: 0 10px 10px 0;
+    }
+    .sb-sidenav .nav-link:hover::before,
+    .sb-sidenav .nav-link.active::before { transform: scaleY(1); }
+
+    .sb-sidenav .nav-link i { width: 20px; text-align: center; margin-right: 10px; font-size: 1rem; }
+    .sb-sidenav-footer {
+      background: rgba(255,255,255,.1) !important;
+      color: #fff !important;
+      border-top: 1px solid rgba(255,255,255,.2);
+      padding: 20px 15px;
+      margin-top: 20px;
+    }
+
+    /* 內容區 */
+    .container-fluid { padding: 30px !important; }
+    h1 {
+      background: var(--primary-gradient);
+      background-clip: text;              /* 標準屬性 */
+      -webkit-background-clip: text;      /* 前綴 */
+      color: transparent;                 /* 標準作法 */
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    /* 麵包屑（與首頁一致） */
+    .breadcrumb {
+      background: rgba(255,255,255,.8);
+      border-radius: var(--border-radius);
+      padding: 15px 20px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* 表格（與首頁一致） */
+    .table {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: var(--card-shadow);
+    }
+    .table thead th {
+      background: var(--primary-gradient);
+      color: #000;
+      border: none;
+      font-weight: 600;
+      padding: 15px;
+    }
+    .table tbody td {
+      padding: 15px;
+      vertical-align: middle;
+      border-color: rgba(0,0,0,.05);
+    }
+    .table tbody tr:hover {
+      background: rgba(227, 23, 111, 0.05);
+      transform: scale(1.01);
+    }
+
+    /* 只把「頂欄」的搜尋框做白字半透明背景（避免影響內容區搜尋框） */
+    .sb-topnav .form-control {
+      border-radius: 25px;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,.2);
+      color: #fff;
+    }
+    .sb-topnav .form-control:focus {
+      background: rgba(255,255,255,.3);
+      border-color: rgba(255,255,255,.5);
+      box-shadow: 0 0 20px rgba(255,255,255,.2);
+      color: #fff;
+    }
+    .btn-primary {
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 25px;
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(209, 209, 209, 0.976);
+    }
+
+    /* 讓按鈕內容不換行，並水平置中排好 */
+.view-slot-btn{
+  white-space: nowrap;         /* 關鍵：不換行 */
+  display: inline-flex;        /* 讓圖示/文字/徽章在同一行 */
+  align-items: center;
+  gap: .25rem;
+}
+/*（可選）避免表格把內容硬折行 */
+#viewerBody td { white-space: nowrap; }
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Navbar -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand ps-3" href="index.html">員工管理系統</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button"><i class="fas fa-bars"></i></button>
+
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+      <div class="input-group">
+        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" />
+        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-user fa-fw"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="#!">Settings</a></li>
+          <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="#!">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="layoutSidenav">
+    <!-- Side Nav -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="index.html">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>首頁
+            </a>
+
+            <div class="sb-sidenav-menu-heading">Pages</div>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>人事管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav">
+                <a class="nav-link" href="員工資料表.html">員工資料表</a>
+                <a class="nav-link" href="班表管理.html">班表管理</a>
+                <a class="nav-link" href="日報表記錄.html">日報表記錄</a>
+                <a class="nav-link" href="假別管理.html">假別管理</a>
+                <a class="nav-link" href="打卡記錄.html">打卡紀錄</a>
+                <a class="nav-link" href="薪資管理.html">薪資管理</a>
+              </nav>
+            </div>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>營運管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseOperation" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionOperation">
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#operationCollapseInventory" aria-expanded="false">
+                  庫存管理
+                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="operationCollapseInventory" data-bs-parent="#sidenavAccordionOperation">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="庫存查詢.html">庫存查詢</a>
+                    <a class="nav-link" href="庫存調整.html">庫存調整</a>
+                  </nav>
+                </div>
+
+                <a class="nav-link" href="日報表.html"><div class="sb-nav-link-icon"></div>日報表</a>
+                <a class="nav-link" href="薪資記錄.html"><div class="sb-nav-link-icon"></i></div>薪資記錄</a>
+                <a class="nav-link" href="班表.html"><div class="sb-nav-link-icon"></div>班表</a>
+
+              </nav>
+            </div>
+      
+                <a class="nav-link" href="請假申請.html"><div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>請假申請</a>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWebsite">
+              <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>網站管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseWebsite" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionWebsite">
+                <a class="nav-link" href="layout-static.html">官網資料修改</a>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#websiteCollapseMember">
+                  會員管理 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="websiteCollapseMember" data-bs-parent="#sidenavAccordionWebsite">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="member-list.html">會員清單</a>
+                    <a class="nav-link" href="member-detail.html">詳細資料頁</a>
+                    <a class="nav-link" href="point-manage.html">點數管理</a>
+                  </nav>
+                </div>
+              </nav>
+            </div>
+
+            <div class="sb-sidenav-menu-heading">Addons</div>
+            <a class="nav-link" href="charts.html"><div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>Charts</a>
+            <a class="nav-link" href="tables.html"><div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>Tables</a>
+          </div>
+        </div>
+
+        <div class="sb-sidenav-footer">
+          <div class="small">Logged in as:</div>
+          Start Bootstrap
+        </div>
+      </nav>
+    </div>
+
+    <div id="layoutSidenav_content">
+      <main>
+        <div class="container-fluid">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>班表管理</h1>
+            <div class="text-muted"><i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span></div>
+          </div>
+
+          <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">首頁</a></li>
+            <li class="breadcrumb-item active">班表管理</li>
+          </ol>
+
+          <!-- 查詢日期 -->
+          <div class="d-flex justify-content-start align-items-center gap-2 mb-4">
+            <select id="yearSelect" class="form-select" style="width: 100px;"></select>
+            <select id="monthSelect" class="form-select" style="width: 100px;"></select>
+            <select id="daySelect" class="form-select" style="width: 100px;"></select>
+            <button class="btn btn-primary" id="btnQuery">查詢</button>
+          </div>
+
+          <!-- 本週班表（唯讀） -->
+          <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-calendar-alt me-2"></i>本週班表（唯讀）</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle">
+                  <thead id="weekHeader"><!-- 動態產生 --></thead>
+                  <tbody id="currentScheduleTable"><!-- 動態載入 --></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 可排人員檢視 -->
+          <div class="card mb-4">
+            <div class="card-header"><i class="fas fa-user-check me-2"></i>可排人員檢視（點名單按鈕即可加入/移除草稿）</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                  <thead class="table-light">
+                    <tr id="viewerHeaderRow"><th style="width:100px">時段</th></tr>
+                  </thead>
+                  <tbody id="viewerBody"></tbody>
+                </table>
+              </div>
+              <div class="small text-muted">深色＝已加入【編輯班表】；淺色＝可排未加入。</div>
+            </div>
+          </div>
+
+          <!-- 編輯班表（新增 / 修改 / 刪除） -->
+          <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <div><i class="fas fa-edit me-2"></i>編輯班表（草稿｜可新增/修改）</div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm" id="btnClearDraft"><i class="fas fa-eraser me-1"></i>清空草稿</button>
+                <button class="btn btn-primary btn-sm" id="btnSaveDraft"><i class="fas fa-save me-1"></i>儲存班表</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle" id="editorTable">
+                  <thead class="table-light">
+                    <tr id="editorHeaderRow"><th style="width:100px">時段</th></tr>
+                  </thead>
+                  <tbody id="editorBody"></tbody>
+                </table>
+              </div>
+              <div class="small text-muted">每格可「+ 新增」或點名字旁的✎修改、×移除；儲存後會同步更新上方唯讀班表。</div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; Xxing0625</div>
+            <div>
+              <a href="#">Privacy Policy</a> &middot;
+              <a href="#">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Modal：可排名單 -->
+  <div class="modal fade" id="slotModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><span id="modalDate"></span>・<span id="modalPeriod"></span> 的可排名單</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-light border">
+            點「姓名＋時段」按鈕即可加入/移除【編輯班表】草稿。
+          </div>
+          <div id="candidateArea" class="d-flex flex-wrap"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">完成</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal：新增/修改 指定人員 -->
+  <div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="assignForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="assignModalTitle">新增人員</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="assignDs">
+          <input type="hidden" id="assignPeriod">
+          <input type="hidden" id="assignOriginalName">
+
+          <div class="mb-3">
+            <label class="form-label">姓名</label>
+            <input class="form-control" id="assignName" list="nameOptions" placeholder="輸入或選擇姓名" required>
+            <datalist id="nameOptions"></datalist>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label">開始時間</label>
+              <input type="time" class="form-control" id="assignStart" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">結束時間</label>
+              <input type="time" class="form-control" id="assignEnd" required>
+            </div>
+          </div>
+
+          <div class="form-text mt-2">儲存後此人會出現在該日「編輯班表」欄位，也會影響下方可排人員的計數。</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">取消</button>
+          <button class="btn btn-primary" type="submit">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    /* ========= 基本設定 ========= */
+    const PERIODS = ['上午','晚上'];
+    const BASE_URL = '/api';   // TODO: 換你的 API
+    const DEFAULT_HEADERS = { 'Content-Type':'application/json' };
+
+    async function fetchJSON(path, options = {}) {
+      try {
+        const res = await fetch(BASE_URL + path, { headers: DEFAULT_HEADERS, credentials:'include', ...options });
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        return await res.json();
+      } catch (err) { console.warn('[API ERROR]', path, err); return null; }
+    }
+
+    /* ========= 日期 util ========= */
+    function getMonday(d=new Date()){ const x=new Date(d); const dow=(x.getDay()+6)%7; x.setHours(0,0,0,0); x.setDate(x.getDate()-dow); return x; }
+    function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+    function fmt(d){ return d.toISOString().slice(0,10); }
+    function daysOfWeek(monday){ const a=[]; for(let i=0;i<7;i++) a.push(addDays(monday,i)); return a; }
+
+    /* ========= 狀態 ========= */
+    let scheduleAssignedMap = {}; // 已發布
+    let draftAssignedMap = {};    // 草稿
+    let availabilityDetail = {};  // 可排
+
+    function ensureDraftKey(ds){ draftAssignedMap[ds] = draftAssignedMap[ds] || { '上午':[], '晚上':[] }; }
+    function inDraft(ds, period, name){ return (draftAssignedMap[ds]?.[period] || []).some(x => x.name === name); }
+
+    function addToDraft(ds, period, name, time){
+      ensureDraftKey(ds);
+      if (!inDraft(ds, period, name)) {
+        draftAssignedMap[ds][period].push({name, time});
+        renderEditorCell(ds, period);
+        refreshViewerCounts(ds, period);
+      }
+    }
+    function removeFromDraft(ds, period, name){
+      ensureDraftKey(ds);
+      draftAssignedMap[ds][period] = draftAssignedMap[ds][period].filter(x => x.name !== name);
+      renderEditorCell(ds, period);
+      refreshViewerCounts(ds, period);
+    }
+    function upsertDraft(ds, period, name, time, originalName=null){
+      ensureDraftKey(ds);
+      const list = draftAssignedMap[ds][period];
+      const targetIdx = list.findIndex(x => x.name === (originalName || name));
+      if (targetIdx === -1) {
+        list.push({name, time});
+      } else {
+        list[targetIdx] = {name, time};
+        // 若更名造成重複，移除另一個
+        for (let i=list.length-1;i>=0;i--){
+          if (i!==targetIdx && list[i].name===name) list.splice(i,1);
+        }
+      }
+      renderEditorCell(ds, period);
+      refreshViewerCounts(ds, period);
+    }
+
+    /* ========= UI 初始化 ========= */
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'long', day:'numeric', weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e => {
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const daySelect   = document.getElementById('daySelect');
+    function initDateSelectors(){
+      const today = new Date(); const y0=today.getFullYear();
+      for(let y=y0-3;y<=y0+3;y++) yearSelect.insertAdjacentHTML('beforeend', `<option value="${y}" ${y===y0?'selected':''}>${y}</option>`);
+      for(let m=1;m<=12;m++) monthSelect.insertAdjacentHTML('beforeend', `<option value="${String(m).padStart(2,'0')}" ${m===today.getMonth()+1?'selected':''}>${m}</option>`);
+      for(let d=1;d<=31;d++) daySelect.insertAdjacentHTML('beforeend', `<option value="${String(d).padStart(2,'0')}" ${d===today.getDate()?'selected':''}>${d}</option>`);
+    }
+    function selectedDate(){ return new Date(+yearSelect.value, +monthSelect.value-1, +daySelect.value); }
+
+    /* ========= 上方：已發布（唯讀） ========= */
+    function renderWeekHeader(monday){
+      const weekHeader = document.getElementById('weekHeader');
+      const weekday = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+      const cells = daysOfWeek(monday).map((d,i)=>`<th>${weekday[i]}<br>${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}</th>`);
+      weekHeader.innerHTML = `<tr><th style="width:100px"></th>${cells.join('')}</tr>`;
+    }
+    function normalizePeriod(s){ if(!s) return ''; s=String(s); if(s.includes('早')||s.includes('上')) return '上午'; if(s.includes('晚')) return '晚上'; return s; }
+    function parseNames(cell){ return String(cell||'').split(/[\s,，、/|\n]+/).map(s=>s.trim()).filter(Boolean); }
+
+    async function loadSchedulePreview(monday){
+      const y=yearSelect.value, m=monthSelect.value, d=daySelect.value;
+      const date = `${y}-${m}-${d}`;
+      scheduleAssignedMap = {};
+      const tbody = document.getElementById('currentScheduleTable');
+
+      try{
+        const res = await fetch(`api_schedule.php?date=${date}`); // TODO 換你的 API
+        const data = await res.json();
+
+        if(!Array.isArray(data) || data.length===0){
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">沒有資料</td></tr>`;
+        }else{
+          tbody.innerHTML = data.map(row => `
+            <tr>
+              <th class="bg-light">${row.timeSlot ?? ''}</th>
+              ${(row.days ?? Array(7).fill('')).map(v => `<td>${v || ''}</td>`).join('')}
+            </tr>
+          `).join('');
+        }
+
+        // 解析成 map
+        daysOfWeek(monday).forEach(d => { const ds=fmt(d); scheduleAssignedMap[ds] = { '上午':[], '晚上':[] }; });
+        (Array.isArray(data)?data:[]).forEach(row=>{
+          const p = normalizePeriod(row.timeSlot);
+          if(!PERIODS.includes(p)) return;
+          (row.days || []).forEach((cell, idx)=>{
+            const ds = fmt(addDays(monday, idx));
+            scheduleAssignedMap[ds][p] = parseNames(cell).map(n=>({name:n}));
+          });
+        });
+      }catch(e){
+        console.warn(e);
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">載入失敗</td></tr>`;
+      }
+    }
+
+    /* ========= 可排（Demo） ========= */
+    function demoAvailability(monday){
+      const names = ["韶靜","承諺","麗靜","佩均","宜伶","季嫻","沛瑜"];
+      const timesAM = ["10:00-14:00","11:00-15:00","12:00-16:00"];
+      const timesPM = ["16:00-20:00","17:00-22:00","18:00-22:00"];
+      availabilityDetail = {};
+      daysOfWeek(monday).forEach(d=>{
+        const ds = fmt(d);
+        availabilityDetail[`${ds}::上午`] = names.map((n,i)=>({name:n, time: timesAM[i%timesAM.length]}));
+        availabilityDetail[`${ds}::晚上`] = names.map((n,i)=>({name:n, time: timesPM[(i+1)%timesPM.length]}));
+      });
+    }
+    async function loadAvailability(monday){
+      // const data = await fetchJSON(`/availability/weekly?start=${fmt(monday)}`);
+      // availabilityDetail = data || {};
+      demoAvailability(monday);
+    }
+
+    /* ========= 可排人員檢視（表格 + Modal） ========= */
+    function renderViewerHeader(monday){
+      const headRow = document.getElementById('viewerHeaderRow');
+      headRow.querySelectorAll('th:nth-child(n+2)').forEach(th => th.remove());
+      const labels = ['一','二','三','四','五','六','日'];
+      daysOfWeek(monday).forEach((d,i)=>{
+        const th = document.createElement('th');
+        th.innerHTML = `${d.getMonth()+1}/${d.getDate()}<br>星期${labels[i]}`;
+        headRow.appendChild(th);
+      });
+    }
+    function countDraft(ds, period){ return (draftAssignedMap[ds]?.[period] || []).length; }
+    function countAvailable(ds, period){
+      const key = `${ds}::${period}`;
+      return Array.isArray(availabilityDetail[key]) ? availabilityDetail[key].length : 0;
+    }
+    function refreshViewerCounts(ds, period){
+      const cells = document.querySelectorAll(`button.view-slot-btn[data-date="${ds}"][data-period="${period}"] .summary-badge`);
+      const x = countDraft(ds, period);
+      const y = countAvailable(ds, period);
+      cells.forEach(b => b.textContent = `${x}/${y}`);
+    }
+    function renderViewerGrid(monday){
+      const tbody = document.getElementById('viewerBody');
+      tbody.innerHTML = '';
+      PERIODS.forEach(period=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<th class="bg-light">${period}</th>`;
+        daysOfWeek(monday).forEach(d=>{
+          const ds = fmt(d);
+          const td = document.createElement('td');
+          td.innerHTML = `
+            <button type="button" class="btn btn-outline-secondary view-slot-btn"
+                    data-date="${ds}" data-period="${period}">
+              <i class="fas fa-users me-1"></i> 查看名單
+              <span class="summary-badge ms-1">${countDraft(ds, period)}/${countAvailable(ds, period)}</span>
+            </button>`;
+          td.querySelector('button').addEventListener('click', openSlotModal);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    const slotModal = new bootstrap.Modal(document.getElementById('slotModal'));
+    const candidateArea = document.getElementById('candidateArea');
+    const modalDateEl = document.getElementById('modalDate');
+    const modalPeriodEl = document.getElementById('modalPeriod');
+
+    function openSlotModal(e){
+      const btn = e.currentTarget;
+      const ds = btn.dataset.date;
+      const period = btn.dataset.period;
+      modalDateEl.textContent = ds;
+      modalPeriodEl.textContent = period;
+      renderCandidateButtons(ds, period);
+      slotModal.show();
+    }
+    function renderCandidateButtons(ds, period){
+      candidateArea.innerHTML = '';
+      const key = `${ds}::${period}`;
+      const avail = availabilityDetail[key] || [];
+      avail.forEach(({name, time})=>{
+        const isSelected = inDraft(ds, period, name);
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline-primary'} me-2 mb-2`;
+        b.dataset.ds = ds; b.dataset.period = period; b.dataset.name = name; b.dataset.time = time || '';
+        b.innerHTML = `${isSelected ? '✓ ' : ''}<i class="fas fa-user me-1"></i>${name}　<small class="opacity-75">${time || ''}</small>`;
+        b.addEventListener('click', toggleCandidate);
+        candidateArea.appendChild(b);
+      });
+      if(avail.length===0) candidateArea.innerHTML = `<div class="text-muted">此時段目前沒有可排人員。</div>`;
+    }
+    function toggleCandidate(e){
+      const b = e.currentTarget;
+      const ds = b.dataset.ds, period = b.dataset.period, name = b.dataset.name, time = b.dataset.time;
+      if (inDraft(ds, period, name)) {
+        removeFromDraft(ds, period, name);
+        b.classList.remove('btn-primary'); b.classList.add('btn-outline-primary');
+        b.innerHTML = `<i class="fas fa-user me-1"></i>${name}　<small class="opacity-75">${time || ''}</small>`;
+      } else {
+        addToDraft(ds, period, name, time);
+        b.classList.remove('btn-outline-primary'); b.classList.add('btn-primary');
+        b.innerHTML = `✓ <i class="fas fa-user me-1"></i>${name}　<small class="opacity-75">${time || ''}</small>`;
+      }
+    }
+
+    /* ========= 編輯班表（新增/修改/刪除） ========= */
+    function renderEditorHeader(monday){
+      const headRow = document.getElementById('editorHeaderRow');
+      headRow.querySelectorAll('th:nth-child(n+2)').forEach(th => th.remove());
+      const labels = ['一','二','三','四','五','六','日'];
+      daysOfWeek(monday).forEach((d,i)=>{
+        const th = document.createElement('th');
+        th.innerHTML = `${d.getMonth()+1}/${d.getDate()}<br>星期${labels[i]}`;
+        headRow.appendChild(th);
+      });
+    }
+
+    function renderEditorGrid(monday){
+      const tbody = document.getElementById('editorBody');
+      tbody.innerHTML = '';
+      PERIODS.forEach(period=>{
+        const tr = document.createElement('tr');
+        const th = document.createElement('th'); th.className='bg-light'; th.textContent = period; tr.appendChild(th);
+
+        daysOfWeek(monday).forEach(d=>{
+          const ds = fmt(d);
+          ensureDraftKey(ds);
+          const td = document.createElement('td');
+          td.dataset.ds = ds; td.dataset.period = period;
+          td.innerHTML = `
+            <div class="d-flex flex-wrap gap-2 mb-2"></div>
+            <button type="button" class="btn btn-sm btn-outline-primary add-assign-btn">
+              <i class="fas fa-plus me-1"></i>新增
+            </button>`;
+          tr.appendChild(td);
+
+          td.querySelector('.add-assign-btn').addEventListener('click', ()=> openAssignModal({ds, period}));
+          renderEditorCell(ds, period);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderEditorCell(ds, period){
+      const td = document.querySelector(`#editorBody td[data-ds="${ds}"][data-period="${period}"]`);
+      if(!td) return;
+      const wrap = td.querySelector('div');
+      wrap.innerHTML = '';
+      (draftAssignedMap[ds]?.[period] || []).forEach(({name, time})=>{
+        const chip = document.createElement('span');
+        chip.className = 'badge text-bg-primary assign-chip d-inline-flex align-items-center';
+        chip.innerHTML = `
+          <i class="fas fa-user me-1"></i>${name}
+          <small class="opacity-75 ms-1">${time || ''}</small>
+          <button type="button" class="btn btn-light btn-sm chip-btn ms-2" title="修改"><i class="fas fa-pen"></i></button>
+          <button type="button" class="btn btn-light btn-sm chip-btn" title="移除">×</button>`;
+        const [btnEdit, btnDel] = chip.querySelectorAll('button');
+        btnEdit.addEventListener('click', ()=> openAssignModal({ds, period, name, time}));
+        btnDel .addEventListener('click', ()=> removeFromDraft(ds, period, name));
+        wrap.appendChild(chip);
+      });
+    }
+
+    /* ========= 新增/修改 Modal ========= */
+    const assignModal = new bootstrap.Modal(document.getElementById('assignModal'));
+    const assignForm  = document.getElementById('assignForm');
+    const nameOptions = document.getElementById('nameOptions');
+
+    function buildNameDatalist(){
+      const set = new Set();
+      // 從可排名單收集
+      Object.values(availabilityDetail).forEach(list => (list||[]).forEach(x=> set.add(x.name)));
+      // 從已發布與草稿收集
+      Object.values(scheduleAssignedMap).forEach(p=> PERIODS.forEach(k=> (p[k]||[]).forEach(x=> set.add(x.name))));
+      Object.values(draftAssignedMap).forEach(p=> PERIODS.forEach(k=> (p[k]||[]).forEach(x=> set.add(x.name))));
+      nameOptions.innerHTML = Array.from(set).sort().map(n=>`<option value="${n}">`).join('');
+    }
+
+    function openAssignModal({ds, period, name='', time=''}) {
+      document.getElementById('assignDs').value = ds;
+      document.getElementById('assignPeriod').value = period;
+      document.getElementById('assignOriginalName').value = name || '';
+      document.getElementById('assignModalTitle').textContent = name ? '修改人員' : '新增人員';
+
+      // 解析時間至 time inputs
+      let start = '', end = '';
+      if (time && time.includes('-')) { [start, end] = time.split('-'); }
+      document.getElementById('assignName').value  = name || '';
+      document.getElementById('assignStart').value = start || '';
+      document.getElementById('assignEnd').value   = end || '';
+
+      buildNameDatalist();
+      assignModal.show();
+    }
+
+    assignForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const ds     = document.getElementById('assignDs').value;
+      const period = document.getElementById('assignPeriod').value;
+      const originalName = document.getElementById('assignOriginalName').value || null;
+      const name   = (document.getElementById('assignName').value || '').trim();
+      const start  = document.getElementById('assignStart').value;
+      const end    = document.getElementById('assignEnd').value;
+
+      if(!name || !start || !end){ return; }
+      const time = `${start}-${end}`;
+      upsertDraft(ds, period, name, time, originalName);
+      assignModal.hide();
+    });
+
+    /* ========= 儲存 ========= */
+    async function saveDraft(monday){
+      const payload = { week_start: fmt(monday), assignments: {} };
+      daysOfWeek(monday).forEach(d=>{
+        const ds = fmt(d);
+        payload.assignments[ds] = {
+          '上午': (draftAssignedMap[ds]?.['上午'] || []).map(x=>({name:x.name, time:x.time})),
+          '晚上': (draftAssignedMap[ds]?.['晚上'] || []).map(x=>({name:x.name, time:x.time}))
+        };
+      });
+
+      // TODO: 換成你的儲存 API
+      // const ok = await fetchJSON('/schedule/week', { method:'POST', body: JSON.stringify(payload) });
+      const ok = true; // demo
+
+      if(ok){
+        await loadSchedulePreview(currentMonday);
+        alert('已儲存班表！');
+      }else{
+        alert('儲存失敗，請稍後再試');
+      }
+    }
+
+    /* ========= 刷新流程 ========= */
+    let currentMonday = getMonday(new Date());
+
+    function renderViewerHeader(monday){ // 已在上面定義，這裡覆蓋確保順序 OK
+      const headRow = document.getElementById('viewerHeaderRow');
+      headRow.querySelectorAll('th:nth-child(n+2)').forEach(th => th.remove());
+      const labels = ['一','二','三','四','五','六','日'];
+      daysOfWeek(monday).forEach((d,i)=>{
+        const th = document.createElement('th');
+        th.innerHTML = `${d.getMonth()+1}/${d.getDate()}<br>星期${labels[i]}`;
+        headRow.appendChild(th);
+      });
+    }
+
+    async function refreshAll(){
+      renderWeekHeader(currentMonday);
+      await loadSchedulePreview(currentMonday);
+
+      // 用已發布初始化草稿
+      draftAssignedMap = JSON.parse(JSON.stringify(scheduleAssignedMap));
+
+      await loadAvailability(currentMonday);
+
+      renderViewerHeader(currentMonday);
+      renderViewerGrid(currentMonday);
+
+      renderEditorHeader(currentMonday);
+      renderEditorGrid(currentMonday);
+    }
+
+    document.getElementById('btnQuery').addEventListener('click', async ()=>{
+      currentMonday = getMonday(selectedDate());
+      await refreshAll();
+    });
+    document.getElementById('btnSaveDraft').addEventListener('click', ()=> saveDraft(currentMonday));
+    document.getElementById('btnClearDraft').addEventListener('click', ()=>{
+      if(!confirm('確定要清空本週的草稿嗎？')) return;
+      draftAssignedMap = {};
+      renderEditorGrid(currentMonday);
+      daysOfWeek(currentMonday).forEach(d=>{
+        ['上午','晚上'].forEach(p=> refreshViewerCounts(fmt(d), p));
+      });
+    });
+
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      initDateSelectors();
+      await refreshAll();
+    });
+  </script>
+</body>
+</html>
