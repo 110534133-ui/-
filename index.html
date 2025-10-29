@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>湯樂有限公司</title>
+  <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon">
+  <meta name="keywords" content="">
+
+
+
+<!-- 主要favicon -->
+<link rel="icon" href="assets/img/shanhe-logo.png" type="image/png">
+
+<!-- 蘋果設備圖標 -->
+<link rel="apple-touch-icon" href="assets/img/shanhe-logo.png">
+
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+ <style>
+    /* 彈出視窗樣式 */
+    .popup {
+        display: none; /* 隱藏彈出視窗 */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 背景遮罩 */
+        display: flex; /* 使用 Flexbox 來居中 */
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+    }
+
+    .popup-content {
+        background: linear-gradient(135deg, #fff9f0 0%, #f5f5f0 100%);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        width: 80%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column; /* 垂直排列內容 */
+        color: ＃333;  
+    }
+
+    .close-btn {
+        cursor: pointer;
+        float: right;
+        font-size: 1.5rem;
+    }
+  </style>
+</head>
+<!-- 懸浮小麵圖標 -->
+<style>
+#chatbot-icon {
+  position: fixed;
+  bottom: 55px;
+  right: 20px;
+  width: 100px;  /* 調整圖標大小 */
+  height: 100px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#chatbot-frame {
+  display: none; /* 預設隱藏 */
+  position: fixed;
+  bottom: 90px;  /* 圖標上方 */
+  right: 20px;
+  width: 350px;  /* 調整聊天框大小 */
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 999;
+}
+</style>
+
+<!-- 懸浮圖標 -->
+<img src="小麵.png" id="chatbot-icon" alt="Chatbot">
+
+<!-- 聊天框 iframe -->
+<iframe id="chatbot-frame" src="https://cdn.botpress.cloud/webchat/v3.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/10/29/03/20251029030317-XBWHYHXK.json" allow="fullscreen">
+</iframe>>
+
+<script>
+// 點擊圖標切換聊天框顯示/隱藏
+const icon = document.getElementById('chatbot-icon');
+const frame = document.getElementById('chatbot-frame');
+
+icon.addEventListener('click', () => {
+  if (frame.style.display === 'none') {
+    frame.style.display = 'block';
+  } else {
+    frame.style.display = 'none';
+  }
+});
+</script> 
+
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <h1 class="sitename">Tang lei</h1>
+        <span></span>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">首頁<br></a></li>
+          <li><a href="#hero" class="active">旗下品牌<br></a></li>
+          <li><a href="#events">最新活動</a></li>
+          <li><a href="#about">麵屋風味</a></li>
+          <li><a href="#nichu">拉麵之家</a></li>
+          <li><a href="#gallery">顧客留言</a></li>
+          <li><a href="關於我們.html">關於我們</a></li>
+          <li><a href="https://line.me/R/ti/p/@673axlfy">加入好友</a></li>
+          <li><a href="#" id="open-popup-btn">加入會員</a></li>
+          </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+     
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- 新增全寬圖片區塊 -->
+<section id="hero" class="custom-hero">
+  <img src="assets/img/拉麵.png" alt="拉麵店主視覺" class="hero-image">
+  
+</section>
+    
+
+    <!-- Why Us Section -->
+    <section id="why-us" class="why-us section light-background">
+
+      <div class="container">
+
+        <div class="row gy-4 justify-content-center">
+    <div class="section-title-spacing" data-aos="fade-up">
+    <p><span>旗下品牌</span></p>
+</div>
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="why-box">
+              <h3>麵屋風味</h3>
+              <img src="assets/img/mu.png" class="why-box-image" alt="拉麵图片"> 
+              <div class="text-center">
+                <a href="令和博多.html" class="more-btn"><span>瞭解更多</span> <i class="bi bi-chevron-right"></i></a>
+              </div>
+            </div>
+          </div><!-- End Why Box -->
+
+
+         <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="why-box">
+              <h3>拉麵之家</h3>
+              <img src="assets/img/lm.png" class="why-box-image" alt="日暮拉麵图片"> 
+              <div class="text-center">
+                <a href="日暮.html" class="more-btn"><span>瞭解更多</span> <i class="bi bi-chevron-right"></i></a>
+              </div>
+            </div>
+          </div><!-- End Why Box -->
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /Why Us Section -->
+
+ <div class="container section-title section-title-spacingp" data-aos="fade-up">
+  <p><span>最新</span> <span class="description-title">活動</span></p>
+</div>
+
+     
+    <!-- Events Section -->
+    <section id="events" class="events section">
+
+      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "breakpoints": {
+                "320": {
+                  "slidesPerView": 1,
+                  "spaceBetween": 40
+                },
+                "1200": {
+                  "slidesPerView": 3,
+                  "spaceBetween": 1
+                }
+              }
+            }
+          </script>
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/鮮蚵定食.jpg)">
+              <h3>鮮蚵定食</h3>
+              <div class="price align-self-start">$99</div>
+              <p class="description">
+                鮮珂定食，新鮮滿分！主菜香氣撲鼻，小菜多樣豐富，一口湯暖心，每天都要來一份！</p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/蒲燒鰻定食.jpg)">
+              <h3>蒲燒鰻定食</h3>
+              <div class="price align-self-start">$289</div>
+              <p class="description">
+                金黃醬汁包裹的蒲燒鰻，鮮嫩滑口超下飯，一份定食，幸福滿點！</p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/鯖魚定食.jpg)">
+              <h3>鯖魚定食</h3>
+              <div class="price align-self-start">$499</div>
+              <p class="description">
+                香煎鯖魚金黃酥香，肉質鮮嫩多汁，搭配熱湯與配菜，營養美味一次滿足！</p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assets/img/厚切炸豬排.jpg)">
+              <h3>厚切炸豬排</h3>
+              <div class="price align-self-start">$899</div>
+              <p class="description">
+                咬下去就Juicy！厚切炸豬排香酥可口，定食搭配配菜更完美！</p>
+            </div><!-- End Event item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section><!-- /Events Section -->
+
+    <!-- Chefs Section -->
+    <section id="chefs" class="chefs section">
+
+     
+
+      <div class="container">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+            <div class="team-member">
+              <div class="member-img">
+                <img src="assets/img/感情很好.jpg" class="img-fluid" alt="感情很好">
+                <div class="social">
+                  
+                  <a href="https://www.facebook.com/p/令和博多拉麵-61559236584603/"><i class="bi bi-facebook"></i></a>
+                  <a href="https://www.google.com/maps/place/令和博多拉麵/data=!4m2!3m1!1s0x3442ad0064545b4b:0xc3fb93a50128e06b?sa=X&ved=1t:242&ictx=111"><i class="bi bi-google"></i></a>
+                  
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>心情小記</h4>
+                
+                <p>
+今天的生意特別好，顧客們一進門就被湯香吸引，笑容滿面地點餐。
+看著一碗碗熱騰騰的拉麵端上桌，我感受到滿滿的成就感。每位顧客的滿意都是我努力的回報。
+雖然工作繁忙，偶爾的疲憊卻被顧客的讚美和笑聲驅散。這份事業不僅是賺錢，
+更是對美味的堅持和對顧客的承諾。希望未來能持續創造更多美好的回憶，讓每一位來店的客人都能感受到家的溫暖。</p>
+              </div>
+            </div>
+          </div><!-- End Chef Team Member -->
+
+          <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+            <div class="team-member">
+              <div class="member-img">
+                <img src="assets/img/noodle.png" class="img-fluid" alt="老闆">
+                <div class="social">
+                   <a href="https://www.facebook.com/p/令和博多拉麵-61559236584603/"><i class="bi bi-facebook"></i></a>
+                  <a href="https://www.google.com/maps/place/令和博多拉麵/data=!4m2!3m1!1s0x3442ad0064545b4b:0xc3fb93a50128e06b?sa=X&ved=1t:242&ictx=111"><i class="bi bi-google"></i></a>
+                  
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>拉麵文化</h4>
+                
+                <p>日本拉麵文化是在中國麵食基礎上，融入日本獨特飲食習慣而演變成的國民美食，
+                  其歷史可追溯到1910年代東京的「來來軒」，後因二戰期間小麥援助而蓬勃發展。
+                  拉麵文化的核心要素為由湯頭、醬料、麵條、配料和油脂構成，各地因地域、氣候和文化發展出不同風格的「地方拉麵」，
+                  如札幌味噌拉麵與博多豚骨拉麵，並形成「替玉」（加麵）等獨特用餐方式。 
+</p>
+              </div>
+            </div>
+          </div><!-- End Chef Team Member -->
+
+          <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+            <div class="team-member">
+              <div class="member-img">
+                <img src="assets/img/妹妹五星圖.png" class="img-fluid" alt="妹妹五星好評">
+                <div class="social">
+                   <a href="https://www.facebook.com/p/令和博多拉麵-61559236584603/"><i class="bi bi-facebook"></i></a>
+                  <a href="https://www.google.com/maps/place/令和博多拉麵/data=!4m2!3m1!1s0x3442ad0064545b4b:0xc3fb93a50128e06b?sa=X&ved=1t:242&ictx=111"><i class="bi bi-google"></i></a>
+                  
+                </div>
+              </div>
+              <div class="member-info">
+                <h4>妹妹給我們的五星好評！！！</h4>
+                <span>老闆很開心～～～</span>
+                <p>妹妹親手畫了一張五星好評圖送給店家，看著她認真描繪每一道餐點的樣子，心裡特別暖。
+                  她說這是她最喜歡的餐廳，每次來都能吃到新鮮美味又用心的料理。能把自己的喜愛畫下來分享給店家，
+                  真的很可愛也很感動。希望這份小小心意，能讓店家感受到我們滿滿的喜愛和支持！</p>
+              </div>
+            </div>
+          </div><!-- End Chef Team Member -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Chefs Section -->
+
+   
+
+ 
+   <!-- About Section -->
+    <section id="about" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>About Us ★ 麵屋風味 ★<br></h2>
+        <p><span>品牌</span> <span class="description-title">故事</span></p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+           <a href="令和博多.html">
+  <img src="assets/img/place.png" class="img-fluid mb-4" alt="令和博多">
+</a>
+
+            
+            
+          </div>
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+               膳和有限公司源自一份對料理的執著與對食材的尊重。
+              </p>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>我們相信，一碗好麵，</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>必須從湯頭到配料，皆用心對待。</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>秉持「誠意、品質、溫度」的理念，</span></li>
+              </ul>
+              <p>
+                無論是濃厚豚骨，還是拉麵的清爽醬油，
+                每一碗都承載著我們對顧客的真心款待。
+              </p>
+              <div class="book-a-table">
+              <h3>店內環境</h3>
+              <p>call us :02-1212-0000 </p>
+            </div>
+<div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Section -->
+
+  <!-- About Section r -->
+    <section id="nichu" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>About Us ★ 拉麵之家 ★<br></h2>
+        <p><span>品牌</span> <span class="description-title">故事</span></p>
+      </div><!-- End Section Title -->
+
+
+      
+      <div class="container">
+
+        <div class="row gy-4">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+           <a href="日暮.html">
+  <img src="assets/img/lm.png" class="img-fluid mb-4" alt="令和博多">
+</a>
+          </div>
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+               落日餘暉，拉麵香氣伴你回家。
+              </p>
+              <br>
+              <p>
+                「在忙碌一天後，拉麵之家邀你放慢腳步。
+濃郁的湯頭、彈牙的手工麵條，每一口都帶來溫暖與滿足。
+夕陽西下的時刻，來一碗拉麵，療癒你的心和味蕾。」
+              </p>
+
+              <div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
+ 
+                <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /About Sectionr -->
+<!-- 給我們意見 -->
+<h1 style="text-align: center;">- - - 給我們意見 - - -</h1>
+
+<section id="gallery" class="testimonials section light-background">
+  <div class="container section-title" data-aos="fade-up">
+
+    <form id="feedbackForm" action="send_mail.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
+      <div class="row gy-4">
+
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+        </div>
+
+        <div class="col-md-6">
+          <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+        </div>
+
+        <div class="col-md-12">
+          <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+        </div>
+
+        <div class="col-md-12">
+          <textarea name="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <button type="submit">Send Message</button>
+          <p id="thankYouMsg" class="text-danger mt-3" style="display:none;">感謝您的回饋！</p>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</section>
+
+<script>
+// 阻止表單跳頁，送出後顯示感謝訊息
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // 阻止跳頁
+
+  // 顯示感謝訊息
+  const msg = document.getElementById('thankYouMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 4000);
+
+  // 用 fetch 送資料到 PHP
+  const formData = new FormData(this);
+  fetch(this.action, {
+    method: 'POST',
+    body: formData
+  }).then(response => response.text())
+    .then(data => {
+      console.log('寄信結果:', data);
+    }).catch(err => console.error('寄信失敗:', err));
+
+  // 可選：重置表單
+  this.reset();
+});
+</script>
+
+     <!-- Testimonials Section -->
+    <section id="gallery" class="testimonials section light-background">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h1> - - -  顧客留言  - - -</h1>
+        <p><span class="description-title">五星好評！</span></p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              }
+            }
+          </script>
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <div class="row gy-4 justify-content-center">
+                  <div class="col-lg-6">
+                    <div class="testimonial-content">
+                      <p>
+                        <i class="bi bi-quote quote-icon-left"></i>
+                        <span>店裡的氛圍感很舒服，而且離捷運站很近。
+吃的部分我最喜歡的是茶碗蒸誒🤣真的超好吃，吃起來很滑順，可以扮一些進飯裡也很讚。
+
+炸牡蠣沾醬也很下飯，只是現炸的要稍微等一下下。
+
+我同事是點拉麵，拉麵不大碗，但可以加麵加湯，我同事吃不多，所以一碗剛剛好，完全不浪費😍😍😍</span>
+                        <i class="bi bi-quote quote-icon-right"></i>
+                      </p>
+                      <h3>匿名評價</h3>
+                      <h4></h4>
+                      <div class="stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 text-center">
+  <a href="https://www.google.com/maps/contrib/112834601969291768715/reviews?hl=zh-TW" target="_blank">
+    <img src="assets/img/111.png" class="img-fluid testimonial-img" alt="01">
+  </a>
+</div>
+                </div>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <div class="row gy-4 justify-content-center">
+                  <div class="col-lg-6">
+                    <div class="testimonial-content">
+                      <p>
+                        <i class="bi bi-quote quote-icon-left"></i>
+                        <span>拉麵好吃 服務到位
+環境也很舒適
+
+叉燒軟硬度適中
+麵條有特製的細麵挺特別
+若是蒜味控湯頭的大家
+一定要從招牌試試！
+
+據說沒有限時也沒有低消
+整體氛圍就像在自家餐廳一樣自在
+服務也很不錯
+交通上距離捷運葫洲站只需一分鐘
+方便 美味又舒適 相當推薦👍🏻👍🏻</span>
+                        <i class="bi bi-quote quote-icon-right"></i>
+                      </p>
+                      <h3>匿名評價</h3>
+                 
+                      <div class="stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 text-center">
+  <a href="https://www.google.com/maps/contrib/107854004012913946381/reviews?hl=zh-TW" target="_blank">
+    <img src="assets/img/111.png" class="img-fluid testimonial-img" alt="02">
+  </a>
+</div>
+                </div>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <div class="row gy-4 justify-content-center">
+                  <div class="col-lg-6">
+                    <div class="testimonial-content">
+                      <p>
+                        <i class="bi bi-quote quote-icon-left"></i>
+                        <span>招牌豚骨拉麵湯頭順口，麵體是屬於細麵，Q彈度剛剛好，不會太硬、也不會太軟，很用心經營的店家，食材一吃就知道是新鮮的～
+店員都很親切，服務👍</span>
+                        <i class="bi bi-quote quote-icon-right"></i>
+                      </p>
+                      <h3>匿名評價</h3>
+                    
+                      <div class="stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 text-center">
+  <a href="https://www.google.com/maps/contrib/108402408179353079914/reviews/@24.0303247,120.9199403,8z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=zh-TW&entry=ttu&g_ep=EgoyMDI1MDgxOC4wIKXMDSoASAFQAw%3D%3D" target="_blank">
+    <img src="assets/img/111.png" class="img-fluid testimonial-img" alt="03">
+  </a>
+</div>
+                </div>
+              </div>
+            </div><!-- End testimonial item -->
+
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <div class="row gy-4 justify-content-center">
+                  <div class="col-lg-6">
+                    <div class="testimonial-content">
+                      <p>
+                        <i class="bi bi-quote quote-icon-left"></i>
+                        <span>拉麵麵質、湯頭都很好；丼飯熱騰騰，醬汁濃郁誘人；炸牡蠣酥脆不膩、鮮嫩肥美；茶碗蒸料多味美而且蠻～大～碗！
+最近有“古法純釀果醋氣泡飲”，莓果口味的帶有水蜜桃香氣，青蘋果檸檬口味的口齒留香（蘋果清香），兩種口味都冰涼順口又解膩，值得一試！</span>
+                        <i class="bi bi-quote quote-icon-right"></i>
+                      </p>
+                      <h3>匿名評價</h3>
+                
+                      <div class="stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 text-center">
+  <a href="https://www.google.com/maps/contrib/100370453567431560400/reviews/@24.6457238,121.199932,10z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=zh-TW&entry=ttu&g_ep=EgoyMDI1MDgxOC4wIKXMDSoASAFQAw%3D%3D" target="_blank">
+    <img src="assets/img/111.png" class="img-fluid testimonial-img" alt="04">
+  </a>
+</div>
+                </div>
+              </div>
+            </div><!-- End testimonial item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section><!-- /Testimonials Section -->
+
+  </main>
+<!-- 彈出視窗 -->
+<div id="popup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h2 class="form-title">加入會員</h2>
+        
+        <form method="post" action="register.php" onsubmit="return validateForm();">
+           <div class="form-group">
+                <label for="name">姓名：</label>
+                <input type="text" id="name" name="name" placeholder="請輸入您的姓名" required>
+                <a>* 可為暱稱 *</a>
+            </div>   
+          
+          <div class="form-group">
+                <label for="phone">電話：</label>
+                <input type="tel" id="phone" name="phone" placeholder="請輸入您的電話" required>
+           <a>* 電話為登入帳號喔 *</a>
+              </div>
+
+              <div class="form-group">
+                <label for="phone">電子郵件：</label>
+                <input type="tel" id="phone" name="email" placeholder="請輸入您的電子郵件" required>
+              <a>* 電子郵件為忘記密碼驗證用喔 *</a>
+              </div>
+
+            <div class="form-group">
+                <label for="password">密碼：</label>
+                <input type="password" id="password" name="password" placeholder="請設定密碼" required>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday">生日：</label>
+                <input type="date" id="birthday" name="birthday">
+            </div>
+          
+            <!-- 同意條款 -->
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="agree" name="agree" required>
+                <label for="agree">
+                    我已閱讀並同意 
+                    <a href="terms.html" target="_blank">服務條款</a> 與 
+                    <a href="privacy.html" target="_blank">隱私權政策</a>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">立即加入</button>
+            <button type="reset" class="btn btn-reset">重設資料</button>
+        </form>
+
+        <!-- 忘記密碼 -->
+        <p>
+          <a href="#" id="forgot-password-link">忘記密碼？   /</a>
+          <a href="login.html" id="login-link">已是會員？</a>
+        </p>
+        
+        <!-- 會員專屬優惠 -->
+        <div class="benefits">
+            <h3>會員專屬優惠</h3>
+            <ul>
+                <li>首次加入贈送100點點數</li>
+                <li>生日當月贈送免費拉麵一碗</li>
+                <li>消費一元累積一點，點數可折抵消費</li>
+                <li>會員專屬優惠券定期發送</li>
+                <li>新品試吃優先邀請</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 忘記密碼的彈出視窗 -->
+<div id="forgot-password-popup" class="popup" style="display: none;">
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h2 class="form-title">重設密碼</h2>
+        
+        <form id="send-sms-form"> 
+    <div class="form-group">
+        <label for="reset-phone">電子郵件驗證：</label>
+        <input type="tel" id="reset-phone" name="reset-phone" placeholder="請輸入您的電子郵件：" required>
+        <button type="submit" class="btn" style="margin-left: 10px;">發送驗證碼</button>
+    </div>
+</form>
+
+
+        <form method="post" action="verify_code.php"> <!-- 將 action 設置為處理更新密碼的 PHP 文件 -->
+            <div class="form-group">
+                <label for="verification-code">驗證碼：</label>
+                <input type="text" id="verification-code" name="verification-code" placeholder="請輸入驗證碼" required>
+                <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>"> <!-- 隱藏手機號碼 -->
+            </div>
+            <button type="submit" class="btn">驗證</button> <!-- 送出驗證碼的按鈕 -->
+        </form>
+    </div>
+</div>
+
+<!-- 重設密碼的彈出視窗 -->
+<div id="forgot-password-popup-step2" class="popup" style="display: none;">
+
+    <div class="popup-content">
+        <span class="close-btn">&times;</span>
+        <h2 class="form-title">重設密碼</h2>
+        
+        <form method="post" action="reset_password.php">
+  <div class="form-group">
+      <label for="new-password">新密碼：</label>
+      <input type="password" id="new-password" name="new-password" placeholder="請輸入您的新密碼" required>
+  </div>
+  <div class="form-group">
+      <label for="confirm-password">再次輸入新密碼：</label>
+      <input type="password" id="confirm-password" name="confirm-password" placeholder="請再次輸入您的新密碼" required>
+  </div>
+  <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>">
+  <button type="submit" class="btn">儲存</button>
+</form>
+
+    </div>
+    
+    
+</div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">2025 </strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+         <p>Designed by ：林宜伶，葉芃孝，林妍妡，鍾雨凝</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+
+  <!-- 在 head 或 body 末尾添加 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggle = document.querySelector(".mobile-nav-toggle");
+      const nav = document.querySelector("#navmenu");
+
+      toggle.addEventListener("click", function () {
+        nav.classList.toggle("active");
+        // 切換圖示 (三條線 ↔ 關閉)
+        this.classList.toggle("bi-list");
+        this.classList.toggle("bi-x");
+      });
+    });
+// ==================== 會員彈窗 ====================
+document.addEventListener('DOMContentLoaded', function() {
+    // 彈出視窗控制
+    const popup = document.getElementById("popup");
+    const forgotPasswordPopup = document.getElementById("forgot-password-popup");
+    const forgotPasswordPopupStep2 = document.getElementById("forgot-password-popup-step2");
+    const openPopupBtn = document.getElementById("open-popup-btn");
+    const forgotPasswordLink = document.getElementById("forgot-password-link");
+    const closeBtns = document.querySelectorAll(".close-btn");
+
+    // 顯示加入會員彈出視窗
+    if (openPopupBtn) {
+        openPopupBtn.onclick = function(event) {
+            event.preventDefault();
+            popup.style.display = "flex";
+        }
+    }
+
+    // 顯示忘記密碼第一步
+    if (forgotPasswordLink) {
+        forgotPasswordLink.onclick = function(event) {
+            event.preventDefault();
+            popup.style.display = "none";
+            forgotPasswordPopup.style.display = "flex";
+        }
+    }
+
+    // 關閉所有彈出視窗
+    closeBtns.forEach(btn => {
+        btn.onclick = function() {
+            popup.style.display = "none";
+            forgotPasswordPopup.style.display = "none";
+            forgotPasswordPopupStep2.style.display = "none";
+        }
+    });
+
+    // 點擊外部隱藏彈出視窗
+    window.onclick = function(event) {
+        if (event.target === popup) popup.style.display = "none";
+        if (event.target === forgotPasswordPopup) forgotPasswordPopup.style.display = "none";
+        if (event.target === forgotPasswordPopupStep2) forgotPasswordPopupStep2.style.display = "none";
+    }
+
+    // ==================== 修正：處理發送驗證碼表單 ====================
+    const smsForm = document.getElementById('send-sms-form');
+    if (smsForm) {
+        smsForm.onsubmit = function(event) {
+            event.preventDefault();
+            
+            const phone = document.getElementById('reset-phone').value.trim();
+            
+            if (!phone) {
+                alert('請輸入手機號碼');
+                return;
+            }
+            
+            if (!/^09\d{8}$/.test(phone)) {
+                alert('手機號碼格式錯誤！請輸入09開頭的10位數字');
+                return;
+            }
+
+            // 顯示載入狀態
+            const submitBtn = this.querySelector('.btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '發送中...';
+            submitBtn.disabled = true;
+
+            // 使用 fetch 發送請求
+            const formData = new FormData();
+            formData.append('reset-phone', phone);
+            
+            fetch(encodeURI('send_sms.php'), {
+
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // 改為解析 JSON
+            .then(data => {
+                if (data.success) {
+                    // 提取驗證碼（測試用）
+                    if (data.test_code) {
+                        alert(`驗證碼已發送至您的手機！\n測試用驗證碼：${data.test_code}`);
+                    } else {
+                        alert(data.message);
+                    }
+                    // 將手機號碼設置到驗證表單的隱藏欄位
+                    document.getElementById('verify-phone').value = phone;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('發送失敗，請稍後再試');
+            })
+            .finally(() => {
+                // 恢復按鈕狀態
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        };
+    }
+
+   // ==================== 修正：處理驗證碼驗證表單 ====================
+const verifyForm = document.getElementById('verify-code-form');
+if (verifyForm) {
+    verifyForm.onsubmit = function(event) {
+        event.preventDefault();
+        
+        const code = document.getElementById('verification-code').value.trim();
+        // 直接抓取手機號碼輸入框的值，不要用隱藏欄位
+        const phone = document.getElementById('reset-phone').value.trim();
+        
+        console.log('驗證時的手機號碼:', phone);
+        console.log('驗證碼:', code);
+        
+        if (!code) {
+            alert('請輸入驗證碼');
+            return;
+        }
+        
+        if (!phone) {
+            alert('請先輸入手機號碼並發送驗證碼');
+            return;
+        }
+
+        // 顯示載入狀態
+        const submitBtn = this.querySelector('.btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = '驗證中...';
+        submitBtn.disabled = true;
+
+        // 發送驗證請求
+        const formData = new FormData();
+        formData.append('verification-code', code);
+        formData.append('phone', phone);
+        
+        fetch('verify_code.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('驗證回傳:', data);
+            
+            if (data.success) {
+                alert('驗證成功！請重設新密碼');
+                forgotPasswordPopup.style.display = "none";
+                forgotPasswordPopupStep2.style.display = "flex";
+                // 傳遞手機號碼到重設密碼表單
+                document.getElementById('reset-phone-hidden').value = phone;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('驗證失敗，請稍後再試');
+        })
+        .finally(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+    };
+}
+
+    // ==================== 處理重設密碼表單 ====================
+    const resetForm = document.getElementById('reset-password-form');
+    if (resetForm) {
+        resetForm.onsubmit = function(event) {
+            event.preventDefault();
+            
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!newPassword || !confirmPassword) {
+                alert('請完整填寫新密碼欄位');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('密碼長度至少需要6個字元');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('兩次密碼輸入不一致');
+                return;
+            }
+
+            // 顯示載入狀態
+            const submitBtn = this.querySelector('.btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '儲存中...';
+            submitBtn.disabled = true;
+
+            // 發送重設密碼請求
+            const formData = new FormData(this);
+            
+            fetch('reset_password.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // 改為解析 JSON
+            .then(data => {
+                console.log('Reset Response:', data);
+                
+                if (data.success) {
+                    alert(data.message);
+                    forgotPasswordPopupStep2.style.display = "none";
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('更新密碼失敗，請稍後再試');
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        };
+    }
+});
+
+// 驗證電話號碼格式（原有的函數）
+function validateForm() {
+    let phone = document.getElementById("phone").value;
+    if (!/^09\d{8}$/.test(phone)) {
+        alert("手機號碼必須是09開頭的10位數字！");
+        return false;
+    }
+    return true;
+}
+
+
+  </script>  
+</body>
+
+</html>
