@@ -466,8 +466,17 @@ header("Expires: 0");
   background-color: rgba(251, 185, 124, 0.1);
 }
 </style>
-
-        </div>
+<div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
       </main>
 
       <footer class="py-4 bg-light mt-auto">
