@@ -67,6 +67,53 @@
     }
   </style>
 </head>
+<!-- 懸浮小麵圖標 -->
+<style>
+#chatbot-icon {
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  width: 100px;  /* 調整圖標大小 */
+  height: 100px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#chatbot-frame {
+  display: none; /* 預設隱藏 */
+  position: fixed;
+  bottom: 90px;  /* 圖標上方 */
+  right: 20px;
+  width: 350px;  /* 調整聊天框大小 */
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 999;
+}
+</style>
+
+<!-- 懸浮圖標 -->
+<img src="xm.png" id="chatbot-icon" alt="Chatbot">
+
+<!-- 聊天框 iframe -->
+<iframe id="chatbot-frame" 
+        src="https://cdn.botpress.cloud/webchat/v3.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/10/29/03/20251029030317-XBWHYHXK.json"
+        allow="fullscreen">
+</iframe>
+
+<script>
+// 點擊圖標切換聊天框顯示/隱藏
+const icon = document.getElementById('chatbot-icon');
+const frame = document.getElementById('chatbot-frame');
+
+icon.addEventListener('click', () => {
+  if (frame.style.display === 'none') {
+    frame.style.display = 'block';
+  } else {
+    frame.style.display = 'none';
+  }
+});
+</script>
 
 <body class="index-page">
 
@@ -323,10 +370,8 @@
   <img src="assets/img/place.png" class="img-fluid mb-4" alt="令和博多">
 </a>
 
-            <div class="book-a-table">
-              <h3>店內環境</h3>
-              <p>call us :02-1212-0000 </p>
-            </div>
+            
+            
           </div>
           <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
@@ -342,10 +387,22 @@
                 無論是濃厚豚骨，還是拉麵的清爽醬油，
                 每一碗都承載著我們對顧客的真心款待。
               </p>
-<div class="position-relative mt-4">
-    <img src="assets/img/sy.jpg" class="img-fluid" alt="山藥">
-    <a href="assets/img/sy.mp4" class="glightbox pulsating-play-btn" data-type="video"></a>
+              <div class="book-a-table">
+              <h3>店內環境</h3>
+              <p>call us :02-1212-0000 </p>
+            </div>
+<div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
 </div>
+
 
             </div>
           </div>
@@ -373,11 +430,6 @@
            <a href="日暮.html">
   <img src="assets/img/lm.png" class="img-fluid mb-4" alt="令和博多">
 </a>
-
-            <div class="book-a-table">
-              <h3>拉麵之家即將開幕～<br>快加入會員享優惠！！</h3>
-              <p>call us :02-1234-0000 </p>
-            </div>
           </div>
           <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
@@ -390,11 +442,23 @@
 濃郁的湯頭、彈牙的手工麵條，每一口都帶來溫暖與滿足。
 夕陽西下的時刻，來一碗拉麵，療癒你的心和味蕾。」
               </p>
-
-              <div class="position-relative mt-4">
-    <img src="assets/img/lx.jpg" class="img-fluid" alt="山藥">
-    <a href="assets/img/lx.mp4" class="glightbox pulsating-play-btn" data-type="video"></a>
+<br><br><br>
+              <div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
+ <div class="book-a-table">
+              <h3>店內環境</h3>
+              <p>call us :02-1212-0000 </p>
+            </div>
+                <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
 </div>
+
             </div>
           </div>
         </div>
@@ -402,6 +466,65 @@
       </div>
 
     </section><!-- /About Sectionr -->
+<!-- 給我們意見 -->
+<h1 style="text-align: center;">- - - 給我們意見 - - -</h1>
+
+<section id="gallery" class="testimonials section light-background">
+  <div class="container section-title" data-aos="fade-up">
+
+    <form id="feedbackForm" action="send_mail.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
+      <div class="row gy-4">
+
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+        </div>
+
+        <div class="col-md-6">
+          <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+        </div>
+
+        <div class="col-md-12">
+          <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+        </div>
+
+        <div class="col-md-12">
+          <textarea name="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <button type="submit">Send Message</button>
+          <p id="thankYouMsg" class="text-danger mt-3" style="display:none;">感謝您的回饋！</p>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</section>
+
+<script>
+// 阻止表單跳頁，送出後顯示感謝訊息
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // 阻止跳頁
+
+  // 顯示感謝訊息
+  const msg = document.getElementById('thankYouMsg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 4000);
+
+  // 用 fetch 送資料到 PHP
+  const formData = new FormData(this);
+  fetch(this.action, {
+    method: 'POST',
+    body: formData
+  }).then(response => response.text())
+    .then(data => {
+      console.log('寄信結果:', data);
+    }).catch(err => console.error('寄信失敗:', err));
+
+  // 可選：重置表單
+  this.reset();
+});
+</script>
 
      <!-- Testimonials Section -->
     <section id="gallery" class="testimonials section light-background">
@@ -682,6 +805,8 @@
 </form>
 
     </div>
+    
+    
 </div>
 
     <div class="container copyright text-center mt-4">

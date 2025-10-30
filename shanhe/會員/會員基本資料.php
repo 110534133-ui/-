@@ -371,6 +371,53 @@ header("Expires: 0");
 </div>
 
         </div>
+        <!-- 懸浮小麵圖標 -->
+<style>
+#chatbot-icon {
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  width: 100px;  /* 調整圖標大小 */
+  height: 100px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#chatbot-frame {
+  display: none; /* 預設隱藏 */
+  position: fixed;
+  bottom: 90px;  /* 圖標上方 */
+  right: 20px;
+  width: 350px;  /* 調整聊天框大小 */
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 999;
+}
+</style>
+
+<!-- 懸浮圖標 -->
+<img src="xm.png" id="chatbot-icon" alt="Chatbot">
+
+<!-- 聊天框 iframe -->
+<iframe id="chatbot-frame" 
+        src="https://cdn.botpress.cloud/webchat/v3.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/10/29/03/20251029030317-XBWHYHXK.json"
+        allow="fullscreen">
+</iframe>
+
+<script>
+// 點擊圖標切換聊天框顯示/隱藏
+const icon = document.getElementById('chatbot-icon');
+const frame = document.getElementById('chatbot-frame');
+
+icon.addEventListener('click', () => {
+  if (frame.style.display === 'none') {
+    frame.style.display = 'block';
+  } else {
+    frame.style.display = 'none';
+  }
+});
+</script>
       </main>
 
       <footer class="py-4 bg-light mt-auto">
