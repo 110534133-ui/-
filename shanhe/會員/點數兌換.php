@@ -602,14 +602,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   let userPoints = 0;
 
-  // 商品列表（可依 DB 擴充）
+  // 商品列表
   const products = [
-    { id: 1, name: '9折優惠券', points: 100, img: 'assets/img/coupon-discount.jpg' },
-    { id: 2, name: '加麵', points: 40, img: 'assets/img/coupon-extra-noodle.jpg' },
-    { id: 3, name: '拉麵套餐', points: 400, img: 'assets/img/coupon-ramen-set.jpg' }
+    { id: 1, name: '9折優惠券', points: 100, img: '9折.png' },
+    { id: 2, name: '加麵', points: 40, img: '加麵.png' },
+    { id: 3, name: '拉麵套餐', points: 400, img: '拉麵套餐.png' }
   ];
-
-  // -------------------------
   // 1️⃣ 讀取會員點數
   function loadUserPoints() {
     fetch('get_points.php', { credentials: 'same-origin' })

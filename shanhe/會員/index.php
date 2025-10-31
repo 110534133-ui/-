@@ -1,17 +1,61 @@
 <?php
 session_start();
-// 如果沒有登入，導回登入頁（根據實際路徑調整）
 if (!isset($_SESSION['member_id'])) {
-    header("Location: ../login.html");  // ../ 表示回到上一層（專案根目錄）
+    header("Location: ../login.html");
     exit;
 }
 
-// 防止快取，避免登出後按返回鍵看到頁面
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-header("Expires: 0");
+// 連線資料庫
+$conn = new mysqli("localhost", "root", "", "lamain");
+if ($conn->connect_error) die("DB連線失敗: " . $conn->connect_error);
+
+$member_id = $_SESSION['member_id'];
+
+// ✅ 取得會員基本資料（從 ramen_members）
+$memberSql = "SELECT 姓名, 電話, 會員點數 FROM ramen_members WHERE id = $member_id";
+$memberRes = $conn->query($memberSql);
+if ($memberRes->num_rows === 0) die("找不到會員資料");
+$member = $memberRes->fetch_assoc();
+$phone = $member['電話'];
+
+// ✅ 計算可用點數：會員點數 + 所有訂單獲得點數
+$pointsSql = "SELECT SUM(`獲得點數`) AS orderPoints FROM ramen_orders WHERE 電話 = '$phone'";
+$pointsRes = $conn->query($pointsSql);
+$pointsRow = $pointsRes->fetch_assoc();
+$availablePoints = $member['會員點數'] + ($pointsRow['orderPoints'] ?? 0);
+
+// ✅ 累計消費總金額（從 ramen_orders）
+$orderSql = "SELECT SUM(總金額) AS total_spent FROM ramen_orders WHERE 電話 = '$phone'";
+$orderRes = $conn->query($orderSql);
+$orderRow = $orderRes->fetch_assoc();
+$totalSpent = $orderRow['total_spent'] ?? 0;
+
+// ✅ 本月消費次數
+$monthSql = "SELECT COUNT(*) AS month_count FROM ramen_orders WHERE 電話 = '$phone' AND DATE_FORMAT(訂單日期, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')";
+$monthRes = $conn->query($monthSql);
+$monthRow = $monthRes->fetch_assoc();
+$monthConsumption = $monthRow['month_count'] ?? 0;
+
+// ✅ 可兌換券（未使用且未過期）
+$couponSql = "SELECT COUNT(*) AS usable_coupons FROM ramen_coupons WHERE 電話 = '$phone' AND 狀態 = '未使用' AND 到期日 >= CURDATE()";
+$couponRes = $conn->query($couponSql);
+$couponRow = $couponRes->fetch_assoc();
+$availableCoupons = $couponRow['usable_coupons'] ?? 0;
+
+// ✅ 組成資料給畫面用
+$memberData = [
+    'name' => $member['姓名'],
+    'points' => $availablePoints,
+    'totalSpent' => $totalSpent,
+    'monthConsumption' => $monthConsumption,
+    'availableCoupons' => $availableCoupons
+];
+
+$conn->close();
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -245,7 +289,9 @@ header("Expires: 0");
   <div class="card-body">
     <div class="row align-items-center">
       <div class="col-md-8">
-        <h3 class="mb-2">歡迎回來，<span id="memberName"></span>！</h3>
+        <h3 class="mb-2">
+          歡迎回來，<?php echo htmlspecialchars($_SESSION['member_name'] ?? ''); ?>！
+        </h3>
         <p class="mb-0 opacity-90">感謝您對本店的支持～</p>
       </div>
       <div class="col-md-4 text-end">
@@ -255,61 +301,83 @@ header("Expires: 0");
   </div>
 </div>
 
+
 <!-- 快速統計卡片 -->
 <div class="row g-3 mb-4">
+
+  <!-- 可用點數 -->
   <div class="col-md-3">
     <div class="card stat-card stat-success">
       <div class="card-body text-center">
-        <div class="mb-2"><i class="fas fa-coins fa-2x" style="color:rgb(255, 182, 13);"></i></div>
+        <div class="mb-2">
+          <i class="fas fa-coins fa-2x" style="color:rgb(255, 182, 13);"></i>
+        </div>
         <div class="stat-label">可用點數</div>
-        <div class="stat-value" style="background: var(--primary-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; -webkit-text-fill-color: transparent;">
-          <span id="dashPoints">350</span>
+        <div class="stat-value"
+             style="background: var(--primary-gradient);
+                    background-clip: text;
+                    -webkit-background-clip: text;
+                    color: transparent;
+                    -webkit-text-fill-color: transparent;">
+          <span id="dashPoints"><?= number_format($memberData['points']); ?></span>
         </div>
         <a href="點數記錄.php" class="btn btn-sm btn-outline-primary mt-2">查看明細</a>
       </div>
       <span class="stat-glow"></span>
     </div>
   </div>
-  
+
+  <!-- 累計消費 -->
   <div class="col-md-3">
     <div class="card stat-card">
       <div class="card-body text-center">
-        <div class="mb-2"><i class="fas fa-shopping-cart fa-2x" style="color: #4facfe;"></i></div>
+        <div class="mb-2">
+          <i class="fas fa-shopping-cart fa-2x" style="color: #4facfe;"></i>
+        </div>
         <div class="stat-label">累計消費</div>
         <div class="stat-value" style="color: #4facfe;">
-          $<span id="dashTotal">12,850</span>
+          $<span id="dashTotal"><?= number_format($memberData['totalSpent']); ?></span>
         </div>
         <a href="消費紀錄.php" class="btn btn-sm btn-outline-primary mt-2">消費記錄</a>
       </div>
     </div>
   </div>
-  
+
+  <!-- 可兌換券 -->
   <div class="col-md-3">
     <div class="card stat-card">
       <div class="card-body text-center">
-        <div class="mb-2"><i class="fas fa-gift fa-2x" style="color: #ff6b00;"></i></div>
+        <div class="mb-2">
+          <i class="fas fa-gift fa-2x" style="color: #ff6b00;"></i>
+        </div>
         <div class="stat-label">可兌換券</div>
         <div class="stat-value" style="color: #ff6b00;">
-          <span id="dashCoupons">2</span> 張
+          <span id="dashCoupons"><?= $memberData['availableCoupons']; ?></span> 張
         </div>
         <a href="點數兌換.php" class="btn btn-sm btn-outline-primary mt-2">立即兌換</a>
       </div>
     </div>
   </div>
-  
+
+  <!-- 本月消費 -->
   <div class="col-md-3">
     <div class="card stat-card">
       <div class="card-body text-center">
-        <div class="mb-2"><i class="fas fa-calendar-check fa-2x" style="color: #54bcc1;"></i></div>
+        <div class="mb-2">
+          <i class="fas fa-calendar-check fa-2x" style="color: #54bcc1;"></i>
+        </div>
         <div class="stat-label">本月消費</div>
         <div class="stat-value" style="color: #54bcc1;">
-          <span id="dashMonth">8</span> 次
+          <span id="dashMonth"><?= $memberData['monthConsumption']; ?></span> 次
         </div>
-        <a href="" class="btn btn-sm btn-outline-primary mt-2">查看詳情</a>
+        <a href="消費紀錄.php" class="btn btn-sm btn-outline-primary mt-2">查看詳情</a>
       </div>
     </div>
   </div>
+
 </div>
+
+
 
 <!-- 快速功能 -->
 <div class="row g-3 mb-4">
@@ -377,23 +445,6 @@ header("Expires: 0");
   </div>
 </div>
 
-<!-- 最新消息 / 優惠活動 -->
-<div class="row g-3 mb-4">
-  <div class="col-md-8">
-    <div class="card">
-      
-    </div>
-  </div>
-  
-  <div class="col-md-4">
-    <div class="card">
-      
-    </div>
-  </div>
-</div>
-
-
-
 <script>
 
 
@@ -412,15 +463,7 @@ header("Expires: 0");
   // 初始化
   loadDashboard();
 
-  // TODO: 從後端載入資料
-  /*
-  fetchJSON('/member/dashboard').then(data => {
-    if (data && data.success) {
-      memberData = data.data;
-      loadDashboard();
-    }
-  });
-  */
+
 })();
 </script>
 
@@ -466,6 +509,72 @@ header("Expires: 0");
   background-color: rgba(251, 185, 124, 0.1);
 }
 </style>
+<!-- 意見反饋表單 -->
+ <h1 style="text-align: center;">- - - 提出您對我們的問題 - - -</h1>
+<section id="gallery" class="testimonials section light-background">
+  <div class="container section-title" data-aos="fade-up">
+
+    <form id="feedbackForm" action="send_mail.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
+      <div class="row gy-4">
+
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control" placeholder="您的姓名" required>
+        </div>
+
+        <div class="col-md-6">
+          <input type="email" name="email" class="form-control" placeholder="您的電子郵件" required>
+        </div>
+
+        <div class="col-md-12">
+          <input type="text" name="subject" class="form-control" placeholder="主旨" required>
+        </div>
+
+        <div class="col-md-12">
+          <textarea name="message" class="form-control" rows="6" placeholder="請詳細描述您的問題，我們將盡快回覆您！" required></textarea>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <h4></h4>
+          <button type="submit">送出留言</button>
+          <p id="thankYouMsg" class="text-danger mt-3" style="display:none;">感謝您的回饋！</p>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</section>
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+  e.preventDefault(); // 阻止表單預設跳轉
+
+  const form = this;
+  const formData = new FormData(form); // 取得表單資料
+
+  fetch('send_mail.php', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(data => {
+    // 成功提示
+    const thankMsg = document.getElementById('thankYouMsg');
+    thankMsg.style.display = 'block';
+    thankMsg.textContent = '感謝您的回饋，留言已送出！';
+
+    // 清空表單
+    form.reset();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    const thankMsg = document.getElementById('thankYouMsg');
+    thankMsg.style.display = 'block';
+    thankMsg.textContent = '送出失敗，請稍後再試';
+  });
+});
+</script>
+
+<br><br>
+ <h1 style="text-align: center;">- - - 店舖資訊 - - -</h1>
 <div class="map-container" style="width:100%; height:400px; margin-bottom:20px;">
   <iframe 
     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.671843041697!2d121.60435031500113!3d25.07281008398162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442ad0064545b4b%3A0xc3fb93a50128e06b!2z5Luk5ZKM5Y2a5aSa5ouJ6bq1IOWFp-a5luWNgOaXpeacrOaWueeVpeacrOW4g-mrmA!5e0!3m2!1szh-TW!2stw!4v1698531600000!5m2!1szh-TW!2stw" 
@@ -543,7 +652,14 @@ icon.addEventListener('click', () => {
       </footer>
     </div>
   </div>
-
+  <script>
+    // 頂欄日期 & 側欄收合
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e=>{
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+</script>
   <!-- 依你原本使用的版本 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -592,142 +708,7 @@ fetch('get_coupons.php')
     const now = new Date();
     currentDateElem.textContent = now.toLocaleDateString('zh-TW', options);
   </script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  fetch("get_member_level.php")
-    .then(response => response.json())
-    .then(data => {
-      console.log("會員資料回傳：", data); // ✅ 除錯用
 
-      // 🟢 確保 API 回傳成功
-      if (data.success) {
-        const levelText = document.getElementById("memberLevel");
-        const progressBar = document.getElementById("levelProgress");
-        const nextTextEl = document.querySelector(".text-muted.small.mb-3");
-        const totalTextEl = document.querySelector(".text-muted.small.mt-2");
-
-        // 🟢 顯示會員等級
-        levelText.textContent = data.level;
-
-        // 🟢 顯示距離下一等級或最高等級
-        if (data.nextTarget && data.remaining > 0) {
-          nextTextEl.innerHTML = `距離下一等級還需 <strong>${data.remaining.toLocaleString()}</strong> 元`;
-        } else {
-          nextTextEl.innerHTML = `您已達最高等級 🎉`;
-        }
-
-        // 🟢 顯示進度條
-        const progress = Math.min(data.progress, 100);
-        progressBar.style.width = progress + "%";
-        progressBar.textContent = progress + "%";
-
-        // 🟢 顯示累計消費
-        let maxDisplay = data.nextTarget ? data.nextTarget : data.total_spent;
-        totalTextEl.innerHTML = `累計消費：$${data.total_spent.toLocaleString()} / $${maxDisplay.toLocaleString()}`;
-
-      } else {
-        console.warn("⚠️ API 錯誤：", data.message);
-        showEmptyState("尚無消費紀錄");
-      }
-    })
-    .catch(error => {
-      console.error("⚠️ 無法讀取會員資料：", error);
-      showEmptyState("無法載入資料");
-    });
-
-  // 🧹 清空畫面的函式
-  function showEmptyState(msg) {
-    document.getElementById("memberLevel").textContent = "—";
-    document.querySelector(".text-muted.small.mb-3").textContent = msg;
-    document.getElementById("levelProgress").style.width = "0%";
-    document.getElementById("levelProgress").textContent = "0%";
-    document.querySelector(".text-muted.small.mt-2").textContent = "累計消費：$0 / $1";
-  }
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const dashTotalEl = document.getElementById('dashTotal');
-  const dashMonthEl = document.getElementById('dashMonth');
-  const dashCouponsEl = document.getElementById('dashCoupons');
-
-  function loadDashboard() {
-    fetch('get_points.php', { credentials: 'same-origin' })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.success) {
-          console.warn('無法載入會員資料');
-          dashTotalEl.textContent = '-';
-          dashMonthEl.textContent = '-';
-          dashCouponsEl.textContent = '0';
-          return;
-        }
-
-        // 🔹 累計消費
-        if (dashTotalEl) dashTotalEl.textContent = (data.totalSpent || 0).toLocaleString();
-
-        // 🔹 本月消費
-        if (dashMonthEl) dashMonthEl.textContent = (data.monthOrders || 0);
-
-        // 🔹 可兌換券（未使用且未過期）
-        fetch('get_coupons.php', { credentials: 'same-origin' })
-          .then(r => r.json())
-          .then(cdata => {
-            let coupons = cdata.data || [];
-            const now = new Date();
-            const usable = coupons.filter(c => {
-              if (c.狀態 !== '未使用') return false;
-              if (!c.到期日) return false;
-              return new Date(c.到期日 + 'T23:59:59') >= now;
-            });
-            if (dashCouponsEl) dashCouponsEl.textContent = usable.length;
-          })
-          .catch(err => {
-            console.error('get_coupons error', err);
-            if (dashCouponsEl) dashCouponsEl.textContent = '0';
-          });
-
-      })
-      .catch(err => {
-        console.error('get_points error', err);
-        dashTotalEl.textContent = '-';
-        dashMonthEl.textContent = '-';
-        dashCouponsEl.textContent = '0';
-      });
-  }
-
-  loadDashboard();
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    fetch("get_points.php")
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // 🔹 可用點數
-                const pointsSpan = document.getElementById("dashPoints");
-                if (pointsSpan) {
-                    pointsSpan.textContent = data.totalPoints.toLocaleString();
-                }
-
-                // 如果你之後還要加本月消費、累計消費、可兌換券等，也可以在這裡加入更新
-                // 例如：
-                // document.getElementById("dashTotal").textContent = data.totalSpent.toLocaleString();
-                // document.getElementById("dashMonth").textContent = data.monthOrders;
-            } else {
-                console.warn("❗ 取得點數資料失敗：", data.message);
-                const pointsSpan = document.getElementById("dashPoints");
-                if (pointsSpan) pointsSpan.textContent = "—";
-            }
-        })
-        .catch(error => {
-            console.error("⚠️ 讀取 get_points.php 失敗：", error);
-            const pointsSpan = document.getElementById("dashPoints");
-            if (pointsSpan) pointsSpan.textContent = "—";
-        });
-});
-</script>
 
 </body>
 </html>
