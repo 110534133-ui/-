@@ -580,7 +580,14 @@ header("Expires: 0");
         src="https://cdn.botpress.cloud/webchat/v3.3/shareable.html?configUrl=https://files.bpcontent.cloud/2025/10/29/03/20251029030317-XBWHYHXK.json"
         allow="fullscreen">
 </iframe>
-
+  <script>
+    // 頂欄日期 & 側欄收合
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e=>{
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+</script>
 <script>
 // 點擊圖標切換聊天框顯示/隱藏
 const icon = document.getElementById('chatbot-icon');
