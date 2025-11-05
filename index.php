@@ -18,6 +18,12 @@ if ($memberRes->num_rows === 0) die("找不到會員資料");
 $member = $memberRes->fetch_assoc();
 $phone = $member['電話'];
 
+// ✅ 計算可用點數：會員點數 + 所有訂單獲得點數
+$pointsSql = "SELECT SUM(`獲得點數`) AS orderPoints FROM ramen_orders WHERE 電話 = '$phone'";
+$pointsRes = $conn->query($pointsSql);
+$pointsRow = $pointsRes->fetch_assoc();
+$availablePoints = $member['會員點數'] + ($pointsRow['orderPoints'] ?? 0);
+
 // ✅ 累計消費總金額（從 ramen_orders）
 $orderSql = "SELECT SUM(總金額) AS total_spent FROM ramen_orders WHERE 電話 = '$phone'";
 $orderRes = $conn->query($orderSql);
@@ -39,7 +45,7 @@ $availableCoupons = $couponRow['usable_coupons'] ?? 0;
 // ✅ 組成資料給畫面用
 $memberData = [
     'name' => $member['姓名'],
-    'points' => $member['會員點數'],
+    'points' => $availablePoints,
     'totalSpent' => $totalSpent,
     'monthConsumption' => $monthConsumption,
     'availableCoupons' => $availableCoupons
@@ -248,6 +254,9 @@ $conn->close();
 
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
+</a>
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
 </a>
 
             <div class="sb-sidenav-menu-heading"></div>
@@ -646,7 +655,14 @@ icon.addEventListener('click', () => {
       </footer>
     </div>
   </div>
-
+  <script>
+    // 頂欄日期 & 側欄收合
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e=>{
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+</script>
   <!-- 依你原本使用的版本 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
