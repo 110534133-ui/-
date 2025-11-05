@@ -287,7 +287,9 @@ header("Expires: 0");
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
 </a>
-
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
+</a>
         <div class="sb-sidenav-footer">
           <div class="small">Logged in as: <br>會員</div>
       </nav>
@@ -366,11 +368,7 @@ header("Expires: 0");
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <div><i class="fas fa-receipt me-2"></i>消費記錄</div>
-    <div>
-      <button class="btn btn-light btn-sm" id="btnExport">
-        <i class="fas fa-download me-1"></i>匯出報表
-      </button>
-    </div>
+   
   </div>
   <div class="card-body">
     <div class="table-responsive">
