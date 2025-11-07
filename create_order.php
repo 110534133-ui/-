@@ -34,17 +34,26 @@ try {
         $orderNumber = 'ORD' . date('Ymd') . '0001';
     }
     
-    // 商品明細轉為 JSON
-    $itemsJson = json_encode($input['items'], JSON_UNESCAPED_UNICODE);
+    // 商品明細轉為「商品名稱 x數量」的格式
+    $itemsText = '';
+    foreach ($input['items'] as $item) {
+        $itemsText .= $item['name'] . ' x' . $item['quantity'] . ', ';
+    }
+    // 去掉最後的逗號和空格
+    $itemsText = rtrim($itemsText, ', ');
     
-    // 插入訂單
-    $stmt = $conn->prepare("INSERT INTO ramen_orders (訂單編號, 電話, 總金額, 獲得點數, 商品明細) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssiis", 
+    // 獲取當前日期時間
+    $orderDate = date('Y-m-d H:i:s');
+    
+    // 插入訂單（加入訂單日期欄位）
+    $stmt = $conn->prepare("INSERT INTO ramen_orders (訂單編號, 電話, 總金額, 獲得點數, 商品明細, 訂單日期) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssiiss", 
         $orderNumber,
         $input['phone'],
         $input['totalAmount'],
         $input['totalPoints'],
-        $itemsJson
+        $itemsText,
+        $orderDate
     );
     
     if ($stmt->execute()) {
@@ -52,7 +61,8 @@ try {
         echo json_encode([
             'success' => true, 
             'orderNumber' => $orderNumber,
-            'message' => '訂單建立成功'
+            'message' => '訂單建立成功',
+            'orderDate' => $orderDate
         ]);
     } else {
         throw new Exception("執行 SQL 失敗: " . $stmt->error);
