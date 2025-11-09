@@ -10,21 +10,41 @@ if (!isset($_SESSION['member_phone'])) {
     exit;
 }
 
-// 🔹 若你想同時相容舊程式（例如有用 $_SESSION['phone']）
-if (!isset($_SESSION['phone'])) {
-    $_SESSION['phone'] = $_SESSION['member_phone'];
-}
-
 // 🔹 防止快取（避免登出後按返回鍵看到舊頁面）
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: 0");
 
-// ✅ 這裡開始就能安全使用登入者資料
-$memberId   = $_SESSION['member_id'];
-$memberName = $_SESSION['member_name'];
-$phone      = $_SESSION['member_phone'];
+// ✅【重要修復】每次都從資料庫重新讀取最新資料
+require_once "config.php"; // 確保引入資料庫連線
+
+$phone = $_SESSION['member_phone'];
+$sql = "SELECT * FROM ramen_members WHERE `電話` = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $phone);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    // 使用者不存在，強制登出
+    session_destroy();
+    header("Location: ../login.html");
+    exit;
+}
+
+$member = $result->fetch_assoc();
+$stmt->close();
+
+// ✅ 使用從資料庫讀取的最新資料，而不是 Session 中的舊資料
+$memberId   = $member['id'];
+$memberName = $member['姓名'];
+$phone      = $member['電話'];
+
+// ✅ 可選：更新 Session 為最新資料（保持相容性）
+$_SESSION['member_id'] = $member['id'];
+$_SESSION['member_name'] = $member['姓名'];
+$_SESSION['member_phone'] = $member['電話'];
 ?>
 
 
