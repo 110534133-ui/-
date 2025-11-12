@@ -45,6 +45,27 @@ $phone      = $member['電話'];
 $_SESSION['member_id'] = $member['id'];
 $_SESSION['member_name'] = $member['姓名'];
 $_SESSION['member_phone'] = $member['電話'];
+
+// ✅ 使用從資料庫讀取的最新資料，而不是 Session 中的舊資料
+$memberId   = $member['id'];
+$memberName = $member['姓名'];
+$phone      = $member['電話'];
+
+// ✅ 可選：更新 Session 為最新資料（保持相容性）
+$_SESSION['member_id'] = $member['id'];
+$_SESSION['member_name'] = $member['姓名'];
+$_SESSION['member_phone'] = $member['電話'];
+
+// ✅【重要】加入這幾行 - 統一 Session 變數，讓 get_points.php 也能讀到
+$_SESSION['phone'] = $member['電話'];
+
+// ✅ 加入這幾行 - 取得點數資料（跟著 get_points.php 的邏輯）
+$totalPoints = $member['會員點數'] ?? 0;
+$monthEarned = 0;   // 先給預設值
+$monthUsed = 0;     // 先給預設值  
+$pendingTasks = 0;  // 先給預設值
+?>
+
 ?>
 
 
@@ -324,12 +345,12 @@ $_SESSION['member_phone'] = $member['電話'];
     <div>
       <div class="stat-label">當前點數總計</div>
       <div class="stat-value">
-        <span id="totalPoints">0</span> 點
+        <span id="totalPoints"><?php echo $totalPoints; ?></span> 點
       </div>
       <div class="mt-2 small">
-        <span class="me-3">本月獲得：<span id="monthEarned">0</span> 點</span>
-        <span class="me-3">本月使用：<span id="monthUsed">0</span> 點</span>
-        <span>待領任務：<span id="pendingTasks">0</span> 個</span>
+        <span class="me-3">本月獲得：<span id="monthEarned"><?php echo $monthEarned; ?></span> 點</span>
+        <span class="me-3">本月使用：<span id="monthUsed"><?php echo $monthUsed; ?></span> 點</span>
+        <span>待領任務：<span id="pendingTasks"><?php echo $pendingTasks; ?></span> 個</span>
       </div>
     </div>
     <div class="text-end">
