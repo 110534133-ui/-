@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>薪資記錄 - 員工管理系統</title>
+
+  <!-- 依賴 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%); /* 首頁同色 */
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
+      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
+      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
+      --border-radius: 20px;
+      --transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    * { transition: var(--transition); }
+    body {
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* 頂欄（跟首頁一致） */
+    .sb-topnav {
+      background: var(--dark-bg) !important;
+      border: none;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(45deg, #ffffff, #ffffff);
+      /* 修復 Lint：標準屬性 + 前綴 + 透明文字 */
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+
+    /* 側欄（跟首頁一致） */
+    .sb-sidenav {
+      background: linear-gradient(180deg, #fbb97ce4 0%, #ff00006a 100%) !important;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav-menu-heading {
+      color: rgba(255,255,255,.7) !important;
+      font-weight: 600;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 20px 15px 10px 15px !important;
+      margin-top: 15px;
+    }
+    .sb-sidenav .nav-link {
+      border-radius: 15px;
+      margin: 5px 15px;
+      padding: 12px 15px;
+      position: relative;
+      overflow: hidden;
+      color: rgba(255,255,255,.9) !important;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav .nav-link:hover {
+      background: rgba(255,255,255,.15) !important;
+      transform: translateX(8px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+      color: #fff !important;
+    }
+    .sb-sidenav .nav-link.active {
+      background: rgba(255,255,255,.2) !important;
+      color: #fff !important;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+    .sb-sidenav .nav-link::before {
+      content: '';
+      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: linear-gradient(45deg, #ffffff, #ffffff); /* 和首頁相同：白色亮條 */
+      transform: scaleY(0);
+      transition: var(--transition);
+      border-radius: 0 10px 10px 0;
+    }
+    .sb-sidenav .nav-link:hover::before,
+    .sb-sidenav .nav-link.active::before { transform: scaleY(1); }
+
+    .sb-sidenav .nav-link i { width: 20px; text-align: center; margin-right: 10px; font-size: 1rem; }
+    .sb-sidenav-footer {
+      background: rgba(255,255,255,.1) !important;
+      color: #fff !important;
+      border-top: 1px solid rgba(255,255,255,.2);
+      padding: 20px 15px;
+      margin-top: 20px;
+    }
+    /* 內容區 */
+    .container-fluid{ padding:30px !important; }
+    h1{
+      background: var(--primary-gradient);
+      background-clip:text; -webkit-background-clip:text;
+      color:transparent; -webkit-text-fill-color:transparent;
+      font-weight:700; font-size:2.5rem; margin-bottom:30px;
+    }
+    .breadcrumb{ background: rgba(255,255,255,.8); border-radius: var(--border-radius); padding: 15px 20px; box-shadow: var(--card-shadow); backdrop-filter: blur(10px); }
+
+    .card{ border:none; border-radius: var(--border-radius); box-shadow: var(--card-shadow); background:#fff; overflow:hidden; }
+    .card-header{ background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.75)); font-weight:600; }
+    .form-control, .form-select{ border-radius:12px; }
+    .btn-primary{ background: var(--primary-gradient); border:none; border-radius:25px; }
+    .btn-primary:hover{ transform:scale(1.05); box-shadow:0 10px 25px rgba(209,209,209,.976); }
+
+    /* 表格 */
+    .table{ border-radius:var(--border-radius); overflow:hidden; background:#fff; box-shadow:var(--card-shadow); }
+    .table thead th{ background:var(--primary-gradient); color:#000; border:none; font-weight:600; padding:15px; }
+    .table tbody td{ padding:15px; vertical-align:middle; border-color:rgba(0,0,0,.05); }
+    .table tbody tr:hover{ background:rgba(227,23,111,.05); transform:scale(1.01); }
+
+    /* 統計摘要（與日報表記錄一致） */
+    .stat-card{ border:none; color:#fff; border-radius:var(--border-radius); background:#999; box-shadow:var(--card-shadow); position:relative; overflow:hidden; }
+    .stat-card .card-body{ padding:1.1rem 1.25rem; }
+    .stat-label{ font-size:.85rem; opacity:.9; }
+    .stat-value{ font-size:1.6rem; font-weight:700; line-height:1.2; }
+    .stat-icon{ font-size:2.2rem; opacity:.35; }
+    .stat-glow{ position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,.15); filter:blur(12px); }
+    .stat-primary{  background: var(--primary-gradient);  }
+    .stat-success{  background: var(--success-gradient);  }
+    .stat-warning{  background: var(--warning-gradient);  }
+    .stat-secondary{ background: var(--secondary-gradient); }
+
+    /* 遮蔽（米字號） */
+    .masked{ letter-spacing:.06em; }
+    .reveal-toggle{ border:none; border-radius:25px; background:var(--secondary-gradient); color:#fff; padding:.5rem .9rem; }
+    .reveal-toggle:hover{ transform:scale(1.05); box-shadow:0 10px 25px rgba(0,0,0,.12); }
+
+    .badge-paytype{ font-size:.75rem; }
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+  <!-- Navbar -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand ps-3" href="index.html">員工管理系統</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+      <div class="input-group">
+        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" />
+        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-user fa-fw"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="#!">Settings</a></li>
+          <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="#!">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <div id="layoutSidenav">
+    <!-- Side Nav -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="index.html">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>首頁
+            </a>
+
+            <div class="sb-sidenav-menu-heading">Pages</div>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>人事管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav">
+                <a class="nav-link" href="員工資料表.html">員工資料表</a>
+                <a class="nav-link" href="班表管理.html">班表管理</a>
+                <a class="nav-link" href="日報表記錄.html">日報表記錄</a>
+                <a class="nav-link" href="假別管理.html">假別管理</a>
+                <a class="nav-link" href="打卡記錄.html">打卡紀錄</a>
+                <a class="nav-link" href="薪資管理.html">薪資管理</a>
+              </nav>
+            </div>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>營運管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseOperation" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionOperation">
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#operationCollapseInventory" aria-expanded="false">
+                  庫存管理
+                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="operationCollapseInventory" data-bs-parent="#sidenavAccordionOperation">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="庫存查詢.html">庫存查詢</a>
+                    <a class="nav-link" href="庫存調整.html">庫存調整</a>
+                  </nav>
+                </div>
+
+                <!-- 這三個項目補上正確 icon -->
+                <a class="nav-link" href="日報表.html">
+                  <div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>日報表
+                </a>
+                <a class="nav-link active" href="薪資記錄.html">
+                  <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>薪資記錄
+                </a>
+                <a class="nav-link" href="班表.html">
+                  <div class="sb-nav-link-icon"><i class="fas fa-calendar-days"></i></div>班表
+                </a>
+              </nav>
+            </div>
+
+            <a class="nav-link" href="請假申請.html">
+              <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>請假申請
+            </a>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWebsite" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>網站管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseWebsite" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionWebsite">
+                <a class="nav-link" href="layout-static.html">官網資料修改</a>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#websiteCollapseMember" aria-expanded="false">
+                  會員管理
+                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="websiteCollapseMember" data-bs-parent="#sidenavAccordionWebsite">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="member-list.html">會員清單</a>
+                    <a class="nav-link" href="member-detail.html">詳細資料頁</a>
+                    <a class="nav-link" href="point-manage.html">點數管理</a>
+                  </nav>
+                </div>
+              </nav>
+            </div>
+
+            <div class="sb-sidenav-menu-heading">Addons</div>
+            <a class="nav-link" href="charts.html"><div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>Charts</a>
+            <a class="nav-link" href="tables.html"><div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>Tables</a>
+          </div>
+        </div>
+
+        <div class="sb-sidenav-footer">
+          <div class="small">Logged in as:</div>
+          Start Bootstrap
+        </div>
+      </nav>
+    </div>
+
+    <!-- Content -->
+    <div id="layoutSidenav_content">
+      <main>
+        <div class="container-fluid">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>薪資記錄</h1>
+            <div class="text-muted"><i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span></div>
+          </div>
+
+          <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">首頁</a></li>
+            <li class="breadcrumb-item active">薪資記錄</li>
+          </ol>
+
+          <!-- 載入 / 訊息 -->
+          <div id="loadingIndicator" class="d-none">
+            <div class="d-flex justify-content-center align-items-center mb-4">
+              <div class="spinner-border text-primary me-2" role="status"><span class="visually-hidden">Loading...</span></div>
+              <span>載入中...</span>
+            </div>
+          </div>
+          <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i><span id="errorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+
+          <!-- 當月摘要 + 顯示按鈕 -->
+          <div class="card stat-card stat-success mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <div class="stat-label">本月（<span id="currentMonthText"></span>）實領</div>
+                <div class="stat-value">
+                  <span id="currentMonthAmount" class="masked">＊＊＊＊＊</span>
+                </div>
+                <div class="mt-2 small">
+                  <span class="me-3">底薪 / 時薪：<span id="cm_base" class="masked">＊＊＊</span></span>
+                  <span class="me-3">工時：<span id="cm_hours" class="masked">＊＊＊</span></span>
+                  <span class="me-3">獎金：<span id="cm_bonus" class="masked">＊＊＊</span></span>
+                  <span>扣款：<span id="cm_ded" class="masked">＊＊＊</span></span>
+                </div>
+              </div>
+              <div class="text-end">
+                <button id="toggleRevealBtn" class="reveal-toggle">
+                  <i class="fas fa-eye me-1"></i> 顯示金額
+                </button>
+                <div class="mt-2">
+                  <button class="btn btn-light btn-sm" id="openDetailBtn">
+                    <i class="fas fa-receipt me-1"></i> 查看明細
+                  </button>
+                </div>
+              </div>
+            </div>
+            <span class="stat-glow"></span>
+          </div>
+
+          <!-- 歷史薪資 -->
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div><i class="fas fa-clock-rotate-left me-1"></i> 歷史薪資</div>
+              <div class="text-muted small">僅顯示您個人的薪資資料</div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>月份</th>
+                      <th>薪資類型</th>
+                      <th>底薪/時薪</th>
+                      <th>工時</th>
+                      <th>獎金</th>
+                      <th>扣款</th>
+                      <th>實領</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody">
+                    <tr id="noHistoryRow" class="d-none">
+                      <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i><br>尚無歷史資料
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- 詳細資料 Modal -->
+      <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fas fa-receipt me-2"></i>薪資詳情</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detailBody"></div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; Xxing0625</div>
+            <div>
+              <a href="#">Privacy Policy</a> &middot; <a href="#">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    // 頂欄日期 & 側欄收合
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e=>{
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+
+    /* ===== API（僅回傳本人） ===== */
+    const API_BASE_URL = '/api';
+    class APIClient {
+      static async request(endpoint, options = {}) {
+        const resp = await fetch(`${API_BASE_URL}${endpoint}`, {
+          headers: {'Content-Type':'application/json', ...(options.headers||{})},
+          ...options
+        });
+        if(!resp.ok) throw new Error('HTTP '+resp.status);
+        const ct = resp.headers.get('content-type')||'';
+        if(ct.includes('application/json')) return resp.json();
+        return resp;
+      }
+      // 當月
+      static getMySalary(month){ return this.request(`/my-salaries?month=${encodeURIComponent(month)}`); }
+      // 歷史：預設近12個月
+      static getMyHistory(limit=12){ return this.request(`/my-salaries/history?limit=${limit}`); }
+      // 明細
+      static getDetail(month){ return this.request(`/my-salaries/${encodeURIComponent(month)}`); }
+    }
+
+    /* ===== Helpers ===== */
+    const $ = (id)=>document.getElementById(id);
+    function showLoading(show=true){ $('loadingIndicator').classList.toggle('d-none', !show); }
+    function showError(msg){ const a=$('errorAlert'); $('errorMessage').textContent=msg; a.classList.remove('d-none'); setTimeout(()=>a.classList.add('d-none'), 5000); }
+    const currency = (n)=> new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',minimumFractionDigits:0}).format(n||0);
+
+    // 米字號遮蔽（依位數）
+    function maskStars(n){ const digits = Math.max(String(Math.round(Math.abs(n||0))).length, 3); return '＊'.repeat(digits); }
+
+    // 金額/數字分開處理
+    let revealed = false;
+    function setMaskedMoney(el, value){
+      el.dataset.raw = value ?? 0;
+      el.textContent = revealed ? currency(Number(value||0)) : maskStars(Number(value||0));
+      el.classList.toggle('masked', !revealed);
+    }
+    function setMaskedNumber(el, value, digits=2){
+      const v = Number(value||0);
+      el.dataset.raw = v;
+      el.textContent = revealed ? v.toFixed(digits) : maskStars(v);
+      el.classList.toggle('masked', !revealed);
+    }
+
+    function calcBasePay(row){
+      if(row && row.hourly_rate!=null && row.hourly_rate!==undefined){
+        return Math.round((row.hourly_rate||0) * (row.working_hours||0));
+      }
+      return row?.base_salary || 0;
+    }
+    function payTypeBadge(row){
+      const isHourly = (row.hourly_rate!=null && row.hourly_rate!==undefined);
+      return isHourly
+        ? '<span class="badge bg-info badge-paytype"><i class="fas fa-clock me-1"></i>時薪</span>'
+        : '<span class="badge bg-secondary badge-paytype"><i class="fas fa-briefcase me-1"></i>月薪</span>';
+    }
+
+    /* ===== 初始化 ===== */
+    const now = new Date();
+    const currentYM = now.toISOString().slice(0,7);
+    $('currentMonthText').textContent = currentYM;
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      try{
+        showLoading(true);
+        await loadCurrent();
+        await loadHistory();
+      }catch(e){
+        console.error(e); showError('載入薪資資料失敗');
+      }finally{
+        showLoading(false);
+      }
+    });
+
+    // 顯示/隱藏按鈕
+    $('toggleRevealBtn').addEventListener('click', ()=>{
+      revealed = !revealed;
+      $('toggleRevealBtn').innerHTML = revealed
+        ? '<i class="fas fa-eye-slash me-1"></i> 隱藏金額'
+        : '<i class="fas fa-eye me-1"></i> 顯示金額';
+      renderCurrent(currentRowCache);
+      renderHistory(historyCache);
+    });
+
+    // 查看當月明細
+    $('openDetailBtn').addEventListener('click', ()=> openDetail(currentYM));
+
+    /* ===== 當月 ===== */
+    let currentRowCache = null;
+    async function loadCurrent(){
+      const r = await APIClient.getMySalary(currentYM);
+      currentRowCache = r.salary || r;
+      renderCurrent(currentRowCache);
+    }
+    function renderCurrent(row){
+      const total = (row.total_salary!=null)? row.total_salary : (calcBasePay(row)+(row.bonus||0)-(row.deductions||0));
+      setMaskedMoney($('currentMonthAmount'), total);
+      // 金額
+      setMaskedMoney($('cm_base'), (row.hourly_rate!=null)?row.hourly_rate:row.base_salary);
+      setMaskedMoney($('cm_bonus'), row.bonus||0);
+      setMaskedMoney($('cm_ded'), row.deductions||0);
+      // 工時
+      setMaskedNumber($('cm_hours'), row.working_hours||0, 2);
+    }
+
+    /* ===== 歷史 ===== */
+    let historyCache = [];
+    async function loadHistory(){
+      const data = await APIClient.getMyHistory(12); // 近12個月
+      historyCache = Array.isArray(data)? data : (data.data||[]);
+      renderHistory(historyCache);
+    }
+    function renderHistory(list){
+      const tbody = $('historyBody');
+      const no = $('noHistoryRow');
+      tbody.innerHTML = '';
+      if(!list || list.length===0){ tbody.appendChild(no); no.classList.remove('d-none'); return; }
+      no.classList.add('d-none');
+
+      list.forEach(item=>{
+        const calcTotal = (item.total_salary!=null)? item.total_salary : (calcBasePay(item)+(item.bonus||0)-(item.deductions||0));
+        const baseDisplay = (item.hourly_rate!=null && item.hourly_rate!==undefined)
+          ? (revealed? currency(item.hourly_rate): maskStars(item.hourly_rate)) + '/時'
+          : (revealed? currency(item.base_salary||0): maskStars(item.base_salary||0)) + '/月';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.salary_month||'-'}</td>
+          <td>${payTypeBadge(item)}</td>
+          <td>${baseDisplay}</td>
+          <td>${revealed? (Number(item.working_hours||0)).toFixed(2) : maskStars(item.working_hours||0)}</td>
+          <td>${revealed? currency(item.bonus||0) : maskStars(item.bonus||0)}</td>
+          <td>${revealed? currency(item.deductions||0) : maskStars(item.deductions||0)}</td>
+          <td><strong>${revealed? currency(calcTotal) : maskStars(calcTotal)}</strong></td>
+          <td class="text-nowrap">
+            <button class="btn btn-sm btn-info" onclick="openDetail('${item.salary_month||''}')" title="查看明細">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ===== 明細 Modal ===== */
+    async function openDetail(month){
+      try{
+        showLoading(true);
+        const d = await APIClient.getDetail(month);
+        const s = d.salary || d;
+        const calcBase = calcBasePay(s);
+        const calcTot  = (s.total_salary!=null)? s.total_salary : (calcBase + (s.bonus||0) - (s.deductions||0));
+        const fmtMoney = (n)=> revealed? currency(n) : maskStars(n);
+        const fmtHours = (n)=> revealed? (Number(n||0)).toFixed(2) : maskStars(n);
+
+        $('detailBody').innerHTML = `
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-primary"><i class="fas fa-info-circle me-1"></i> 基本</h6>
+              <table class="table table-sm table-borderless">
+                <tr><td class="fw-bold">月份：</td><td>${s.salary_month||month}</td></tr>
+                <tr><td class="fw-bold">薪資類型：</td><td>${(s.hourly_rate!=null)?'時薪':'月薪'}</td></tr>
+                <tr><td class="fw-bold">工時：</td><td>${fmtHours(s.working_hours||0)}</td></tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-success"><i class="fas fa-calculator me-1"></i> 金額</h6>
+              <table class="table table-sm table-borderless">
+                <tr><td class="fw-bold">底薪 / 時薪：</td><td>${(s.hourly_rate!=null)? (fmtMoney(s.hourly_rate)+'/時') : (fmtMoney(s.base_salary||0)+'/月')}</td></tr>
+                <tr><td class="fw-bold">計算底薪：</td><td>${fmtMoney(calcBase)}</td></tr>
+                <tr><td class="fw-bold">獎金：</td><td>${fmtMoney(s.bonus||0)}</td></tr>
+                <tr><td class="fw-bold">扣款：</td><td>${fmtMoney(s.deductions||0)}</td></tr>
+                <tr class="table-success border-top"><td class="fw-bold">實領：</td><td class="fw-bold">${fmtMoney(calcTot)}</td></tr>
+              </table>
+            </div>
+          </div>
+        `;
+        new bootstrap.Modal(document.getElementById('detailModal')).show();
+      }catch(e){
+        console.error(e); showError('讀取明細失敗');
+      }finally{
+        showLoading(false);
+      }
+    }
+  </script>
+
+  <script src="js/scripts.js"></script>
+</body>
+</html>

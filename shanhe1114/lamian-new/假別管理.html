@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>假別管理 - 員工管理系統</title>
+
+  <!-- 與其他頁一致 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+<style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%); /* 首頁同色 */
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
+      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
+      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
+      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
+      --border-radius: 20px;
+      --transition: all .3s cubic-bezier(.4,0,.2,1);
+    }
+    * { transition: var(--transition); }
+    body {
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* 頂欄（跟首頁一致） */
+    .sb-topnav {
+      background: var(--dark-bg) !important;
+      border: none;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(45deg, #ffffff, #ffffff);
+      /* 修復 Lint：標準屬性 + 前綴 + 透明文字 */
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+
+    /* 側欄（跟首頁一致） */
+    .sb-sidenav {
+      background: linear-gradient(180deg, #fbb97ce4 0%, #ff00006a 100%) !important;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav-menu-heading {
+      color: rgba(255,255,255,.7) !important;
+      font-weight: 600;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 20px 15px 10px 15px !important;
+      margin-top: 15px;
+    }
+    .sb-sidenav .nav-link {
+      border-radius: 15px;
+      margin: 5px 15px;
+      padding: 12px 15px;
+      position: relative;
+      overflow: hidden;
+      color: rgba(255,255,255,.9) !important;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+    .sb-sidenav .nav-link:hover {
+      background: rgba(255,255,255,.15) !important;
+      transform: translateX(8px);
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+      color: #fff !important;
+    }
+    .sb-sidenav .nav-link.active {
+      background: rgba(255,255,255,.2) !important;
+      color: #fff !important;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+    .sb-sidenav .nav-link::before {
+      content: '';
+      position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+      background: linear-gradient(45deg, #ffffff, #ffffff); /* 和首頁相同：白色亮條 */
+      transform: scaleY(0);
+      transition: var(--transition);
+      border-radius: 0 10px 10px 0;
+    }
+    .sb-sidenav .nav-link:hover::before,
+    .sb-sidenav .nav-link.active::before { transform: scaleY(1); }
+
+    .sb-sidenav .nav-link i { width: 20px; text-align: center; margin-right: 10px; font-size: 1rem; }
+    .sb-sidenav-footer {
+      background: rgba(255,255,255,.1) !important;
+      color: #fff !important;
+      border-top: 1px solid rgba(255,255,255,.2);
+      padding: 20px 15px;
+      margin-top: 20px;
+    }
+
+    /* 內容區 */
+    .container-fluid { padding: 30px !important; }
+    h1 {
+      background: var(--primary-gradient);
+      background-clip: text;              /* 標準屬性 */
+      -webkit-background-clip: text;      /* 前綴 */
+      color: transparent;                 /* 標準作法 */
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    /* 麵包屑（與首頁一致） */
+    .breadcrumb {
+      background: rgba(255,255,255,.8);
+      border-radius: var(--border-radius);
+      padding: 15px 20px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    /* 表格（與首頁一致） */
+    .table {
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      background: #fff;
+      box-shadow: var(--card-shadow);
+    }
+    .table thead th {
+      background: var(--primary-gradient);
+      color: #000;
+      border: none;
+      font-weight: 600;
+      padding: 15px;
+    }
+    .table tbody td {
+      padding: 15px;
+      vertical-align: middle;
+      border-color: rgba(0,0,0,.05);
+    }
+    .table tbody tr:hover {
+      background: rgba(227, 23, 111, 0.05);
+      transform: scale(1.01);
+    }
+
+    /* 只把「頂欄」的搜尋框做白字半透明背景（避免影響內容區搜尋框） */
+    .sb-topnav .form-control {
+      border-radius: 25px;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,.2);
+      color: #fff;
+    }
+    .sb-topnav .form-control:focus {
+      background: rgba(255,255,255,.3);
+      border-color: rgba(255,255,255,.5);
+      box-shadow: 0 0 20px rgba(255,255,255,.2);
+      color: #fff;
+    }
+    .btn-primary {
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 25px;
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(209, 209, 209, 0.976);
+    }
+  </style>
+</head>
+
+
+<body class="sb-nav-fixed">
+  <!-- Navbar -->
+  <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand ps-3" href="index.html">員工管理系統</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+      <div class="input-group">
+        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" />
+        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+      </div>
+    </form>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-user fa-fw"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="#!">Settings</a></li>
+          <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item" href="#!">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+   <div id="layoutSidenav">
+    <!-- Side Nav -->
+    <div id="layoutSidenav_nav">
+      <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+          <div class="nav">
+            <div class="sb-sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="index.html">
+              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>首頁
+            </a>
+
+            <div class="sb-sidenav-menu-heading">Pages</div>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>人事管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav">
+                <a class="nav-link" href="員工資料表.html">員工資料表</a>
+                <a class="nav-link" href="班表管理.html">班表管理</a>
+                <a class="nav-link" href="日報表記錄.html">日報表記錄</a>
+                <a class="nav-link" href="假別管理.html">假別管理</a>
+                <a class="nav-link" href="打卡記錄.html">打卡紀錄</a>
+                <a class="nav-link" href="薪資管理.html">薪資管理</a>
+              </nav>
+            </div>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>營運管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseOperation" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionOperation">
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#operationCollapseInventory" aria-expanded="false">
+                  庫存管理
+                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="operationCollapseInventory" data-bs-parent="#sidenavAccordionOperation">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="庫存查詢.html">庫存查詢</a>
+                    <a class="nav-link" href="庫存調整.html">庫存調整</a>
+                  </nav>
+                </div>
+
+                <a class="nav-link" href="日報表.html"><div class="sb-nav-link-icon"></div>日報表</a>
+                <a class="nav-link" href="薪資記錄.html"><div class="sb-nav-link-icon"></i></div>薪資記錄</a>
+                <a class="nav-link" href="班表.html"><div class="sb-nav-link-icon"></div>班表</a>
+
+              </nav>
+            </div>
+      
+                <a class="nav-link" href="請假申請.html"><div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>請假申請</a>
+
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWebsite" aria-expanded="false">
+              <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>網站管理
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseWebsite" data-bs-parent="#sidenavAccordion">
+              <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionWebsite">
+                <a class="nav-link" href="layout-static.html">官網資料修改</a>
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#websiteCollapseMember" aria-expanded="false">
+                  會員管理
+                  <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="websiteCollapseMember" data-bs-parent="#sidenavAccordionWebsite">
+                  <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="member-list.html">會員清單</a>
+                    <a class="nav-link" href="member-detail.html">詳細資料頁</a>
+                    <a class="nav-link" href="point-manage.html">點數管理</a>
+                  </nav>
+                </div>
+              </nav>
+            </div>
+
+            <div class="sb-sidenav-menu-heading">Addons</div>
+            <a class="nav-link" href="charts.html"><div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>Charts</a>
+            <a class="nav-link" href="tables.html"><div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>Tables</a>
+          </div>
+        </div>
+
+        <div class="sb-sidenav-footer">
+          <div class="small">Logged in as:</div>
+          Start Bootstrap
+        </div>
+      </nav>
+    </div>
+
+    <!-- Content -->
+    <div id="layoutSidenav_content">
+      <main>
+        <div class="container-fluid px-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>假別管理</h1>
+            <div class="text-muted"><i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span></div>
+          </div>
+
+          <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">首頁</a></li>
+            <li class="breadcrumb-item active">假別管理</li>
+          </ol>
+
+          <!-- 提示/狀態 -->
+          <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="errorMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <div id="successAlert" class="alert alert-success d-none" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span id="successMessage"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+
+          <!-- 員工請假紀錄 -->
+          <div class="card p-3 mb-4">
+            <div class="card-header"><i class="fas fa-list me-2"></i>員工請假紀錄</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle">
+                  <thead>
+                    <tr>
+                      <th>員工</th>
+                      <th>假別</th>
+                      <th>開始</th>
+                      <th>結束</th>
+                      <th>原因</th>
+                      <th>狀態</th>
+                    </tr>
+                  </thead>
+                  <tbody id="allLeaveTable">
+                    <tr><td colspan="6" class="text-muted">載入中…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 請假審核管理 -->
+          <div class="card p-3">
+            <div class="card-header"><i class="fas fa-clipboard-check me-2"></i>請假審核管理</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center align-middle">
+                  <thead>
+                    <tr>
+                      <th>員工</th>
+                      <th>假別</th>
+                      <th>開始</th>
+                      <th>結束</th>
+                      <th>原因</th>
+                      <th>照片</th>
+                      <th>狀態</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaveReviewTable">
+                    <tr><td colspan="8" class="text-muted">載入中…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+          <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; Xxing0625</div>
+            <div>
+              <a href="#">Privacy Policy</a> &middot; <a href="#">Terms &amp; Conditions</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    // 日期顯示／側欄收合
+    document.getElementById('currentDate').textContent =
+      new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+    document.getElementById('sidebarToggle').addEventListener('click', e=>{
+      e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
+    });
+
+    // 提示
+    function showError(msg){const a=document.getElementById('errorAlert');document.getElementById('errorMessage').textContent=msg;a.classList.remove('d-none');setTimeout(()=>a.classList.add('d-none'),4000)}
+    function showSuccess(msg){const a=document.getElementById('successAlert');document.getElementById('successMessage').textContent=msg;a.classList.remove('d-none');setTimeout(()=>a.classList.add('d-none'),3000)}
+
+    // 狀態徽章
+    function statusBadge(s){
+      const t=(s||'').toLowerCase();
+      if(t==='approved'||t==='通過') return `<span class="badge-status badge-approved">已通過</span>`;
+      if(t==='rejected'||t==='駁回') return `<span class="badge-status badge-rejected">已駁回</span>`;
+      return `<span class="badge-status badge-pending">審核中</span>`;
+    }
+
+    // 員工請假紀錄
+    async function loadAllLeave(){
+      const tbody=document.getElementById('allLeaveTable');
+      try{
+        const res = await fetch('api_all_leave.php');
+        if(!res.ok) throw new Error(res.status+' '+res.statusText);
+        const data = await res.json();
+        tbody.innerHTML = (data||[]).map(item=>`
+          <tr>
+            <td>${item.employee??''}</td>
+            <td>${item.type??''}</td>
+            <td>${item.start??''}</td>
+            <td>${item.end??''}</td>
+            <td class="text-start">${item.reason??''}</td>
+            <td>${statusBadge(item.status)}</td>
+          </tr>`).join('') || `<tr><td colspan="6" class="text-muted">目前沒有資料</td></tr>`;
+      }catch(e){
+        console.warn(e); tbody.innerHTML = `<tr><td colspan="6" class="text-danger">載入失敗</td></tr>`; showError('無法載入員工請假紀錄');
+      }
+    }
+
+    // 請假審核列表
+    async function loadLeaveReview(){
+      const tbody=document.getElementById('leaveReviewTable');
+      try{
+        const res = await fetch('api_leave_review_list.php');
+        if(!res.ok) throw new Error(res.status+' '+res.statusText);
+        const data = await res.json();
+        tbody.innerHTML = (data||[]).map(item=>`
+          <tr>
+            <td>${item.employee??''}</td>
+            <td>${item.type??''}</td>
+            <td>${item.start??''}</td>
+            <td>${item.end??''}</td>
+            <td class="text-start">${item.reason??''}</td>
+            <td>${item.photo?`<a href="${item.photo}" target="_blank">查看</a>`:'無'}</td>
+            <td>${statusBadge(item.status)}</td>
+            <td>
+              <button class="btn btn-success btn-sm me-1" onclick="confirmReview(${item.id}, 'approved')"><i class="fas fa-check"></i> 通過</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmReview(${item.id}, 'rejected')"><i class="fas fa-times"></i> 駁回</button>
+            </td>
+          </tr>`).join('') || `<tr><td colspan="8" class="text-muted">目前沒有待審核項目</td></tr>`;
+      }catch(e){
+        console.warn(e); tbody.innerHTML = `<tr><td colspan="8" class="text-danger">載入失敗</td></tr>`; showError('無法載入審核列表');
+      }
+    }
+
+    // 審核確認
+    function confirmReview(id, action){
+      const ok = confirm(action==='approved'?'確定通過這筆請假嗎？':'確定駁回這筆請假嗎？');
+      if(!ok) return;
+      reviewLeave(id, action);
+    }
+
+    // 審核 API
+    async function reviewLeave(id, action){
+      try{
+        const res = await fetch('api_leave_review_action.php', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id, action })
+        });
+        if(!res.ok) throw new Error(res.status+' '+res.statusText);
+        const text = await res.text();
+        showSuccess(text || '操作成功');
+      }catch(e){
+        console.warn(e); showError('審核操作失敗');
+      }finally{
+        // 更新兩個表
+        loadLeaveReview(); loadAllLeave();
+      }
+    }
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', ()=>{
+      loadAllLeave();
+      loadLeaveReview();
+    });
+  </script>
+  <script src="js/scripts.js"></script>
+</body>
+</html>
