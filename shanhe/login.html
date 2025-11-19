@@ -129,53 +129,117 @@
     </div>
   </div>
 
-  <!-- 忘記密碼的彈出視窗 -->
-  <div id="forgot-password-popup" class="popup">
-    <div class="popup-content">
-      <span class="close-btn" id="close-popup">&times;</span>
-      <h2 class="form-title">重設密碼</h2>
-      
-      <form method="post" action="send_sms.php"> <!-- 設置為處理發送驗證碼的 PHP 文件 -->
-        <div class="form-group">
-          <label for="reset-phone">手機號碼：</label>
-          <input type="tel" id="reset-phone" name="reset-phone" placeholder="請輸入您的手機號碼" required>
-          <button type="submit" class="btn" style="margin-top: 10px;">發送驗證碼</button> <!-- 發送驗證碼的按鈕 -->
-        </div>
-      </form>
+  <!-- 忘記密碼彈出視窗 -->
+<div id="forgot-password-popup" class="popup" style="display:none;">
+  <div class="popup-content">
+    <span class="close-btn" id="close-popup">&times;</span>
+    <h2 class="form-title">重設密碼</h2>
 
-      <form method="post" action="verify_code.php"> <!-- 設置為處理更新密碼的 PHP 文件 -->
-        <div class="form-group">
-          <label for="verification-code">驗證碼：</label>
-          <input type="text" id="verification-code" name="verification-code" placeholder="請輸入驗證碼" required>
-          <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>"> <!-- 隱藏手機號碼 -->
-        </div>
-        <button type="submit" class="btn">驗證</button> <!-- 送出驗證碼的按鈕 -->
-      </form>
+    <!-- STEP 1：輸入 Email -->
+    <div id="step-email">
+      <label for="reset-email">電子郵件：</label>
+      <input type="email" id="reset-email" placeholder="請輸入您的電子郵件" required>
+      <button id="send-code-btn" class="btn">發送驗證碼</button>
+      <p id="email-error" style="color:red;"></p>
+    </div>
+
+    <!-- STEP 2：驗證碼輸入 -->
+    <div id="step-code" style="display:none;">
+      <label for="verification-code">驗證碼：</label>
+      <input type="text" id="verification-code" placeholder="請輸入驗證碼" required>
+      <button id="verify-code-btn" class="btn">確認</button>
+      <p id="code-error" style="color:red;"></p>
+    </div>
+
+    <!-- STEP 3：重設密碼 -->
+    <div id="step-reset" style="display:none;">
+      <label for="new-password">新密碼：</label>
+      <input type="password" id="new-password" placeholder="請輸入新密碼" required>
+      <button id="reset-password-btn" class="btn">確認修改</button>
+      <p id="reset-error" style="color:red;"></p>
     </div>
   </div>
+</div>
 
-  <script>
-    const forgotPasswordLink = document.getElementById("forgot-password-link");
-    const forgotPasswordPopup = document.getElementById("forgot-password-popup");
-    const closePopup = document.getElementById("close-popup");
+<script>
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const forgotPopup = document.getElementById("forgot-password-popup");
+const closePopup = document.getElementById("close-popup");
 
-    // 顯示忘記密碼彈出視窗
-    forgotPasswordLink.onclick = function(event) {
-        event.preventDefault(); // 防止鏈接跳轉
-        forgotPasswordPopup.style.display = "flex"; // 顯示忘記密碼視窗
-    }
+forgotPasswordLink.onclick = e => { e.preventDefault(); forgotPopup.style.display="flex"; }
+closePopup.onclick = ()=> forgotPopup.style.display="none";
+window.onclick = e=> { if(e.target==forgotPopup) forgotPopup.style.display="none"; }
 
-    // 關閉彈出視窗
-    closePopup.onclick = function() {
-        forgotPasswordPopup.style.display = "none"; // 隱藏忘記密碼視窗
-    }
-
-    // 點擊視窗外部關閉視窗
-    window.onclick = function(event) {
-        if (event.target == forgotPasswordPopup) {
-            forgotPasswordPopup.style.display = "none";
+// ===== STEP 1：發送驗證碼 =====
+document.getElementById('send-code-btn').addEventListener('click', function(){
+    const email = document.getElementById('reset-email').value;
+    fetch('send_mail.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`reset_email=${encodeURIComponent(email)}`
+    })
+    .then(res=>res.text())
+    .then(data=>{
+        if(data.includes("尚未註冊")){
+            document.getElementById('email-error').textContent="尚未註冊過會員！";
+        } else if(data.includes("驗證碼已寄出")){
+            document.getElementById('email-error').textContent="";
+            document.getElementById('step-email').style.display='none';
+            document.getElementById('step-code').style.display='block';
+            alert("驗證碼已寄出，請檢查信箱！");
+        } else {
+            document.getElementById('email-error').textContent="發生錯誤，請稍後再試";
         }
-    }
-  </script>
+    });
+});
+
+// ===== STEP 2：驗證驗證碼 =====
+document.getElementById('verify-code-btn').addEventListener('click', function(){
+    const code = document.getElementById('verification-code').value;
+    fetch('verify_code.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`verification_code=${encodeURIComponent(code)}`
+    })
+    .then(res=>res.text())
+    .then(data=>{
+        if(data.includes("驗證成功")){
+            document.getElementById('code-error').textContent="";
+            document.getElementById('step-code').style.display='none';
+            document.getElementById('step-reset').style.display='block';
+        } else {
+            document.getElementById('code-error').textContent="驗證碼錯誤或已過期";
+        }
+    });
+});
+
+// ===== STEP 3：重設密碼 =====
+document.getElementById('reset-password-btn').addEventListener('click', function(){
+    const newPassword = document.getElementById('new-password').value;
+    fetch('reset_password.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`new_password=${encodeURIComponent(newPassword)}`
+    })
+    .then(res => res.text())
+    .then(data => {
+        console.log('PHP 回傳的結果：', data); // 這裡可以看到 PHP 回傳的結果
+        if (data.includes("密碼重設成功")) { // 確保這裡和後端回應一致
+            alert("密碼修改成功！請重新登入");
+            window.location.href = "login.html";
+        } else {
+            // 顯示錯誤訊息
+            document.getElementById('reset-error').textContent = data || "修改失敗，請稍後再試";
+        }
+    })
+    .catch(error => {
+        console.error('錯誤:', error);  // 發生錯誤時的處理
+        document.getElementById('reset-error').textContent = "請求錯誤，請稍後再試";
+    });
+});
+
+</script>
+
+
 </body>
 </html>

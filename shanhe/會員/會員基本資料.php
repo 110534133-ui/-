@@ -239,7 +239,9 @@ header("Expires: 0");
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
 </a>
-
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
+</a>
         <div class="sb-sidenav-footer">
           <div class="small">Logged in as:<br>會員</div>
           

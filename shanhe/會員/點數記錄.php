@@ -10,23 +10,61 @@ if (!isset($_SESSION['member_phone'])) {
     exit;
 }
 
-// 🔹 若你想同時相容舊程式（例如有用 $_SESSION['phone']）
-if (!isset($_SESSION['phone'])) {
-    $_SESSION['phone'] = $_SESSION['member_phone'];
-}
-
 // 🔹 防止快取（避免登出後按返回鍵看到舊頁面）
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 header("Expires: 0");
 
-// ✅ 這裡開始就能安全使用登入者資料
-$memberId   = $_SESSION['member_id'];
-$memberName = $_SESSION['member_name'];
-$phone      = $_SESSION['member_phone'];
-?>
+// ✅【重要修復】每次都從資料庫重新讀取最新資料
+require_once "config.php"; // 確保引入資料庫連線
 
+$phone = $_SESSION['member_phone'];
+$sql = "SELECT * FROM ramen_members WHERE `電話` = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $phone);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    // 使用者不存在，強制登出
+    session_destroy();
+    header("Location: ../login.html");
+    exit;
+}
+
+$member = $result->fetch_assoc();
+$stmt->close();
+
+// ✅ 使用從資料庫讀取的最新資料，而不是 Session 中的舊資料
+$memberId   = $member['id'];
+$memberName = $member['姓名'];
+$phone      = $member['電話'];
+
+// ✅ 可選：更新 Session 為最新資料（保持相容性）
+$_SESSION['member_id'] = $member['id'];
+$_SESSION['member_name'] = $member['姓名'];
+$_SESSION['member_phone'] = $member['電話'];
+
+// ✅ 使用從資料庫讀取的最新資料，而不是 Session 中的舊資料
+$memberId   = $member['id'];
+$memberName = $member['姓名'];
+$phone      = $member['電話'];
+
+// ✅ 可選：更新 Session 為最新資料（保持相容性）
+$_SESSION['member_id'] = $member['id'];
+$_SESSION['member_name'] = $member['姓名'];
+$_SESSION['member_phone'] = $member['電話'];
+
+//  統一 Session get_points.php 
+$_SESSION['phone'] = $member['電話'];
+
+// ✅ 加入這幾行 - 取得點數資料（跟著 get_points.php 的邏輯）
+$totalPoints = $member['會員點數'] ?? 0;
+$monthEarned = 0;   // 先給預設值
+$monthUsed = 0;     // 先給預設值  
+$pendingTasks = 0;  // 先給預設值
+?>
 
 
 <!DOCTYPE html>
@@ -260,7 +298,9 @@ $phone      = $_SESSION['member_phone'];
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
 </a>
-
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
+</a>
         <div class="sb-sidenav-footer">
           <div class="small">Logged in as:<br>會員</div>
           
@@ -279,7 +319,7 @@ $phone      = $_SESSION['member_phone'];
 
           <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none">首頁</a></li>
-            <li class="breadcrumb-item active">點數加總：</li>
+            <li class="breadcrumb-item active">點數紀錄</li>
           </ol>
 
           <!-- 載入 / 訊息 -->
@@ -302,13 +342,11 @@ $phone      = $_SESSION['member_phone'];
     <div>
       <div class="stat-label">當前點數總計</div>
       <div class="stat-value">
-        <span id="totalPoints">0</span> 點
+        <span id="totalPoints"><?php echo $totalPoints; ?></span> 點
       </div>
       <div class="mt-2 small">
-        <span class="me-3">本月獲得：<span id="monthEarned">0</span> 點</span>
-        <span class="me-3">本月使用：<span id="monthUsed">0</span> 點</span>
-        <span>待領任務：<span id="pendingTasks">0</span> 個</span>
-      </div>
+        <span class="me-3">本月點餐累計獲得：<span id="monthEarned"><?php echo $monthEarned; ?></span> 點</span>
+         </div>
     </div>
     <div class="text-end">
       <div class="display-6 fw-bold" style="background: var(--primary-gradient); background-clip: text; -webkit-background-clip: text; color: transparent; -webkit-text-fill-color: transparent;">
@@ -323,8 +361,8 @@ $phone      = $_SESSION['member_phone'];
   </div>
   <span class="stat-glow"></span>
 </div>
-
-<!-- 任務領取區 -->
+<!-- 
+任務領取區 
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
     <div><i class="fas fa-tasks me-2"></i>任務中心</div>
@@ -332,10 +370,9 @@ $phone      = $_SESSION['member_phone'];
   </div>
   <div class="card-body">
     <div class="row g-3" id="tasksContainer">
-      <!-- 任務卡片會動態生成 -->
     </div>
   </div>
-</div>
+</div> -->
 
 <!-- 點數記錄 -->
 <div class="card mb-4">
@@ -635,41 +672,37 @@ icon.addEventListener('click', () => {
 // 
     document.addEventListener("DOMContentLoaded", () => {
   const totalPointsEl = document.getElementById("totalPoints");
-  const monthEarnedEl = document.getElementById("monthEarned");
-  const monthUsedEl = document.getElementById("monthUsed");
-  const pendingTasksEl = document.getElementById("pendingTasks");
+  const monthEarnedEl = document.getElementById("monthEarned")
   const refreshBtn = document.getElementById("refreshPointsBtn");
 
   const loadingIndicator = document.getElementById("loadingIndicator");
   const errorAlert = document.getElementById("errorAlert");
   const errorMessage = document.getElementById("errorMessage");
 
-  async function loadPoints() {
-    try {
-      // Show loading
-      loadingIndicator.classList.remove("d-none");
-      errorAlert.classList.add("d-none");
+ async function loadPoints() {
+  try {
+    // 顯示 loading
+    loadingIndicator.classList.remove("d-none");
+    errorAlert.classList.add("d-none");
 
-      const response = await fetch("get_points.php");
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const response = await fetch("get_points.php");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const data = await response.json();
+    const data = await response.json();
 
-      // Update UI
-      totalPointsEl.textContent = data.totalPoints ?? 0;
-      monthEarnedEl.textContent = data.monthEarned ?? 0;
-      monthUsedEl.textContent = data.monthUsed ?? 0;
-      pendingTasksEl.textContent = data.pendingTasks ?? 0;
+    // 只更新頁面上存在的元素
+    if (totalPointsEl) totalPointsEl.textContent = data.totalPoints ?? 0;
+    if (monthEarnedEl) monthEarnedEl.textContent = data.monthEarned ?? 0;
 
-    } catch (error) {
-      console.error(error);
-      errorMessage.textContent = "載入點數資料時發生錯誤。";
-      errorAlert.classList.remove("d-none");
-    } finally {
-      // Hide loading
-      loadingIndicator.classList.add("d-none");
-    }
+  } catch (error) {
+    console.error(error);
+    errorMessage.textContent = "載入點數資料時發生錯誤。";
+    errorAlert.classList.remove("d-none");
+  } finally {
+    loadingIndicator.classList.add("d-none");
   }
+}
+
 
   // When page loads
   loadPoints();
@@ -694,14 +727,16 @@ document.addEventListener("DOMContentLoaded", function() {
         tbody.innerHTML = '';
 
         let cumulativePoints = 0; // 累計點數
-        // 假設 data.data 是按日期由新到舊排序，如果不是可先排序
         data.data.forEach(item => {
           const point = Number(item.點數);
-          cumulativePoints += point; // 每筆加減累計
+          
+          // 確保如果是"使用點數"，強制將點數變為負數
+          const isUsePoints = item.類型 === "使用點數";
+          const pointText = isUsePoints 
+            ? `<span class="text-danger">-${Math.abs(point)}</span>` // 顯示負數
+            : `<span class="text-success">+${point}</span>`; // 獲得點數顯示正數
 
-          const pointText = point > 0
-            ? `<span class="text-success">+${point}</span>`
-            : `<span class="text-danger">${point}</span>`;
+          cumulativePoints += point; // 累加點數
 
           const row = document.createElement('tr');
           row.innerHTML = `
@@ -728,10 +763,7 @@ document.addEventListener("DOMContentLoaded", function() {
       `;
     });
 });
-</script>
 
-
-
-  <script src="js/scripts.js"></script>
+</script><script src="js/scripts.js"></script>
 </body>
 </html>

@@ -255,6 +255,9 @@ $conn->close();
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
 </a>
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
+</a>
 
             <div class="sb-sidenav-menu-heading"></div>
             
@@ -438,7 +441,6 @@ $conn->close();
         <p class="text-muted small mt-2">
           累計消費：$12,85 / $14,00
 
-          
         </p>
       </div>
     </div>
@@ -509,6 +511,7 @@ $conn->close();
   background-color: rgba(251, 185, 124, 0.1);
 }
 </style>
+<br><br>
 <!-- 意見反饋表單 -->
  <h1 style="text-align: center;">- - - 提出您對我們的問題 - - -</h1>
 <section id="gallery" class="testimonials section light-background">
@@ -699,6 +702,37 @@ fetch('get_coupons.php')
           console.log(data.data); // 優惠券陣列
       }
   });
+</script>
+<script>
+  // 呼叫 get_member_level.php API 並更新前端頁面
+  fetch('get_member_level.php')
+    .then(response => response.json()) // 確保回應是 JSON 格式
+    .then(data => {
+      // 如果成功，data 會包含 API 回傳的資料
+      if (data.success) {
+        // 更新會員等級
+        document.getElementById('memberLevel').textContent = data.level;
+
+        // 更新距離下一等級還需的金額
+        const nextTargetAmount = data.remaining;
+        document.querySelector('.card-body p strong').textContent = nextTargetAmount;
+
+        // 更新進度條
+        const progressBar = document.getElementById('levelProgress');
+        progressBar.style.width = `${data.progress}%`;
+        progressBar.textContent = `${data.progress}%`;
+
+        // 更新累計消費
+        document.querySelector('.card-body .text-muted.small.mt-2').textContent = `累計消費：$${data.total_spent} / $${data.nextTarget}`;
+
+      } else {
+        // 如果 API 回傳錯誤，顯示錯誤訊息
+        console.error(data.message);
+      }
+    })
+    .catch(error => {
+      console.error('API 呼叫錯誤:', error);
+    });
 </script>
 
   <script>

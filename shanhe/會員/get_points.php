@@ -7,6 +7,65 @@ header('Content-Type: application/json');
 include 'config.php';
 session_start();
 
+// 如果收到 useCouponId，更新優惠券狀態
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['useCouponId'])) {
+    // 確保 session 兼容：若有 member_phone 就同步給 phone
+    if (isset($_SESSION['member_phone']) && !isset($_SESSION['phone'])) {
+        $_SESSION['phone'] = $_SESSION['member_phone'];
+    }
+
+    $couponId = intval($_POST['useCouponId']);
+    // 不用 intval() phone，保留原始字串（電話可能有前導 0）
+    if (!isset($_SESSION['phone'])) {
+        echo json_encode(['success' => false, 'message' => '尚未登入或 session 遺失']);
+        exit;
+    }
+    $phone = $_SESSION['phone'];
+
+    // 1️⃣ 查詢優惠券的當前狀態
+    $stmt = $conn->prepare("SELECT 優惠券編號, 狀態 FROM ramen_coupons WHERE 優惠券編號=? AND 電話=?");
+    $stmt->bind_param("is", $couponId, $phone);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $coupon = $result->fetch_assoc();
+
+    if (!$coupon) {
+        echo json_encode(['success' => false, 'message' => '優惠券不存在']);
+        exit;
+    }
+
+    if ($coupon['狀態'] === '已使用') {
+        echo json_encode(['success' => false, 'message' => '此優惠券已經被使用']);
+        exit;
+    }
+
+    // 4️⃣ 更新優惠券狀態（允許狀態為 NULL 或 '未使用'）
+    $stmt = $conn->prepare("UPDATE ramen_coupons 
+                            SET 狀態='已使用' 
+                            WHERE 優惠券編號=? 
+                              AND 電話=? 
+                              AND (狀態='未使用' OR 狀態 IS NULL)");
+    $stmt->bind_param("is", $couponId, $phone);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        echo json_encode([
+            'success' => true,
+            'message' => '優惠券已使用',
+            'couponId' => $couponId,
+            'newStatus' => '已使用'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => '更新失敗，可能已使用或不存在'
+        ]);
+    }
+    exit;
+}
+
+
+
 // 🔹 從登入 session 取會員電話
 if (!isset($_SESSION['phone'])) {
     echo json_encode([
@@ -123,4 +182,3 @@ try {
         'message' => '程式錯誤：' . $e->getMessage()
     ]);
 }
-?>

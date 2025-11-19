@@ -136,7 +136,7 @@ icon.addEventListener('click', () => {
           <li><a href="#nichu">拉麵之家</a></li>
           <li><a href="#gallery">顧客留言</a></li>
           <li><a href="關於我們.html">關於我們</a></li>
-          <li><a href="https://line.me/R/ti/p/@673axlfy">加入好友</a></li>
+          
           <li><a href="#" id="open-popup-btn">加入會員</a></li>
           </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -707,8 +707,8 @@ document.getElementById('feedbackForm').addEventListener('submit', function(e) {
               </div>
 
               <div class="form-group">
-                <label for="phone">電子郵件：</label>
-                <input type="tel" id="phone" name="email" placeholder="請輸入您的電子郵件" required>
+                <label for="email">電子郵件：</label>
+                <input type="email" id="phone" name="email" placeholder="請輸入您的電子郵件" required>
               <a>* 電子郵件為忘記密碼驗證用喔 *</a>
               </div>
 
@@ -758,51 +758,119 @@ document.getElementById('feedbackForm').addEventListener('submit', function(e) {
 
 
 
-<!-- 忘記密碼的彈出視窗 -->
-<div id="forgot-password-popup" class="popup" style="display: none;">
-    <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <h2 class="form-title">重設密碼</h2>
-        
-        <form id="send-sms-form"> 
-    <div class="form-group">
-        <label for="reset-phone">電子郵件驗證：</label>
-        <input type="tel" id="reset-phone" name="reset-phone" placeholder="請輸入您的電子郵件：" required>
-        <button type="submit" class="btn" style="margin-left: 10px;">發送驗證碼</button>
-    </div>
-</form>
+<!-- 重設密碼的彈出視窗 -->
+<div id="forgot-password-popup" class="popup" style="display:none;">
+  <div class="popup-content">
+    <span class="close-btn" id="close-popup">&times;</span>
+    <h2 class="form-title">重設密碼</h2>
 
-
-        <form method="post" action="verify_code.php"> <!-- 將 action 設置為處理更新密碼的 PHP 文件 -->
-            <div class="form-group">
-                <label for="verification-code">驗證碼：</label>
-                <input type="text" id="verification-code" name="verification-code" placeholder="請輸入驗證碼" required>
-                <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>"> <!-- 隱藏手機號碼 -->
-            </div>
-            <button type="submit" class="btn">驗證</button> <!-- 送出驗證碼的按鈕 -->
-        </form>
+    <!-- STEP 1：輸入 Email -->
+    <div id="step-email">
+      <label for="reset-email">電子郵件：</label>
+      <input type="email" id="reset-email" placeholder="請輸入您的電子郵件" required>
+      <button id="send-code-btn" class="btn">發送驗證碼</button>
+      <p id="email-error" style="color:red;"></p>
     </div>
+
+    <!-- STEP 2：驗證碼輸入 -->
+    <div id="step-code" style="display:none;">
+      <label for="verification-code">驗證碼：</label>
+      <input type="text" id="verification-code" placeholder="請輸入驗證碼" required>
+      <button id="verify-code-btn" class="btn">確認</button>
+      <p id="code-error" style="color:red;"></p>
+    </div>
+
+    <!-- STEP 3：重設密碼 -->
+    <div id="step-reset" style="display:none;">
+      <label for="new-password">新密碼：</label>
+      <input type="password" id="new-password" placeholder="請輸入新密碼" required>
+      <button id="reset-password-btn" class="btn">確認修改</button>
+      <p id="reset-error" style="color:red;"></p>
+    </div>
+  </div>
 </div>
 
-<!-- 重設密碼的彈出視窗 -->
-<div id="forgot-password-popup-step2" class="popup" style="display: none;">
+<script>
+const forgotPasswordLink = document.getElementById("forgot-password-link");
+const forgotPopup = document.getElementById("forgot-password-popup");
+const closePopup = document.getElementById("close-popup");
 
-    <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <h2 class="form-title">重設密碼</h2>
-        
-        <form method="post" action="reset_password.php">
-  <div class="form-group">
-      <label for="new-password">新密碼：</label>
-      <input type="password" id="new-password" name="new-password" placeholder="請輸入您的新密碼" required>
-  </div>
-  <div class="form-group">
-      <label for="confirm-password">再次輸入新密碼：</label>
-      <input type="password" id="confirm-password" name="confirm-password" placeholder="請再次輸入您的新密碼" required>
-  </div>
-  <input type="hidden" name="phone" value="<?php echo htmlspecialchars($phoneNumber); ?>">
-  <button type="submit" class="btn">儲存</button>
-</form>
+// 打開/關閉彈窗
+forgotPasswordLink.onclick = e => { 
+    e.preventDefault(); 
+    forgotPopup.style.display="flex"; 
+}
+closePopup.onclick = () => forgotPopup.style.display="none";
+window.onclick = e => { if(e.target==forgotPopup) forgotPopup.style.display="none"; }
+
+// ===== STEP 1：發送驗證碼 =====
+document.getElementById('send-code-btn').addEventListener('click', function(){
+    const email = document.getElementById('reset-email').value;
+    fetch('send_mail.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`reset_email=${encodeURIComponent(email)}`
+    })
+    .then(res=>res.text())
+    .then(data=>{
+        if(data.includes("尚未註冊")){
+            document.getElementById('email-error').textContent="尚未註冊過會員！";
+        } else if(data.includes("驗證碼已寄出")){
+            document.getElementById('email-error').textContent="";
+            document.getElementById('step-email').style.display='none';
+            document.getElementById('step-code').style.display='block';
+            alert("驗證碼已寄出，請檢查信箱！");
+        } else {
+            document.getElementById('email-error').textContent="發生錯誤，請稍後再試";
+        }
+    });
+});
+
+// ===== STEP 2：驗證驗證碼 =====
+document.getElementById('verify-code-btn').addEventListener('click', function(){
+    const code = document.getElementById('verification-code').value;
+    fetch('verify_code.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`verification_code=${encodeURIComponent(code)}`
+    })
+    .then(res=>res.text())
+    .then(data=>{
+        if(data.includes("驗證成功")){
+            document.getElementById('code-error').textContent="";
+            document.getElementById('step-code').style.display='none';
+            document.getElementById('step-reset').style.display='block';
+        } else {
+            document.getElementById('code-error').textContent="驗證碼錯誤或已過期";
+        }
+    });
+});
+
+// ===== STEP 3：重設密碼 =====
+document.getElementById('reset-password-btn').addEventListener('click', function(){
+    const newPassword = document.getElementById('new-password').value;
+    fetch('reset_password.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:`new_password=${encodeURIComponent(newPassword)}`
+    })
+    .then(res => res.text())
+    .then(data => {
+        console.log('PHP 回傳的結果：', data);
+        if (data.includes("密碼重設成功")) {
+            alert("密碼修改成功！請重新登入");
+            window.location.href = "login.html";
+        } else {
+            document.getElementById('reset-error').textContent = data || "修改失敗，請稍後再試";
+        }
+    })
+    .catch(error => {
+        console.error('錯誤:', error);
+        document.getElementById('reset-error').textContent = "請求錯誤，請稍後再試";
+    });
+});
+</script>
+
 
     </div>
     
@@ -898,129 +966,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.target === forgotPasswordPopupStep2) forgotPasswordPopupStep2.style.display = "none";
     }
 
-    // ==================== 修正：處理發送驗證碼表單 ====================
-    const smsForm = document.getElementById('send-sms-form');
-    if (smsForm) {
-        smsForm.onsubmit = function(event) {
-            event.preventDefault();
-            
-            const phone = document.getElementById('reset-phone').value.trim();
-            
-            if (!phone) {
-                alert('請輸入手機號碼');
-                return;
-            }
-            
-            if (!/^09\d{8}$/.test(phone)) {
-                alert('手機號碼格式錯誤！請輸入09開頭的10位數字');
-                return;
-            }
-
-            // 顯示載入狀態
-            const submitBtn = this.querySelector('.btn');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = '發送中...';
-            submitBtn.disabled = true;
-
-            // 使用 fetch 發送請求
-            const formData = new FormData();
-            formData.append('reset-phone', phone);
-            
-            fetch(encodeURI('send_sms.php'), {
-
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())  // 改為解析 JSON
-            .then(data => {
-                if (data.success) {
-                    // 提取驗證碼（測試用）
-                    if (data.test_code) {
-                        alert(`驗證碼已發送至您的手機！\n測試用驗證碼：${data.test_code}`);
-                    } else {
-                        alert(data.message);
-                    }
-                    // 將手機號碼設置到驗證表單的隱藏欄位
-                    document.getElementById('verify-phone').value = phone;
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('發送失敗，請稍後再試');
-            })
-            .finally(() => {
-                // 恢復按鈕狀態
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            });
-        };
-    }
-
-   // ==================== 修正：處理驗證碼驗證表單 ====================
-const verifyForm = document.getElementById('verify-code-form');
-if (verifyForm) {
-    verifyForm.onsubmit = function(event) {
-        event.preventDefault();
-        
-        const code = document.getElementById('verification-code').value.trim();
-        // 直接抓取手機號碼輸入框的值，不要用隱藏欄位
-        const phone = document.getElementById('reset-phone').value.trim();
-        
-        console.log('驗證時的手機號碼:', phone);
-        console.log('驗證碼:', code);
-        
-        if (!code) {
-            alert('請輸入驗證碼');
-            return;
-        }
-        
-        if (!phone) {
-            alert('請先輸入手機號碼並發送驗證碼');
-            return;
-        }
-
-        // 顯示載入狀態
-        const submitBtn = this.querySelector('.btn');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = '驗證中...';
-        submitBtn.disabled = true;
-
-        // 發送驗證請求
-        const formData = new FormData();
-        formData.append('verification-code', code);
-        formData.append('phone', phone);
-        
-        fetch('verify_code.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('驗證回傳:', data);
-            
-            if (data.success) {
-                alert('驗證成功！請重設新密碼');
-                forgotPasswordPopup.style.display = "none";
-                forgotPasswordPopupStep2.style.display = "flex";
-                // 傳遞手機號碼到重設密碼表單
-                document.getElementById('reset-phone-hidden').value = phone;
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('驗證失敗，請稍後再試');
-        })
-        .finally(() => {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        });
-    };
-}
-
+   
     // ==================== 處理重設密碼表單 ====================
     const resetForm = document.getElementById('reset-password-form');
     if (resetForm) {
@@ -1082,15 +1028,6 @@ if (verifyForm) {
     }
 });
 
-// 驗證電話號碼格式（原有的函數）
-function validateForm() {
-    let phone = document.getElementById("phone").value;
-    if (!/^09\d{8}$/.test(phone)) {
-        alert("手機號碼必須是09開頭的10位數字！");
-        return false;
-    }
-    return true;
-}
 
 
   </script>  

@@ -1,18 +1,37 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
+require_once 'config.php';
 
-// 如果沒有登入，導回登入頁（根據實際路徑調整）
 if (!isset($_SESSION['member_id'])) {
-    header("Location: ../login.html");  // ../ 表示回到上一層（專案根目錄）
+    header("Location: ../login.html");
     exit;
 }
 
-// 防止快取，避免登出後按返回鍵看到頁面
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-header("Expires: 0");
+$memberId = $_SESSION['member_id'];
+
+// 抓會員本身點數
+$stmt = $conn->prepare("SELECT 會員點數 FROM ramen_members WHERE id = ?");
+$stmt->bind_param("i", $memberId);
+$stmt->execute();
+$memberData = $stmt->get_result()->fetch_assoc();
+$memberPoints = intval($memberData['會員點數'] ?? 0);
+
+// 抓會員訂單累積點數
+$stmt = $conn->prepare("SELECT IFNULL(SUM(獲得點數),0) AS totalEarnedPoints FROM ramen_orders WHERE 電話 = (SELECT 電話 FROM ramen_members WHERE id=?)");
+$stmt->bind_param("i", $memberId);
+$stmt->execute();
+$orderData = $stmt->get_result()->fetch_assoc();
+$orderPoints = intval($orderData['totalEarnedPoints'] ?? 0);
+
+// 總點數
+$totalPoints = $memberPoints + $orderPoints;
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -233,7 +252,7 @@ header("Expires: 0");
     <a class="navbar-brand ps-3" href="index.php">會員系統</a>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button">
       <i class="fas fa-bars"></i>
-    </button>
+    </button> 
 
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
       <div class="input-group">
@@ -284,7 +303,9 @@ header("Expires: 0");
 <a class="nav-link" href="點數兌換.php">
   <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>點數兌換
 </a>
-
+<a class="nav-link" href="order.php">
+  <div class="sb-nav-link-icon"><i class="fas fa-exchange-alt"></i></div>我要點餐
+</a>
         <div class="sb-sidenav-footer">
           <div class="small">Logged in as: <br>會員</div>
       </nav>
@@ -312,7 +333,7 @@ header("Expires: 0");
     <div>
       <div class="stat-label">您的可用點數</div>
       <div class="stat-value">
-        <span id="userPoints">0</span> 點
+        <span id="userPoints"><?php echo $totalPoints; ?></span> 點
       </div>
       <div class="mt-2 small text-muted">
         點數可兌換以下優惠商品
@@ -353,11 +374,12 @@ header("Expires: 0");
             <th style="width: 100px;" class="text-end">使用點數</th>
             <th style="width: 120px;">狀態</th>
             <th style="width: 150px;">有效期限</th>
+            <th style="width: 120px;">操作</th
           </tr>
         </thead>
         <tbody id="exchangeHistoryBody">
           <tr id="noExchangeRow">
-            <td colspan="5" class="text-center text-muted py-4">
+            <td colspan="6" class="text-center text-muted py-4">
               <i class="fas fa-inbox fa-2x mb-2"></i><br>尚無兌換記錄
             </td>
           </tr>
@@ -593,6 +615,22 @@ icon.addEventListener('click', () => {
       e.preventDefault(); document.body.classList.toggle('sb-sidenav-toggled');
     });
   </script>
+  <!-- 使用確認 Modal -->
+<div class="modal fade" id="confirmUseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">確認使用優惠券</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">是否確認使用這張優惠券？</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">否</button>
+        <button type="button" class="btn btn-primary" id="confirmUseBtn">是</button>
+      </div>
+    </div>
+  </div>
+</div>
   <script>
 document.addEventListener('DOMContentLoaded', function() {
   const pointsEl = document.getElementById('userPoints');
@@ -600,31 +638,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const historyBody = document.getElementById('exchangeHistoryBody');
   const noRow = document.getElementById('noExchangeRow');
 
-  let userPoints = 0;
+  // 直接用 PHP 點數
+  let userPoints = <?php echo $totalPoints; ?>;
+  pointsEl.textContent = userPoints;
 
-  // 商品列表
+  let selectedCouponRow = null;
+
   const products = [
-    { id: 1, name: '9折優惠券', points: 100, img: '9折.png' },
+    { id: 1, name: '溏心蛋', points: 30, img: '溏心蛋.png' },
     { id: 2, name: '加麵', points: 40, img: '加麵.png' },
     { id: 3, name: '拉麵套餐', points: 400, img: '拉麵套餐.png' }
   ];
-  // 1️⃣ 讀取會員點數
-  function loadUserPoints() {
-    fetch('get_points.php', { credentials: 'same-origin' })
-      .then(r => r.json())
-      .then(data => {
-        userPoints = data.success ? parseInt(data.totalPoints) || 0 : 0;
-        if (pointsEl) pointsEl.textContent = userPoints;
-        renderProducts();
-      })
-      .catch(err => {
-        console.error('get_points error', err);
-        if (pointsEl) pointsEl.textContent = '-';
-      });
-  }
 
-  // -------------------------
-  // 2️⃣ 渲染商品卡片
+  // 渲染商品
   function renderProducts() {
     productsContainer.innerHTML = '';
     products.forEach(p => {
@@ -638,19 +664,17 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">${p.name}</h5>
             <p class="card-text mb-3">${p.points} 點</p>
-            <button class="btn ${enough? 'btn-primary' : 'btn-secondary'} mt-auto w-100" ${!enough?'disabled':''} data-id="${p.id}">
+            <button class="btn ${enough ? 'btn-primary' : 'btn-secondary'} mt-auto w-100" ${!enough ? 'disabled' : ''} data-id="${p.id}">
               ${enough ? '立即兌換' : '點數不足'}
             </button>
           </div>
         </div>`;
       productsContainer.appendChild(card);
     });
-
     productsContainer.querySelectorAll('button').forEach(btn => btn.addEventListener('click', handleRedeem));
   }
 
-  // -------------------------
-  // 3️⃣ 兌換商品
+  // 兌換商品
   function handleRedeem(e) {
     const id = e.currentTarget.dataset.id;
     const btn = e.currentTarget;
@@ -659,101 +683,98 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.textContent = '處理中...';
 
     const fd = new FormData();
-    fd.append('商品編號', id);
+    fd.append('優惠券編號', id);
 
-    fetch('redeem_reward.php', {
-      method: 'POST',
-      body: fd,
-      credentials: 'same-origin'
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        const product = products.find(p => p.id == id);
-        userPoints -= product.points;
-        if (pointsEl) pointsEl.textContent = userPoints;
-        renderProducts();
-
-        // ----- 新 coupon 即時加入表格 -----
-        if (data.coupon) {
-          const c = data.coupon;
-          const tr = document.createElement('tr');
-          const expireDate = new Date(c.到期日 + 'T23:59:59');
-          const isExpired = expireDate < new Date();
-          const statusText = isExpired ? '已過期' : c.狀態 || '未使用';
-          if (isExpired) tr.className = 'text-muted bg-light';
-
-          tr.innerHTML = `
-            <td>${(c.領取時間||'').slice(0,10)}</td>
-            <td>${c.優惠券名稱}</td>
-            <td class="text-end">${c.使用點數||'-'}</td>
-            <td>${statusText}</td>
-            <td>${c.到期日}</td>
-          `;
-          if (noRow) noRow.style.display = 'none';
-          historyBody.prepend(tr);
-        }
-
-        alert(data.message);
-      } else {
-        alert(data.message);
-      }
-    })
-    .catch(err => {
-      console.error('redeem error', err);
-      alert('兌換失敗，請稍後再試');
-    })
-    .finally(() => {
-      btn.disabled = false;
-      btn.textContent = oldText;
-    });
+    fetch('redeem_reward.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          userPoints -= products.find(p => p.id == id).points; // 扣掉點數
+          pointsEl.textContent = userPoints;
+          renderProducts();   // 重新渲染商品按鈕
+          loadCoupons();      // 刷新歷史紀錄
+        } else alert(data.message);
+      })
+      .catch(() => alert('兌換失敗，請稍後再試'))
+      .finally(() => { btn.disabled = false; btn.textContent = oldText; });
   }
 
-  // -------------------------
-  // 4️⃣ 讀取歷史優惠券
+  // 載入歷史優惠券
   function loadCoupons() {
     fetch('get_coupons.php', { credentials: 'same-origin' })
       .then(r => r.json())
       .then(data => {
         historyBody.innerHTML = '';
-
         if (!data.success || !data.data || data.data.length === 0) {
-          if (noRow) {
-            noRow.style.display = '';
-            historyBody.appendChild(noRow);
-          }
+          if (noRow) { noRow.style.display = ''; historyBody.appendChild(noRow); }
           return;
         }
-
         if (noRow) noRow.style.display = 'none';
-
-        const now = new Date();
-        data.data.forEach(c => {
-          const tr = document.createElement('tr');
-          const expireDate = new Date(c.到期日 + 'T23:59:59');
-          const isExpired = expireDate < now;
-          const statusText = isExpired ? '已過期' : (c.狀態 || '未使用');
-          if (isExpired) tr.className = 'text-muted bg-light';
-
-          tr.innerHTML = `
-            <td>${(c.領取時間||c.建立時間||'').slice(0,10)}</td>
-            <td>${c.優惠券名稱}</td>
-            <td class="text-end">${c.使用點數||'-'}</td>
-            <td>${statusText}</td>
-            <td>${c.到期日}</td>
-          `;
-          historyBody.appendChild(tr);
-        });
+        data.data.forEach(c => addCouponRow(c));
       })
       .catch(err => console.error('get_coupons error', err));
   }
 
-  // -------------------------
+  // 新增表格列
+  function addCouponRow(c) {
+    const tr = document.createElement('tr');
+    const expireDate = c.到期日 ? new Date(c.到期日 + 'T23:59:59') : null;
+    const isExpired = expireDate && expireDate < new Date();
+    const statusText = isExpired ? '已過期' : c.狀態 || '未使用';
+    if (isExpired) tr.className = 'text-muted bg-light';
+
+    tr.innerHTML = `
+      <td>${(c.領取時間||'').slice(0,10)}</td>
+      <td>${c.優惠券名稱}</td>
+      <td class="text-end">${c.使用點數||'-'}</td>
+      <td class="statusCell">${statusText}</td>
+      <td>${c.到期日||'-'}</td>
+      <td class="actionCell"></td>
+    `;
+
+    const actionCell = tr.querySelector('.actionCell');
+    if (!isExpired && (!c.狀態 || c.狀態 === '未使用')) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-success btn-sm';
+      btn.textContent = '使用';
+      btn.addEventListener('click', () => {
+        selectedCouponRow = tr;
+        selectedCouponRow.dataset.id = c.優惠券編號;
+        const modal = new bootstrap.Modal(document.getElementById('confirmUseModal'));
+        modal.show();
+      });
+      actionCell.appendChild(btn);
+    } else actionCell.textContent = '-';
+
+    historyBody.appendChild(tr);
+  }
+
+  // 使用優惠券 Modal
+  document.getElementById('confirmUseBtn').addEventListener('click', () => {
+    if (!selectedCouponRow) return;
+    const couponId = selectedCouponRow.dataset.id;
+    const fd = new FormData();
+    fd.append('useCouponId', couponId);
+
+    fetch('use_coupon.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        alert(data.message || (data.success ? '使用成功' : '使用失敗'));
+        loadCoupons();
+      })
+      .catch(() => alert('伺服器錯誤'));
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('confirmUseModal'));
+    modal.hide();
+  });
+
   // 初始化
-  loadUserPoints();
-  loadCoupons();
+  renderProducts();  // 直接用 PHP 點數渲染商品
+  loadCoupons();     // 載入歷史紀錄
 });
-  </script>
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
   <script src="js/datatables-simple-demo.js"></script>
 

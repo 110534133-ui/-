@@ -3,7 +3,10 @@ session_start();
 require_once 'config.php';
 
 header('Content-Type: application/json; charset=utf-8');
-
+// 同步給舊系統用
+if (isset($_SESSION['member_phone'])) {
+    $_SESSION['phone'] = $_SESSION['member_phone'];
+}
 // 🔹 檢查是否已登入
 if (!isset($_SESSION['member_phone'])) {
     echo json_encode(['success' => false, 'message' => '請先登入']);
