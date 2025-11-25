@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拉麵店 - 關於我們</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background: #000000;
+            color: white;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: left;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .section-number {
+            font-size: 4em;
+            font-weight: bold;
+            color: #d4af37;
+            opacity: 0.3;
+            position: absolute;
+            left: -20px;
+            top: -20px;
+            z-index: 1;
+        }
+        
+        .section-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-left: 60px;
+        }
+        
+        .section-text {
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-subtitle {
+            font-size: 0.9em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .section-description {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: #e0e0e0;
+        }
+        
+        .section-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 3px solid #d4af37;
+        }
+        
+        .section-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-section {
+            text-align: center;
+            margin: 60px 0;
+        }
+        
+        .product-title {
+            font-size: 2em;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4af37;
+            font-weight: 300;
+            letter-spacing: 10px;
+        }
+        
+        .product-button {
+            background: linear-gradient(45deg, #d4af37, #f4d03f);
+            color: #1a1a2e;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .product-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .store-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 30px;
+            border-radius: 15px;
+            margin-top: 60px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .store-title {
+            text-align: center;
+            font-size: 2em;
+            color: #d4af37;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 5px;
+        }
+        
+        .store-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .store-item {
+            text-align: center;
+        }
+        
+        .store-item-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 2px solid #d4af37;
+        }
+        
+        .store-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .store-name {
+            font-size: 1.3em;
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .store-details {
+            font-size: 0.9em;
+            color: #ccc;
+            line-height: 1.8;
+        }
+        
+        .store-details p {
+            margin-bottom: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            font-size: 0.8em;
+            color: #888;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .section-content {
+                flex-direction: column;
+                text-align: center;
+                margin-left: 20px;
+            }
+            
+            .section-image {
+                order: -1;
+                width: 150px;
+                height: 150px;
+            }
+            
+            .store-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .product-title {
+                position: static;
+                writing-mode: horizontal-tb;
+                text-orientation: mixed;
+                transform: none;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>關於我們</h1>
+        </header>
+        
+        <section class="section">
+            <div class="section-number">01</div>
+            <div class="section-content">
+                <div class="section-text">
+                    <h2 class="section-title">QUALITY <span class="section-subtitle">/ 品質</span></h2>
+                    <p class="section-description">
+                        品質是我們的靈魂。每日新鮮熬煮的豚骨湯頭，搭配自家製作的麵條與嚴選食材，追求每一口都能帶來驚喜。從湯底、叉燒到每片青蔥，都經過精心把關，讓您享受最安心的美味。
+                    </p>
+                </div>
+                <div class="section-image">
+                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=400&fit=crop" alt="拉麵品質">
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-number">02</div>
+            <div class="section-content">
+                <div class="section-image">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=400&fit=crop" alt="服務體驗">
+                </div>
+                <div class="section-text">
+                    <h2 class="section-title">SERVICE <span class="section-subtitle">/ 服務</span></h2>
+                    <p class="section-description">
+                       我們相信，拉麵不只是食物，更是一種溫暖的體驗。店內用心維護舒適氛圍，讓客人放鬆享用美食。親切的笑容、細心的服務，都是希望您在品嚐拉麵的同時，也能感受到家的溫度。
+
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section product-section">
+            <div class="product-title">產品介紹</div>
+            <div class="section-content">
+                <div class="section-text">
+                    <button class="product-button">查看產品</button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-number">03</div>
+            <div class="section-content">
+                <div class="section-text">
+                    <h2 class="section-title">TEAMWORK <span class="section-subtitle">/ 團隊</span></h2>
+                    <p class="section-description">
+                        我們的團隊由一群熱愛拉麵的職人組成，從廚房到服務人員，都懷抱著同樣的初心。每位成員都注重細節與合作，只為讓客人享有最完美的一碗。這份堅持，是我們共同的驕傲。
+                    </p>
+                </div>
+                <div class="section-image">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop" alt="團隊合作">
+                </div>
+            </div>
+        </section>
+      
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>  
+        
+        <div class="store-info">
+            <h2 class="store-title">店鋪資訊</h2>
+            <div class="store-grid">
+                <div class="store-item">
+                    <div class="store-item-image">
+                        <img src="assets/img/bodo.jpg" alt="令和博多拉麵">
+                    </div>
+                    <h3 class="store-name">令和博多拉麵</h3>
+                    <div class="store-details">
+                        <p>📍 No. 2號, 康寧路三段內湖區台北市114</p>
+                        <p>📞  02 2633 9000</p>
+                        
+                    </div>
+                </div>
+                
+                <div class="store-item">
+                    <div class="store-item-image">
+                        <img src="assets/img/日暮拉麵拷貝.jpg" alt="日暮拉麵">
+                    </div>
+                    <h3 class="store-name">日暮拉麵</h3>
+                    <div class="store-details">
+                        <p>📍 台北市大安區忠孝東路四段123號2樓</p>
+                        <p>📞 02-3456-7890</p>
+                        <p>⏰ 週一～週日 11:00-22:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>2025 ©  linhe • 東京風・經典味・傳統奧義</p>
+        </footer>
+    </div>
+
+    <script>
+        // 添加滑動動畫效果
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // 為所有section添加動畫
+        document.querySelectorAll('.section').forEach((section) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(50px)';
+            section.style.transition = 'all 0.6s ease';
+            observer.observe(section);
+        });
+
+        // 產品按鈕點擊事件
+        document.querySelector('.product-button').addEventListener('click', () => {
+            alert('產品頁面即將推出！');
+        });
+    </script>
+</body>
+</html>

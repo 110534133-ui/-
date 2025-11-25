@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <defs>
+    <g id="noodle" fill="none" stroke="#E0CEAE" stroke-width="12" stroke-linecap="round">
+      <path d="M30,110 C80,70 140,70 190,110"></path>
+      <path d="M45,130 C90,95 130,95 175,130"></path>
+      <path d="M60,150 C95,125 125,125 160,150"></path>
+    </g>
+  </defs>
+  <g opacity="0.45">
+    <use href="#noodle" transform="rotate(-25 110 110) translate(-30,-30)"></use>
+    <use href="#noodle" transform="rotate(-25 110 110) translate(80,60)"></use>
+    <use href="#noodle" transform="rotate(-25 110 110) translate(-10,100)"></use>
+  </g>
+</svg>
