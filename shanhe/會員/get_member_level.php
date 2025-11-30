@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 session_start();
-require_once '../config.php'; // 根據實際路徑修改
+require_once '../config.php'; 
 
 if (!isset($_SESSION['member_phone'])) {
     echo json_encode(['success' => false, 'message' => '尚未登入']);

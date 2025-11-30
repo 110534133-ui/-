@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";   // 你的資料庫主機
-$user = "root";        // 你的帳號（通常是 root）
-$pass = "";            // 你的密碼（XAMPP/MAMP 通常空白）
-$db   = "lamain";      // 你的資料庫名稱
+$host = "localhost";  
+$user = "root";        
+$pass = "";          
+$db   = "lamain";      
 
 $conn = new mysqli($host, $user, $pass, $db);
 

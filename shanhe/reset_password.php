@@ -2,9 +2,15 @@
 session_start();
 include 'config.php';
 
-// 只要 session 中有 email，就允許重設密碼
+// 必須有 email
 if (!isset($_SESSION['reset_email'])) {
     echo "未授權：請從忘記密碼流程重新開始";
+    exit;
+}
+
+// 必須通過驗證碼
+if (!isset($_SESSION['reset_verified']) || $_SESSION['reset_verified'] !== true) {
+    echo "未授權：請先通過驗證碼";
     exit;
 }
 
@@ -25,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 密碼加密
     $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
 
-    // ⚡ 更新密碼 + 清空驗證碼
+    // 更新
     $stmt = $conn->prepare("UPDATE ramen_members 
                             SET `密碼` = ?, `驗證碼` = NULL, `驗證碼建立時間` = NULL 
                             WHERE Email = ?");
@@ -36,9 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("ss", $hashed, $email);
 
     if ($stmt->execute()) {
-        // ✅ 成功：清掉 session，讓使用者回登入頁面
-        session_destroy();
-        echo "密碼重設成功";
+
+        // 清除 reset session
+        unset($_SESSION['reset_email']);
+        unset($_SESSION['reset_verified']);
+
+        echo "success"; // 給前端判斷跳轉
     } else {
         echo "密碼更新失敗：" . $stmt->error;
     }
@@ -46,4 +55,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $conn->close();
 }
+
 ?>

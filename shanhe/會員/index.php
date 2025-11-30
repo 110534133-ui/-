@@ -12,11 +12,12 @@ if ($conn->connect_error) die("DB連線失敗: " . $conn->connect_error);
 $member_id = $_SESSION['member_id'];
 
 // ✅ 取得會員基本資料（從 ramen_members）
-$memberSql = "SELECT 姓名, 電話, 會員點數 FROM ramen_members WHERE id = $member_id";
+$memberSql = "SELECT 姓名, 電話, 會員點數 FROM ramen_members WHERE id = " . intval($member_id);
 $memberRes = $conn->query($memberSql);
 if ($memberRes->num_rows === 0) die("找不到會員資料");
 $member = $memberRes->fetch_assoc();
 $phone = $member['電話'];
+
 
 // ✅ 計算可用點數：會員點數 + 所有訂單獲得點數
 $pointsSql = "SELECT SUM(`獲得點數`) AS orderPoints FROM ramen_orders WHERE 電話 = '$phone'";
@@ -464,9 +465,6 @@ $conn->close();
 
   // 初始化
   loadDashboard();
-
-
-})();
 </script>
 
 <style>
@@ -708,7 +706,7 @@ fetch('get_coupons.php')
   fetch('get_member_level.php')
     .then(response => response.json()) // 確保回應是 JSON 格式
     .then(data => {
-      // 如果成功，data 會包含 API 回傳的資料
+ 
       if (data.success) {
         // 更新會員等級
         document.getElementById('memberLevel').textContent = data.level;
