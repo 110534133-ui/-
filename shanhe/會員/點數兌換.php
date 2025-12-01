@@ -564,7 +564,7 @@ $totalPoints = $memberPoints + $orderPoints;
 </style>
 
 <!-- 懸浮圖標 -->
-<img src="xm.png" id="chatbot-icon" alt="Chatbot">
+<img src="pic/xm.png" id="chatbot-icon" alt="Chatbot">
 
 <!-- 聊天框 iframe -->
 <iframe id="chatbot-frame" 
@@ -645,9 +645,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let selectedCouponRow = null;
 
   const products = [
-    { id: 1, name: '溏心蛋', points: 30, img: '溏心蛋.png' },
-    { id: 2, name: '加麵', points: 40, img: '加麵.png' },
-    { id: 3, name: '拉麵套餐', points: 400, img: '拉麵套餐.png' }
+    { id: 1, name: '溏心蛋', points: 30, img: 'pic/溏心蛋.png' },
+    { id: 2, name: '加麵', points: 40, img: 'pic/加麵.png' },
+    { id: 3, name: '拉麵套餐', points: 400, img: 'pic/拉麵套餐.png' }
   ];
 
   // 渲染商品

@@ -536,26 +536,26 @@ if (empty($member_phone)) {
 
       // 商品列表
       const products = [
-        { id: 1, name: '溏心蛋', price: 30, points: 3, img: '溏心蛋.png' },
-        { id: 2, name: '加麵', price: 40, points: 4, img: '加麵.png' },
-        { id: 3, name: '拉麵套餐', price: 400, points: 40, img: '拉麵套餐.png' },
-        { id: 4, name: '叉燒拉麵', price: 250, points: 25, img: '叉燒拉麵.png' },
-        { id: 5, name: '味噌拉麵', price: 220, points: 22, img: '味噌拉麵.png' },
-        { id: 6, name: '醬油拉麵', price: 200, points: 20, img: '醬油拉麵.png' },
-        { id: 7, name: '豚骨拉麵', price: 280, points: 28, img: '豚骨拉麵.png' },
-        { id: 8, name: '辣味拉麵', price: 240, points: 24, img: '辣味拉麵.png' },
-        { id: 9, name: '海鮮拉麵', price: 320, points: 32, img: '海鮮拉麵.png' },
-        { id: 10, name: '蔬菜拉麵', price: 180, points: 18, img: '蔬菜拉麵.png' },
-        { id: 11, name: '炸雞', price: 120, points: 12, img: '炸雞.png' },
-        { id: 12, name: '煎餃', price: 80, points: 8, img: '煎餃.png' },
-        { id: 13, name: '可樂', price: 40, points: 4, img: '可樂.png' },
-        { id: 14, name: '綠茶', price: 35, points: 3, img: '綠茶.png' },
-        { id: 15, name: '烏龍茶', price: 35, points: 3, img: '烏龍茶.png' },
-        { id: 16, name: '啤酒', price: 80, points: 8, img: '啤酒.png' },
-        { id: 17, name: '沙拉', price: 60, points: 6, img: '沙拉.png' },
-        { id: 18, name: '布丁', price: 45, points: 4, img: '布丁.png' },
-        { id: 19, name: '冰淇淋', price: 50, points: 5, img: '冰淇淋.png' },
-        { id: 20, name: '飯糰', price: 55, points: 5, img: '飯糰.png' }
+        { id: 1, name: '溏心蛋', price: 30, points: 3, img: 'pic/溏心蛋.png' },
+        { id: 2, name: '加麵', price: 40, points: 4, img: 'pic/加麵.png' },
+        { id: 3, name: '拉麵套餐', price: 400, points: 40, img: 'pic/拉麵套餐.png' },
+        { id: 4, name: '叉燒拉麵', price: 250, points: 25, img: 'pic/叉燒拉麵.png' },
+        { id: 5, name: '味噌拉麵', price: 220, points: 22, img: 'pic/味噌拉麵.png' },
+        { id: 6, name: '醬油拉麵', price: 200, points: 20, img: 'pic/醬油拉麵.png' },
+        { id: 7, name: '豚骨拉麵', price: 280, points: 28, img: 'pic/豚骨拉麵.png' },
+        { id: 8, name: '辣味拉麵', price: 240, points: 24, img: 'pic/辣味拉麵.png' },
+        { id: 9, name: '海鮮拉麵', price: 320, points: 32, img: 'pic/海鮮拉麵.png' },
+        { id: 10, name: '蔬菜拉麵', price: 180, points: 18, img: 'pic/蔬菜拉麵.png' },
+        { id: 11, name: '炸雞', price: 120, points: 12, img: 'pic/炸雞.png' },
+        { id: 12, name: '煎餃', price: 80, points: 8, img: 'pic/煎餃.png' },
+        { id: 13, name: '可樂', price: 40, points: 4, img: 'pic/可樂.png' },
+        { id: 14, name: '綠茶', price: 35, points: 3, img: 'pic/綠茶.png' },
+        { id: 15, name: '烏龍茶', price: 35, points: 3, img: 'pic/烏龍茶.png' },
+        { id: 16, name: '啤酒', price: 80, points: 8, img: 'pic/啤酒.png' },
+        { id: 17, name: '沙拉', price: 60, points: 6, img: 'pic/沙拉.png' },
+        { id: 18, name: '布丁', price: 45, points: 4, img: 'pic/布丁.png' },
+        { id: 19, name: '冰淇淋', price: 50, points: 5, img: 'pic/冰淇淋.png' },
+        { id: 20, name: '飯糰', price: 55, points: 5, img: 'pic/飯糰.png' }
       ];
 
       // 渲染商品卡片

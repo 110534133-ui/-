@@ -571,7 +571,7 @@ header("Expires: 0");
 </style>
 
 <!-- 懸浮圖標 -->
-<img src="xm.png" id="chatbot-icon" alt="Chatbot">
+<img src="pic/xm.png" id="chatbot-icon" alt="Chatbot">
 
 <!-- 聊天框 iframe -->
 <iframe id="chatbot-frame" 
