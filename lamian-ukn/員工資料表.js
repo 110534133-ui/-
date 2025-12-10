@@ -444,8 +444,11 @@ async function submitAddEmployee() {
         console.log('API 回應:', result);
 
         if (result.success) {
-            const message = `員工新增成功！\n員工編號：${result.data.employee_id}\n登入帳號：${result.data.account}`;
-            alert(message);
+            const message = `員工新增成功！
+員工編號：${result.data.employee_id}
+登入帳號：${result.data.employee_id}
+預設密碼：${result.data.default_password}（身分證後4碼）`;
+alert(message);
             
             // 關閉Modal
             const addModal = bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal'));
@@ -661,10 +664,14 @@ function editEmployee(id) {
         document.getElementById('editHourlyRateGroup').style.display = 'block';
     }
 
+    
+
     // 4. 顯示彈出視窗
     const editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
     editModal.show();
 }
+
+
 
 // 提交編輯表單
 async function submitEdit() {
@@ -811,4 +818,40 @@ document.addEventListener('DOMContentLoaded', function () {
     // 已經有 DOMContentLoaded 事件了，並會在 loadLoggedInUser 之後
     // 呼叫 loadEmployees()。
     // 所以這裡不需要再呼叫一次。
+});
+// ==================== 🔥 重製 Token 功能 ====================
+document.addEventListener('DOMContentLoaded', function () {
+    const resetTokenBtn = document.getElementById('resetTokenBtn');
+    if (resetTokenBtn) {
+        resetTokenBtn.addEventListener('click', async function () {
+            if (!confirm('確定要重製該員工的 device_token 嗎？')) return;
+
+            try {
+                // 這裡假設重製的是選定員工的 ID，可從 editId 或其他方式取得
+                const employeeId = document.getElementById('editId')?.value;
+                if (!employeeId) {
+                    alert('請先選擇要重製 Token 的員工');
+                    return;
+                }
+
+                const res = await fetch('/lamian-ukn/token.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: employeeId })
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    alert('Token 重製成功！\n新的 token: ' + result.token);
+                    // 更新快取，如果你想直接顯示在表格裡可以在此處更新 EMP_CACHE
+                    loadEmployees();
+                } else {
+                    alert('重製失敗：' + result.message);
+                }
+            } catch (e) {
+                console.error('重製 Token 失敗：', e);
+                alert('重製 Token 失敗，請檢查網路或伺服器設定');
+            }
+        });
+    }
 });

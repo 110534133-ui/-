@@ -43,174 +43,363 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
-      --border-radius: 20px;
-      --transition: all .3s cubic-bezier(.4,0,.2,1);
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+    --text-main: #0f172a;
+    --text-subtle: #64748b;
+
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-radius: 22px;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+    --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  * {
+    transition: var(--transition-main);
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+      var(--bg-gradient);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+  }
+
+  /* ====== Top navbar ====== */
+  .sb-topnav {
+    background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(18px);
+  }
+
+  .navbar-brand {
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #f9fafb !important;
+  }
+
+  .navbar-nav .nav-link {
+    color: #e5e7eb !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .container-fluid {
+    padding: 26px 28px;
+  }
+
+  /* ====== Sidebar 背景：淡藍漸層延伸 ====== */
+  .sb-sidenav {
+    background:
+      radial-gradient(circle at 40% 0%, rgba(56, 189, 248, 0.38), transparent 65%),
+      radial-gradient(circle at 80% 100%, rgba(147, 197, 253, 0.34), transparent 70%),
+      linear-gradient(180deg, rgba(220, 235, 255, 0.92), rgba(185, 205, 255, 0.9));
+    backdrop-filter: blur(22px);
+    border-right: 1px solid rgba(255, 255, 255, 0.55);
+  }
+
+  /* ====== Sidebar 標題（CORE / PAGES / ADDONS） ====== */
+  .sb-sidenav-menu-heading {
+    color: #1e293b !important;
+    opacity: 0.75;
+    font-size: 0.78rem;
+    letter-spacing: .18em;
+    margin: 20px 0 8px 16px;
+  }
+
+  /* ====== Sidebar 按鈕（膠囊卡片，文字與框都更明顯） ====== */
+  .sb-sidenav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin: 8px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.80),
+      rgba(241, 248, 255, 0.95)
+    );
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* 左邊 icon 顏色加深 */
+  .sb-sidenav .nav-link .sb-nav-link-icon {
+    margin-right: 10px;
+    color: #1e293b !important;
+    opacity: 0.9 !important;
+    font-size: 1.05rem;
+  }
+
+  /* 右邊箭頭顏色加深 */
+  .sb-sidenav .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link i.fa-chevron-right {
+    color: #1e293b !important;
+    opacity: 0.85 !important;
+  }
+
+  .sb-sidenav .nav-link:hover {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .sb-sidenav .nav-link:hover .sb-nav-link-icon,
+  .sb-sidenav .nav-link:hover .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link:hover i.fa-chevron-right {
+    color: #0f172a !important;
+    opacity: 1 !important;
+  }
+
+  .sb-sidenav .nav-link.active {
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    border-color: rgba(255, 255, 255, 0.98);
+    color: #ffffff !important;
+    box-shadow: 0 18px 36px rgba(59, 130, 246, 0.6);
+  }
+
+  .sb-sidenav .nav-link.active .sb-nav-link-icon,
+  .sb-sidenav .nav-link.active .sb-sidenav-collapse-arrow i {
+    color: #e0f2fe !important;
+  }
+
+  /* ====== Sidebar footer（Logged in as） ====== */
+  .sb-sidenav-footer {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(226, 232, 255, 0.95)
+    ) !important;
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(148, 163, 184, 0.5);
+    padding: 16px 20px;
+    color: #111827 !important;
+    box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.10);
+    font-size: 0.95rem;
+  }
+
+  .sb-sidenav-footer .small {
+    color: #6b7280 !important;
+  }
+
+  /* ====== 標題 & 麵包屑 ====== */
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    background: linear-gradient(120deg, #0f172a, #2563eb);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .breadcrumb {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    color: #9ca3af;
+  }
+
+  /* ====== 系統通知 ====== */
+  #alertBox {
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 18px 24px;
+    border: 1.8px solid rgba(148, 163, 184, 0.55);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.15);
+  }
+
+  /* ====== KPI cards（樣式不變＋加一點顏色） ====== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 32px 40px;
+    margin: 30px 0;
+  }
+
+  .stats-card {
+    position: relative;
+    border-radius: 26px;
+    padding: 26px 28px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .stats-card::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    bottom: -60px;
+    width: 220px;
+    height: 150px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 20% 0, rgba(148, 163, 184, 0.22), transparent 65%);
+    opacity: 0.9;
+  }
+
+  .stats-card .stats-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    font-size: 1.35rem;
+  }
+
+  .stats-number {
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  .stats-label {
+    font-size: 0.82rem;
+    color: var(--text-subtle);
+  }
+
+  /* 每一張卡片加一點色彩背景 */
+  .stats-card.primary {
+    background:
+      radial-gradient(circle at 0 0, rgba(96, 165, 250, 0.20), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.primary .stats-icon {
+    background: rgba(96, 165, 250, 0.16);
+    color: #2563eb;
+  }
+
+  .stats-card.secondary {
+    background:
+      radial-gradient(circle at 0 0, rgba(248, 113, 113, 0.22), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.secondary .stats-icon {
+    background: rgba(248, 113, 113, 0.18);
+    color: #db2777;
+  }
+
+  .stats-card.success {
+    background:
+      radial-gradient(circle at 0 0, rgba(52, 211, 153, 0.22), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.success .stats-icon {
+    background: rgba(52, 211, 153, 0.20);
+    color: #16a34a;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* ====== 一般卡片 / 表格 ====== */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-top: 14px;
+    padding-bottom: 10px;
+  }
+
+  .card-body {
+    padding: 18px 20px 20px;
+  }
+
+  footer {
+    background: transparent;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    margin-top: 24px;
+    padding-top: 14px;
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+  }
+
+  /* ====== RWD ====== */
+  @media (max-width: 992px) {
+    .container-fluid {
+      padding: 20px 16px;
     }
-    *{transition:var(--transition)}
-    body{background:linear-gradient(135deg,#fff 0%,#fff 100%);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh}
-    .sb-topnav{background:var(--dark-bg)!important;border:none;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .navbar-brand{font-weight:700;font-size:1.5rem;background:linear-gradient(45deg,#fff,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-    
-    /* 美化搜尋區域 */
-    .search-container-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-    }
-    .search-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 50px;
-      padding: 4px 4px 4px 20px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      border: 2px solid transparent;
-    }
-    .search-container:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-    .search-container:focus-within {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #fff;
-      font-weight: 500;
-    }
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 400;
-    }
-    .search-btn {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-      border: none;
-      border-radius: 40px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      position: relative;
-      overflow: hidden;
-    }
-    .search-btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(251, 185, 124, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    .search-btn:hover::before {
-      width: 80px;
-      height: 80px;
-    }
-    .search-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    }
-    .search-btn:active {
-      transform: scale(0.95);
-    }
-    .search-btn i {
-      color: #ff6b6b;
-      font-size: 16px;
-      position: relative;
-      z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 16px 12px;
     }
 
-    .sb-sidenav{background:linear-gradient(180deg,#fbb97ce4 0%,#ff00006a 100%)!important;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .sb-sidenav-menu-heading{color:rgba(255,255,255,.7)!important;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;padding:20px 15px 10px!important;margin-top:15px}
-    .sb-sidenav .nav-link{border-radius:15px;margin:5px 15px;padding:12px 15px;position:relative;overflow:hidden;color:rgba(255,255,255,.9)!important;font-weight:500;backdrop-filter:blur(10px)}
-    .sb-sidenav .nav-link:hover{background:rgba(255,255,255,.15)!important;transform:translateX(8px);box-shadow:0 8px 25px rgba(0,0,0,.2);color:#fff!important}
-    .sb-sidenav .nav-link.active{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:600;box-shadow:0 8px 25px rgba(0,0,0,.15)}
-    .sb-sidenav .nav-link::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:linear-gradient(45deg,#fff,#fff);transform:scaleY(0);border-radius:0 10px 10px 0}
-    .sb-sidenav .nav-link:hover::before,.sb-sidenav .nav-link.active::before{transform:scaleY(1)}
-    .sb-sidenav .nav-link i{width:20px;text-align:center;margin-right:10px;font-size:1rem}
-    .sb-sidenav-menu-nested .nav-link{padding-left:45px;font-size:.9rem;background:rgba(255,255,255,.05)!important;margin:2px 15px;border-radius:10px}
-    .sb-sidenav-menu-nested .nav-link:hover{background:rgba(255,255,255,.1)!important;transform:translateX(5px);padding-left:50px}
-    .sb-sidenav-footer{background:rgba(255,255,255,.1)!important;color:#fff!important;border-top:1px solid rgba(255,255,255,.2);padding:20px 15px;margin-top:20px}
-    .sb-sidenav-footer .small{color:rgba(255,255,255,.7)!important;font-size:.8rem}
-    .container-fluid{padding:30px!important}
-    h1{background:var(--primary-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:2.5rem;margin-bottom:30px}
-    .alert{border:none;border-radius:var(--border-radius);background:var(--warning-gradient);color:#fff;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .card{border:none;border-radius:var(--border-radius);box-shadow:var(--card-shadow);backdrop-filter:blur(10px);background:rgba(255,255,255,.9);overflow:hidden;position:relative}
-    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
-    .card:hover{transform:translateY(-10px);box-shadow:var(--hover-shadow)}
-    .card-header{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7));border:none;padding:20px;font-weight:600;border-radius:var(--border-radius) var(--border-radius) 0 0!important}
-    .card-body{padding:25px}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;margin:30px 0}
-    .stats-card{background:#fff;border-radius:var(--border-radius);padding:25px;box-shadow:var(--card-shadow);position:relative;overflow:hidden}
-    .stats-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
-    .stats-card.primary::before{background:var(--primary-gradient)}
-    .stats-card.success::before{background:var(--success-gradient)}
-    .stats-card.warning::before{background:var(--warning-gradient)}
-    .stats-card.secondary::before{background:var(--secondary-gradient)}
-    .stats-icon{width:60px;height:60px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:15px;font-size:24px;color:#fff}
-    .stats-card.primary .stats-icon{background:var(--primary-gradient)}
-    .stats-card.success .stats-icon{background:var(--success-gradient)}
-    .stats-card.warning .stats-icon{background:var(--warning-gradient)}
-    .stats-card.secondary .stats-icon{background:var(--secondary-gradient)}
-    .stats-number{font-size:2rem;font-weight:700;color:#000;margin-bottom:5px;min-height:2.4rem}
-    .stats-label{color:#7f8c8d;font-size:.9rem;font-weight:500}
-    .table{border-radius:var(--border-radius);overflow:hidden;background:#fff;box-shadow:var(--card-shadow)}
-    .table thead th{background:var(--primary-gradient);color:#000;border:none;font-weight:600;padding:15px}
-    .table tbody td{padding:15px;vertical-align:middle;border-color:rgba(0,0,0,.05)}
-    .table tbody tr:hover{background:rgba(227,23,111,.05);transform:scale(1.01)}
-    .breadcrumb{background:rgba(255,255,255,.8);border-radius:var(--border-radius);padding:15px 20px;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    footer{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7))!important;border-top:1px solid rgba(0,0,0,.1);backdrop-filter:blur(10px)}
-    .loading-shimmer{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .user-avatar{border:2px solid rgba(255,255,255,.5)}
-    @media (max-width:768px){.container-fluid{padding:15px!important}.stats-grid{grid-template-columns:1fr;gap:15px}h1{font-size:2rem}}
-  </style>
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .stats-grid {
+      margin: 20px 0;
+      gap: 22px;
+    }
+  }
+  /* ====== 修正側邊欄箭頭（SVG / ::after / background-image 全吃） ====== */
+.sb-sidenav .nav-link svg,
+.sb-sidenav .nav-link svg path,
+.sb-sidenav .nav-link i,
+.sb-sidenav .nav-link::after {
+    stroke: #1e293b !important;
+    color: #1e293b !important;
+    fill: #1e293b !important;
+    opacity: 0.9 !important;
+}
+
+.sb-sidenav .nav-link:hover svg,
+.sb-sidenav .nav-link:hover svg path,
+.sb-sidenav .nav-link:hover i,
+.sb-sidenav .nav-link:hover::after {
+    stroke: #0f172a !important;
+    color: #0f172a !important;
+    fill: #0f172a !important;
+    opacity: 1 !important;
+}
+
+</style>
 </head>
 
 <body class="sb-nav-fixed">
-  <!-- Topbar -->
   <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <a class="navbar-brand ps-3" href="index.php">員工管理系統B</a>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-      <div class="search-container-wrapper">
-        <div class="search-container">
-          <input class="search-input" type="text" placeholder="搜尋員工、班表、薪資..." aria-label="Search" />
-          <button class="search-btn" id="btnNavbarSearch" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
 
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
       <li class="nav-item dropdown">
@@ -228,7 +417,6 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
   </nav>
 
   <div id="layoutSidenav">
-    <!-- Side Nav -->
     <div id="layoutSidenav_nav">
       <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
@@ -245,11 +433,10 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
             </a>
             <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
               <nav class="sb-sidenav-menu-nested nav">
-             <a class="nav-link" href="班表管理.php">班表管理</a>
-                <a class="nav-link" href="日報表記錄.html">日報表記錄</a>
+                <a class="nav-link" href="班表管理.php">班表管理</a>
                 <a class="nav-link" href="假別管理.php">假別管理</a>
                 <a class="nav-link" href="打卡管理.php">打卡管理</a>
-             </nav>
+              </nav>
             </div>
 
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="false">
@@ -271,10 +458,11 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
                 </div>
 
                 <a class="nav-link" href="日報表.php"><div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>日報表</a>
+
+                <a class="nav-link" href="activity_log.php"><div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>修改紀錄</a>
               </nav>
             </div>
-
-       
+          
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWebsite" aria-expanded="false">
               <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>網站管理
               <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -309,7 +497,6 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       </nav>
     </div>
 
-    <!-- Main -->
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid">
@@ -336,41 +523,44 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
 
           <div class="stats-grid">
             <div class="stats-card primary">
-              <div class="stats-icon"><i class="fas fa-users"></i></div>
-              <div class="stats-number" data-bind="employees">--</div>
-              <div class="stats-label">在職員工</div>
-            </div>
-            <div class="stats-card success">
-              <div class="stats-icon"><i class="fas fa-user-check"></i></div>
-              <div class="stats-number" data-bind="present">--</div>
-              <div class="stats-label">今日出勤</div>
-            </div>
-            <div class="stats-card warning">
-              <div class="stats-icon"><i class="fas fa-calendar-times"></i></div>
-              <div class="stats-number" data-bind="leave_pending">--</div>
-              <div class="stats-label">待審請假</div>
+              <div class="stats-icon"><i class="fas fa-dollar-sign"></i></div>
+              <div class="stats-number" data-bind="revenue_today">--</div>
+              <div class="stats-label">本日營收</div>
             </div>
             <div class="stats-card secondary">
               <div class="stats-icon"><i class="fas fa-yen-sign"></i></div>
               <div class="stats-number" data-bind="revenue_month">--</div>
               <div class="stats-label">本月營收</div>
             </div>
+            <div class="stats-card success">
+              <div class="stats-icon"><i class="fas fa-user-check"></i></div>
+              <div class="stats-number" data-bind="present">--</div>
+              <div class="stats-label">今天上班人數</div>
+            </div>
           </div>
 
           <div class="row">
-            <!-- 七日淨利折線圖 -->
             <div class="col-xl-6 col-md-12 mb-4">
               <div class="card h-100">
-                <div class="card-header"><i class="fas fa-chart-area me-1"></i>過去七日數據</div>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <div><i class="fas fa-chart-area me-1"></i>過去七日數據</div>
+                  <a href="charts.php" class="text-decoration-none text-muted" title="查看詳細報表">
+                    <i class="fas fa-external-link-alt fa-xs"></i>
+                  </a>
+                </div>
                 <div class="card-body"><canvas id="myAreaChart" style="height:250px;"></canvas></div>
               </div>
             </div>
 
-            <!-- 月報：收入/支出圓餅圖 -->
             <div class="col-xl-6 col-md-12 mb-4">
               <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                  <div><i class="fas fa-chart-pie me-1"></i>月報表</div>
+                  <div>
+                    <i class="fas fa-chart-pie me-1"></i>月報表
+                    <a href="charts.php#chartTab-pie" class="ms-2" title="查看詳細報表">
+                      <i class="fas fa-external-link-alt fa-xs text-muted"></i>
+                    </a>
+                  </div>
                   <div class="d-flex align-items-center gap-2">
                     <select id="selectYear" class="form-select form-select-sm" style="width:100px;"></select>
                     <select id="selectMonth" class="form-select form-select-sm" style="width:90px;"></select>
@@ -395,27 +585,26 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
             </div>
           </div>
 
-          <!-- 本週班表 -->
-          <div class="card mb-4">
+        
+<div class="card mb-4">
             <div class="card-header">
               <i class="fas fa-calendar-alt me-2"></i>本週班表總覽
               <a href="班表管理.php" class="btn btn-sm btn-outline-primary float-end"><i class="fas fa-edit me-1"></i>編輯班表</a>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>員工</th><th>週一</th><th>週二</th><th>週三</th><th>週四</th><th>週五</th><th>週六</th><th>週日</th>
-                    </tr>
-                  </thead>
-                  <tbody id="currentScheduleTable"></tbody>
+                <table class="table table-hover table-bordered text-center align-middle">
+                  <thead id="weekScheduleHeader">
+                    </thead>
+                  <tbody id="currentScheduleTable">
+                    </tbody>
                 </table>
               </div>
             </div>
           </div>
 
-        </div>
+
+          </div>
       </main>
 
       <footer class="py-4 bg-light mt-auto">
@@ -435,17 +624,34 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
     </div>
   </div>
 
-  <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
   <script>
     // ---- 常數（PHP 變數注入） ----
-    const API_BASE  = <?php echo json_encode($API_BASE_URL, JSON_UNESCAPED_SLASHES); ?>;   // /lamian-ukn/api
-    const DATA_BASE = <?php echo json_encode($DATA_BASE_URL, JSON_UNESCAPED_SLASHES); ?>;  // /lamian-ukn/首頁
+    const API_BASE  = <?php echo json_encode($API_BASE_URL, JSON_UNESCAPED_SLASHES); ?>;
+    const DATA_BASE = <?php echo json_encode($DATA_BASE_URL, JSON_UNESCAPED_SLASHES); ?>;
 
     const $  = s => document.querySelector(s);
     const el = id => document.getElementById(id);
+
+    // 🔥 新增：從 班表管理.php 移植來的日期輔助函數
+    function getMonday(d = new Date()) {
+      const x = new Date(d);
+      const dow = (x.getDay() + 6) % 7; // 星期一=0
+      x.setHours(0, 0, 0, 0);
+      x.setDate(x.getDate() - dow);
+      return x;
+    }
+    function addDays(d, n) {
+      const x = new Date(d);
+      x.setDate(x.getDate() + n);
+      return x;
+    }
+    function fmt(d) {
+      return d.toISOString().slice(0, 10);
+    }
+    // 🔥 (結束) 新增輔助函數
 
     // 今日日期
     el('currentDate').textContent = new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
@@ -467,7 +673,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       if(navName) navName.textContent = userName;
       
       // 🔥 從 me.php 載入真實頭像
-      try {
+     try {
         const r = await fetch(API_BASE + '/me.php', {credentials:'include'});
         if(r.ok) {
           const data = await r.json();
@@ -482,7 +688,6 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
         }
       } catch(e) {
         console.warn('載入頭像失敗:', e);
-        // 即使失敗也不影響其他功能
       }
     }
 
@@ -496,25 +701,32 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       }, 700);
     }
 
-    // 四張統計卡（本月營收用實數據，其他暫留 placeholder）
+    // 🔥 修改：統計卡 (呼叫新的 stats.php)
     async function loadMetrics(){
-      // 先把年/月抓到，直接重用月報選單
-      const y = parseInt(el('selectYear').value, 10);
-      const m = parseInt(el('selectMonth').value, 10);
-
       try{
-        const r = await fetch(`${DATA_BASE}/get_monthly_income.php?year=${y}&month=${String(m).padStart(2,'0')}`);
-        const j = await r.json();
-        const rev = (j?.data?.cash_income||0) + (j?.data?.linepay_income||0) + (j?.data?.uber_income||0);
-        document.querySelector('[data-bind="revenue_month"]').textContent = 'NT$ ' + rev.toLocaleString();
-      }catch(e){
-        console.warn('本月營收載入失敗：', e);
+        // 1. 取得年月 (為了傳給 API 算月營收)
+        const y = parseInt(el('selectYear').value, 10);
+        const m = parseInt(el('selectMonth').value, 10);
+        
+        // 2. 🔥 一次呼叫新的 stats.php 取得所有資料
+        const r_stats = await fetch(`${DATA_BASE}/stats.php?year=${y}&month=${m}&_=${new Date().getTime()}`, { credentials: 'include' });
+        const j_stats = await r_stats.json();
+        
+        if (j_stats.success) {
+          const data = j_stats.data;
+          // 3. 填入 3 張卡片的資料
+          document.querySelector('[data-bind="revenue_today"]').textContent = 'NT$ ' + (data.today_revenue || 0).toLocaleString();
+          document.querySelector('[data-bind="revenue_month"]').textContent = 'NT$ ' + (data.month_revenue || 0).toLocaleString();
+          document.querySelector('[data-bind="present"]').textContent   = data.attendance_count || 0;
+        } else {
+          throw new Error(j_stats.message || 'Stats API returned success=false');
+        }
+      } catch(e) {
+        console.warn('統計卡資料載入失敗：', e);
+        document.querySelector('[data-bind="revenue_today"]').textContent = '錯誤';
+        document.querySelector('[data-bind="revenue_month"]').textContent = '錯誤';
+        document.querySelector('[data-bind="present"]').textContent = '錯誤';
       }
-
-      // 其他三張卡若你尚未提供 API，先維持預設值或自行填入
-      // document.querySelector('[data-bind="employees"]').textContent = '15';
-      // document.querySelector('[data-bind="present"]').textContent   = '12';
-      // document.querySelector('[data-bind="leave_pending"]').textContent = '1';
     }
 
     // 七日（收入-支出）淨利折線圖
@@ -523,6 +735,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       if(!canvas) return;
 
       try{
+        // 🔥 注意：這裡呼叫的是 get_daily_report.php (預設抓 7 天)
         const r = await fetch(`${DATA_BASE}/get_daily_report.php`);
         const j = await r.json();
         if(!j?.success) throw new Error(j?.message || 'get_daily_report failed');
@@ -533,7 +746,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
         const dayNames = ['日','一','二','三','四','五','六'];
 
         const today = new Date();
-        const start = new Date(); start.setDate(today.getDate() - 6); // 含今天共7天
+        const start = new Date(); start.setDate(today.getDate() - 6); 
 
         for(let d = new Date(start); d <= today; d.setDate(d.getDate()+1)){
           const y = d.getFullYear();
@@ -551,6 +764,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
         }
 
         if(window.__areaChart instanceof Chart) window.__areaChart.destroy();
+        
         window.__areaChart = new Chart(canvas.getContext('2d'),{
           type:'line',
           data:{ labels, datasets:[{
@@ -603,6 +817,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
         const r = await fetch(`${DATA_BASE}/get_monthly_income.php?year=${year}&month=${month}`);
         const j = await r.json();
         const d = j?.data || {cash_income:0,linepay_income:0,uber_income:0};
+        
         const total = (d.cash_income||0)+(d.linepay_income||0)+(d.uber_income||0);
 
         if(window.__incomeChart instanceof Chart) window.__incomeChart.destroy();
@@ -660,21 +875,154 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       }
     }
 
-    // 本週班表（暫用假資料；等你有 API 再串）
-    function loadWeekSchedulePlaceholder(){
-      const tbody = el('currentScheduleTable');
-      if(!tbody) return;
-      const schedule = [
-        { name:'王小明', shifts:['10-18','10-18','-','14-22','14-22','-','-'] },
-        { name:'陳小美', shifts:['-','-','10-18','10-18','-','10-22','10-22'] },
-        { name:'林大佬', shifts:['14-22','14-22','14-22','-','-','18-22','-'] }
-      ];
-      tbody.innerHTML = schedule.map(r => {
-        const tds = r.shifts.map(s => s && s!=='-' ? `<td><span class="badge bg-primary">${s}</span></td>`
-                                                   : `<td><span class="badge bg-secondary">休</span></td>`).join('');
-        return `<tr><td><strong>${r.name}</strong></td>${tds}</tr>`;
-      }).join('');
+    // ========= 🔥 班表邏輯重構 START 🔥 =========
+
+    // 1. 新增：載入員工清單的函數
+    let employeeList = []; // 儲存員工清單 [ {id: 1, name: "王小明"}, ... ]
+
+    async function loadEmployeeList() {
+      try {
+        // 假設 api_get_employees.php 和 index.php 在同一層
+        const r = await fetch('api_get_employees.php', { credentials: 'include' });
+        if (!r.ok) throw new Error('無法抓取員工清單');
+        const result = await r.json();
+        
+        if (result && result.success) {
+          employeeList = result.data; 
+          console.log('✅ 員工清單載入成功:', employeeList.length, '人');
+        } else {
+          console.error('載入員工清單失敗', result.message);
+        }
+      } catch (e) {
+        console.warn('載入員工清單API失敗:', e);
+      }
     }
+
+    // 2. 重構：載入本週班表 (改成以「員工」為列)
+    async function loadWeekSchedule() {
+      const tbody = el('currentScheduleTable');
+      const thead = el('weekScheduleHeader');
+      if (!tbody || !thead) return;
+
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">載入班表中...</td></tr>`;
+
+      const today = new Date();
+      const monday = getMonday(today);
+      const todayDateString = fmt(today);
+      
+      // 1. 繪製表頭 (第一欄改成「員工姓名」)
+      const weekday = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'];
+      const headerCells = [];
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(monday, i);
+        headerCells.push(`<th>${weekday[i]}<br><small>${d.getMonth() + 1}/${d.getDate()}</small></th>`);
+      }
+      thead.innerHTML = `<tr><th style="width:120px">員工姓名</th>${headerCells.join('')}</tr>`;
+
+      // 2. 抓取「時段為主」的原始班表資料
+      try {
+        const cacheBuster = `&_=${new Date().getTime()}`;
+        const r = await fetch(`確認班表.php?date=${todayDateString}${cacheBuster}`, { credentials: 'include' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        
+        const timeSlotData = await r.json(); // 格式: [ {timeSlot: "上午", days: [...]}, ... ]
+
+        if (!Array.isArray(timeSlotData) || timeSlotData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">本週尚未排班</td></tr>`;
+          return;
+        }
+
+        // 3. 🔥 資料重組 (Pivot)：
+        
+        // 建立一個以「全體員工」為基礎的 Map
+        const scheduleMap = new Map();
+        employeeList.forEach(emp => {
+          // 每個員工都有7個空位 (週一到週日)
+          scheduleMap.set(emp.name, Array(7).fill('')); 
+        });
+
+        // 追蹤所有在班表上找到的人 (包含可能不在員工列表的)
+        const allNamesFound = new Set();
+
+        // 處理 API 抓回來的資料
+        timeSlotData.forEach(slotRow => { // 跑 "上午", "晚上"
+          const period = slotRow.timeSlot; // e.g., "上午"
+          
+          slotRow.days.forEach((dayContent, dayIndex) => { // 跑 週一, 週二...
+            // dayContent 可能是 "王小明 (10:30-18:30)<br>aaa (10:00-18:00)"
+            if (!dayContent || dayContent === '-') return;
+
+            const shifts = dayContent.split('<br>').filter(Boolean); // e.g., ["王小明 (10:30-18:30)", "aaa (10:00-18:00)"]
+            
+            shifts.forEach(shiftStr => {
+              const match = shiftStr.match(/^(.*?)\s*\((.*?)\)$/); // 解析 "姓名 (時間)"
+              if (!match) return; // 格式不符
+
+              const name = match[1].trim();
+              const time = match[2].trim();
+
+              // 如果這個人在 scheduleMap 裡不存在 (e.g. 離職員工但還在班表上)
+              if (!scheduleMap.has(name)) {
+                if (!allNamesFound.has(name)) { // 避免重複警告
+                   console.warn(`"${name}" 在班表中有資料，但不在 api_get_employees.php 清單中。`);
+                }
+                scheduleMap.set(name, Array(7).fill('')); //動態新增
+              }
+              allNamesFound.add(name); // 記錄所有有班的人
+
+              // 取得該員工的班表陣列
+              const employeeShifts = scheduleMap.get(name);
+              const existingShift = employeeShifts[dayIndex];
+              
+              // 組合新時段字串 (e.g. "上午 10:00-18:00")
+              const newShiftEntry = `${period} ${time}`; 
+              
+              if (existingShift) {
+                // 如果格子裡已經有資料 (e.g. 上午)，就用 <br> 疊加上去 (e.g. 晚上)
+                employeeShifts[dayIndex] = `${existingShift}<br>${newShiftEntry}`;
+              } else {
+                employeeShifts[dayIndex] = newShiftEntry;
+              }
+            });
+          });
+        });
+
+        // 4. 繪製「員工為主」的表格
+        const rowHtmls = [];
+        
+        // 取得所有要顯示的員工姓名並排序
+        const sortedNames = Array.from(scheduleMap.keys()).sort(); 
+
+        sortedNames.forEach(name => {
+            const shifts = scheduleMap.get(name); // 取得 [週一, 週二, ...] 的陣列
+            
+            // 檢查該員工本週是否有班 (如果不想顯示空班的員工，可以取消註解這段)
+            // const hasShifts = shifts.some(s => s);
+            // if (!hasShifts) {
+            //     return; 
+            // }
+
+            const cellsHtml = shifts.map(shiftContent => {
+              // white-space:pre-line 讓 <br> 可以換行
+              return `<td style="white-space:pre-line">${shiftContent || '-'}</td>`;
+            }).join('');
+
+            rowHtmls.push(`<tr><th class="bg-light">${name}</th>${cellsHtml}</tr>`);
+        });
+
+        if (rowHtmls.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">本週無人排班</td></tr>`;
+        } else {
+            tbody.innerHTML = rowHtmls.join('');
+        }
+
+      } catch (e) {
+        console.error('載入首頁班表錯誤:', e);
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">班表載入失敗: ${e.message}</td></tr>`;
+      }
+    }
+    // ========= 🔥 班表邏輯重構 END 🔥 =========
+
 
     // 初始化
     window.addEventListener('DOMContentLoaded', async ()=>{
@@ -684,13 +1032,21 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
       await loadLast7DaysChart();
       await updateIncomeChart();
       await updateExpenseChart();
-      await loadMetrics();           // 用月報收入更新「本月營收」
-      loadWeekSchedulePlaceholder(); // 班表先用假資料
+      
+      // 🔥 修改：loadMetrics() 現在會載入全部卡片
+      await loadMetrics(); 
+      
+      // ========= 🔥 載入順序調整 START 🔥 =========
+      // 必須先載入員工清單，才能繪製「以員工為主」的班表
+      await loadEmployeeList();
+      await loadWeekSchedule(); 
+      // ========= 🔥 載入順序調整 END 🔥 =========
 
       // 切換年月時更新圖與卡片
       el('btnApplyMonth')?.addEventListener('click', async ()=>{
         await updateIncomeChart();
         await updateExpenseChart();
+        // 🔥 修改：切換月份時，也要更新「統計卡」
         await loadMetrics();
       });
     });

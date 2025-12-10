@@ -1,3 +1,7 @@
+<?php
+// 假設你在伺服器端知道這台裝置的 token（例如從 session、或設定檔）
+$DEVICE_TOKEN = $_SESSION['device_token'] ?? ''; // 或從 config 讀取
+?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -13,17 +17,24 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      transition: all .25s cubic-bezier(.4, 0, .2, 1);
     }
     
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #fff9f5 0%, #ffe8dc 50%, #ffd4c4 100%);
+      /* ✅ 改成跟 index 一樣的淡藍＋紫漸層背景 */
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+        linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
       min-height: 100vh;
       padding: 0;
       position: relative;
       overflow-x: hidden;
+      color: #0f172a;
     }
     
+    /* 背景浮動光圈改成藍紫系 */
     body::before {
       content: '';
       position: fixed;
@@ -31,7 +42,7 @@
       right: -20%;
       width: 800px;
       height: 800px;
-      background: radial-gradient(circle, rgba(251, 185, 124, 0.15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, transparent 70%);
       border-radius: 50%;
       animation: float 20s ease-in-out infinite;
       z-index: 0;
@@ -44,7 +55,7 @@
       left: -10%;
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(255, 90, 90, 0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(129, 140, 248, 0.18) 0%, transparent 70%);
       border-radius: 50%;
       animation: float 15s ease-in-out infinite reverse;
       z-index: 0;
@@ -52,7 +63,7 @@
     
     @keyframes float {
       0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(-30px, -30px) scale(1.1); }
+      50% { transform: translate(-30px, -30px) scale(1.06); }
     }
     
     .wrap {
@@ -64,13 +75,14 @@
     }
     
     .header-section {
-      background: white;
+      background: rgba(255, 255, 255, 0.96);
       border-radius: 36px;
       padding: 56px 48px;
       margin-bottom: 32px;
-      box-shadow: 0 20px 60px rgba(251, 185, 124, 0.15), 0 0 0 1px rgba(251, 185, 124, 0.1);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
       position: relative;
       overflow: hidden;
+      border: 1px solid rgba(226, 232, 240, 0.9);
     }
     
     .header-section::before {
@@ -80,7 +92,8 @@
       left: 0;
       right: 0;
       height: 6px;
-      background: linear-gradient(90deg, #fbb97c 0%, #ff5a5a 50%, #fbb97c 100%);
+      /* ✅ 頂部細線改成 index 的藍紫漸層 */
+      background: linear-gradient(90deg, #1e3a8a 0%, #3658ff 40%, #7b6dff 100%);
       background-size: 200% 100%;
       animation: shimmer 3s linear infinite;
     }
@@ -107,14 +120,14 @@
     .brand-icon {
       width: 88px;
       height: 88px;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
       border-radius: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 42px;
       color: white;
-      box-shadow: 0 12px 40px rgba(255, 90, 90, 0.35);
+      box-shadow: 0 16px 42px rgba(59, 130, 246, 0.5);
       animation: pulse 3s ease-in-out infinite;
       position: relative;
     }
@@ -124,7 +137,7 @@
       position: absolute;
       inset: -3px;
       border-radius: 26px;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
       z-index: -1;
       opacity: 0;
       animation: ringPulse 3s ease-in-out infinite;
@@ -143,7 +156,7 @@
     .brand {
       font-size: 52px;
       font-weight: 900;
-      background: linear-gradient(135deg, #fbb97c 0%, #ff5a5a 100%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #4f8bff 45%, #7b6dff 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -153,7 +166,7 @@
     
     .brand-subtitle {
       font-size: 16px;
-      color: #999;
+      color: #64748b;
       font-weight: 600;
       margin-top: 8px;
       letter-spacing: 2px;
@@ -161,45 +174,47 @@
     }
     
     .date-time {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.15), rgba(255, 90, 90, 0.1));
+      background: linear-gradient(135deg, rgba(191, 219, 254, 0.4), rgba(221, 214, 254, 0.4));
       padding: 20px 32px;
       border-radius: 60px;
-      color: #555;
+      color: #1e293b;
       font-size: 17px;
       font-weight: 700;
       display: flex;
       align-items: center;
       gap: 14px;
-      border: 2px solid rgba(251, 185, 124, 0.3);
-      box-shadow: 0 8px 24px rgba(251, 185, 124, 0.15);
+      border: 2px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 10px 26px rgba(148, 163, 184, 0.4);
     }
     
     .date-time i {
-      color: #ff5a5a;
+      color: #2563eb;
       font-size: 24px;
     }
     
     .panel {
-      background: white;
+      background: rgba(255, 255, 255, 0.96);
       border-radius: 36px;
       margin-bottom: 32px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(251, 185, 124, 0.1);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      border: 1px solid rgba(226, 232, 240, 0.95);
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .panel:hover {
-      box-shadow: 0 30px 80px rgba(255, 90, 90, 0.15), 0 0 0 2px rgba(251, 185, 124, 0.2);
-      transform: translateY(-6px);
+      box-shadow: 0 22px 60px rgba(37, 99, 235, 0.35);
+      transform: translateY(-4px);
+      border-color: rgba(191, 219, 254, 0.9);
     }
     
     .panel-h {
       padding: 36px 48px;
       font-weight: 800;
       font-size: 28px;
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.12), rgba(255, 90, 90, 0.08));
-      border-bottom: 3px solid rgba(251, 185, 124, 0.2);
-      color: #333;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(224, 231, 255, 0.96));
+      border-bottom: 2px solid rgba(203, 213, 225, 0.9);
+      color: #0f172a;
       display: flex;
       align-items: center;
       gap: 18px;
@@ -207,7 +222,7 @@
     
     .panel-h i {
       font-size: 32px;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
+      background: linear-gradient(135deg, #1e3a8a, #4f8bff, #7b6dff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -219,7 +234,7 @@
     
     .form-label {
       font-weight: 700;
-      color: #333;
+      color: #0f172a;
       margin-bottom: 14px;
       font-size: 16px;
       text-transform: uppercase;
@@ -227,32 +242,32 @@
     }
     
     .form-control {
-      background: #f8f9fa;
-      border: 3px solid #e9ecef;
+      background: #f9fafb;
+      border: 2px solid #e2e8f0;
       border-radius: 20px;
       padding: 22px 28px;
       font-size: 19px;
-      color: #333;
+      color: #111827;
       transition: all 0.3s ease;
       font-weight: 600;
     }
     
     .form-control::placeholder {
-      color: #adb5bd;
+      color: #94a3b8;
       font-weight: 500;
     }
     
     .form-control:focus {
-      background: white;
-      border-color: #fbb97c;
-      box-shadow: 0 0 0 6px rgba(251, 185, 124, 0.15), 0 8px 24px rgba(251, 185, 124, 0.2);
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
       outline: none;
-      color: #333;
+      color: #0f172a;
       transform: translateY(-2px);
     }
     
     .form-text {
-      color: #6c757d;
+      color: #64748b;
       font-size: 14px;
       margin-top: 12px;
       line-height: 1.7;
@@ -271,7 +286,7 @@
       overflow: hidden;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.4);
     }
     
     .btn-big::before {
@@ -288,283 +303,247 @@
     }
     
     .btn-big:hover::before {
-      width: 500px;
-      height: 500px;
+      width: 400px;
+      height: 400px;
     }
     
-    .btn-big span,
-    .btn-big i {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .btn-in {
-      background: linear-gradient(135deg, #20c997 0%, #17a589 100%);
-    }
-    
-    .btn-in:hover {
-      box-shadow: 0 16px 50px rgba(32, 201, 151, 0.5);
-      transform: translateY(-6px) scale(1.03);
-    }
-    
-    .btn-out {
-      background: linear-gradient(135deg, #4c9aff 0%, #3182e0 100%);
-    }
-    
-    .btn-out:hover {
-      box-shadow: 0 16px 50px rgba(76, 154, 255, 0.5);
-      transform: translateY(-6px) scale(1.03);
+    .btn-big:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.55);
     }
     
     .btn-big:active {
-      transform: scale(0.96);
+      transform: translateY(-1px);
     }
     
-    .msg-success {
-      background: linear-gradient(135deg, #d4f4dd 0%, #c1f2d0 100%);
-      border: 3px solid #20c997;
-      color: #0a5a3e;
-      padding: 24px 32px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 17px;
-      animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 8px 24px rgba(32, 201, 151, 0.2);
+    /* ✅ 上班 / 下班按鈕改成藍＋綠，但主色調還是跟 index 一致 */
+    .btn-in {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
     }
     
-    .msg-error {
-      background: linear-gradient(135deg, #ffe5e5 0%, #ffd4d4 100%);
-      border: 3px solid #ff5a5a;
-      color: #a00;
-      padding: 24px 32px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 17px;
-      animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 8px 24px rgba(255, 90, 90, 0.2);
-    }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .btn-out {
+      background: linear-gradient(135deg, #2563eb, #4f8bff);
     }
     
     .info-text {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.15), rgba(255, 90, 90, 0.1));
-      border: 2px solid rgba(251, 185, 124, 0.3);
-      padding: 20px 28px;
-      border-radius: 18px;
-      color: #555;
-      font-size: 15px;
       margin-top: 28px;
+      padding: 20px 26px;
+      background: linear-gradient(135deg, rgba(191, 219, 254, 0.4), rgba(221, 214, 254, 0.35));
+      border-left: 4px solid #4f8bff;
+      border-radius: 14px;
+      font-size: 15px;
+      color: #1e293b;
       font-weight: 600;
-      border-left: 5px solid #fbb97c;
+    }
+    
+    .info-text i {
+      color: #2563eb;
+      font-size: 18px;
+    }
+    
+    .mode-switch {
+      margin-top: 24px;
+      text-align: center;
+    }
+    
+    /* ✅ 切換模式按鈕改成藍紫膠囊風，跟 index sidebar / 按鈕同系 */
+    .mode-switch a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(224, 231, 255, 0.96));
+      border: 2px solid rgba(191, 219, 254, 0.9);
+      border-radius: 50px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 10px 28px rgba(148, 163, 184, 0.35);
+    }
+    
+    .mode-switch a:hover {
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(59, 130, 246, 0.6);
+    }
+    
+    .msg-success, .msg-error {
+      padding: 20px 26px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      animation: slideIn 0.4s ease;
+      margin-top: 18px;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .msg-success {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+      border-left: 5px solid #22c55e;
+    }
+    
+    .msg-error {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #b91c1c;
+      border-left: 5px solid #ef4444;
     }
     
     .table-responsive {
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: hidden;
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
     }
     
     .table {
       margin-bottom: 0;
-      color: #333;
     }
     
+    /* ✅ 表頭改成淡藍漸層，跟 index 卡片風格接近 */
     .table thead {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.15), rgba(255, 90, 90, 0.1));
+      background: linear-gradient(135deg, rgba(191, 219, 254, 0.9), rgba(221, 214, 254, 0.9));
     }
     
     .table thead th {
       border: none;
-      padding: 24px 28px;
+      color: #0f172a;
       font-weight: 800;
-      color: #333;
-      font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 3px solid rgba(251, 185, 124, 0.3);
+      letter-spacing: 1px;
+      font-size: 14px;
+      padding: 24px 28px;
     }
     
     .table tbody td {
-      padding: 28px;
-      border-bottom: 2px solid #e9ecef;
-      color: #444;
-      font-size: 17px;
+      border-color: rgba(226, 232, 240, 0.9);
+      padding: 24px 28px;
+      font-size: 16px;
+      color: #1f2933;
       font-weight: 600;
-      background: white;
+      background-color: rgba(255, 255, 255, 0.96);
     }
     
     .table tbody tr {
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
     }
     
     .table tbody tr:hover {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.08), rgba(255, 90, 90, 0.05)) !important;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.85), rgba(224, 231, 255, 0.85));
       transform: scale(1.01);
-      box-shadow: 0 4px 16px rgba(251, 185, 124, 0.15);
-    }
-    
-    .table tbody tr:hover td {
-      background: transparent;
-    }
-    
-    .table tbody tr:last-child td {
-      border-bottom: none;
     }
     
     .table code {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.2), rgba(255, 90, 90, 0.15));
-      padding: 8px 16px;
-      border-radius: 12px;
+      background: rgba(191, 219, 254, 0.6);
+      padding: 6px 14px;
+      border-radius: 8px;
       font-size: 15px;
-      color: #ff5a5a;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+    
+    .badge {
+      padding: 10px 22px;
+      border-radius: 50px;
       font-weight: 800;
-      border: 2px solid rgba(251, 185, 124, 0.3);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* ✅ 狀態標籤：用 index 風格的柔和綠 / 紅 / 藍 */
+    .badge-ok {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
     }
     
     .badge-miss {
-      background: linear-gradient(135deg, #ffe5e5, #ffd4d4);
-      border: 2px solid #ff5a5a;
-      color: #c00;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 16px rgba(255, 90, 90, 0.25);
-    }
-    
-    .badge-ok {
-      background: linear-gradient(135deg, #d4f4dd, #c1f2d0);
-      border: 2px solid #20c997;
-      color: #0a5a3e;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 16px rgba(32, 201, 151, 0.25);
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #b91c1c;
     }
     
     .badge-ot {
-      background: linear-gradient(135deg, #e0f0ff, #cce5ff);
-      border: 2px solid #4c9aff;
-      color: #0056b3;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 16px rgba(76, 154, 255, 0.25);
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1d4ed8;
     }
     
-    .empty-state,
-    .loading-state {
+    .loading-state, .empty-state {
       text-align: center;
-      padding: 72px 20px;
-      color: #999;
+      padding: 60px 20px;
+      color: #94a3b8;
     }
     
-    .empty-state i,
-    .loading-state i {
-      font-size: 72px;
-      color: #ddd;
-      margin-bottom: 24px;
-      display: block;
+    .loading-state i, .empty-state i {
+      font-size: 56px;
+      margin-bottom: 20px;
+      color: #cbd5f5;
     }
     
-    .empty-state div,
-    .loading-state div {
+    .loading-state div, .empty-state div {
       font-size: 18px;
       font-weight: 600;
     }
     
     .loading-spinner {
-      display: inline-block;
-      width: 56px;
-      height: 56px;
-      border: 5px solid #f0f0f0;
-      border-top: 5px solid #fbb97c;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 20px;
+      border: 5px solid rgba(191, 219, 254, 0.6);
+      border-top-color: #2563eb;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 24px;
     }
     
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
     
     .footer-text {
       text-align: center;
-      color: #999;
+      color: #64748b;
       font-size: 15px;
-      margin-top: 56px;
-      padding: 28px;
       font-weight: 600;
+      margin-top: 32px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 10px 28px rgba(148, 163, 184, 0.28);
     }
     
-    .mode-switch {
-      text-align: center;
-      margin-top: 24px;
+    .footer-text i {
+      color: #4f8bff;
     }
     
-    .mode-switch a {
-      color: #ff5a5a;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 16px;
-      padding: 12px 24px;
-      border: 2px solid #ff5a5a;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    }
-    
-    .mode-switch a:hover {
-      background: #ff5a5a;
-      color: white;
-      transform: translateY(-2px);
-    }
-    
-    @media (max-width: 768px) {
-      .wrap {
-        padding: 24px 16px;
-      }
-      
+    @media (max-width: 991px) {
       .header-section {
-        padding: 36px 28px;
+        padding: 40px 32px;
       }
       
       .brand {
-        font-size: 36px;
+        font-size: 40px;
       }
       
       .brand-icon {
-        width: 64px;
-        height: 64px;
+        width: 70px;
+        height: 70px;
         font-size: 32px;
       }
       
       .panel-h {
+        font-size: 24px;
         padding: 28px 32px;
-        font-size: 22px;
       }
       
       .panel-b {
-        padding: 32px 28px;
+        padding: 32px;
       }
       
       .btn-big {
@@ -606,28 +585,32 @@
       快速打卡
     </div>
     <div class="panel-b">
-      <div class="row g-4 align-items-end">
-        <div class="col-lg-5">
-          <label class="form-label">員工編號</label>
-          <input type="text" class="form-control" id="empCode" placeholder="輸入員工編號(例如 1002)">
-          <div class="form-text">
-            <i class="fa-solid fa-circle-info me-1"></i>
-            此編號預設使用「員工基本資料.id」。若你要用其它欄位,改 config 的 EMP_CODE_COL。
-          </div>
-        </div>
-        <div class="col-lg-7">
-          <div class="d-flex gap-4">
-            <button class="btn btn-big btn-in flex-fill" id="btnIn">
-              <i class="fa-solid fa-door-open me-2"></i>
-              <span>上班</span>
-            </button>
-            <button class="btn btn-big btn-out flex-fill" id="btnOut">
-              <i class="fa-solid fa-door-closed me-2"></i>
-              <span>下班</span>
-            </button>
-          </div>
-        </div>
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <label class="form-label">員工編號</label>
+      <input type="text" class="form-control" id="empCode" placeholder="輸入員工編號(例如 1002)">
+      <div class="form-text">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        此編號預設使用「員工基本資料.id」。若你要用其它欄位,改 config 的 EMP_CODE_COL。
       </div>
+    </div>
+
+    <!-- ⭐ 只調整這一欄，讓按鈕在欄位裡垂直置中 -->
+    <div class="col-lg-7 d-flex align-items-center">
+      <div class="d-flex gap-4 w-100">
+        <button class="btn btn-big btn-in flex-fill" id="btnIn">
+          <i class="fa-solid fa-door-open me-2"></i>
+          <span>上班</span>
+        </button>
+        <button class="btn btn-big btn-out flex-fill" id="btnOut">
+          <i class="fa-solid fa-door-closed me-2"></i>
+          <span>下班</span>
+        </button>
+      </div>
+    </div>
+  </div>
+ 
+
       
       <div class="info-text">
         <i class="fa-solid fa-lightbulb me-2"></i>
@@ -635,7 +618,7 @@
       </div>
       
       <div class="mode-switch">
-        <a href="face_clock.php">
+        <a href="face_clock_with_liveness.php">
           <i class="fa-solid fa-face-smile me-2"></i>
           切換到人臉識別模式
         </a>
@@ -683,10 +666,15 @@
   </div>
 </div>
 
+
+<script>  
+  // 全域常數：由伺服器注入
+  const DEVICE_TOKEN = <?= json_encode($DEVICE_TOKEN) ?>;
+</script>
+
 <script>
-const API_BASE   = '/lamian-ukn/api';
-const API_SAVE   = API_BASE + '/clock_save.php';
-const API_LIST   = API_BASE + '/clock_list.php';
+// ✅ 使用整合後的 API
+const API_BASE = '/lamian-ukn/api/clock_api.php';
 
 const empInput = document.getElementById('empCode');
 const msg = document.getElementById('msg');
@@ -703,23 +691,14 @@ function badge(st){
 
 async function loadToday(){
   const d = new Date().toISOString().slice(0,10);
-  const url = `${API_LIST}?start_date=${d}&end_date=${d}`;
+  const url = `${API_BASE}?action=list&start_date=${d}&end_date=${d}`;
   
-  console.log('Loading today records from:', url);
-  
-  try{
+  try {
     const r = await fetch(url, {credentials:'include'});
-    
-    if(!r.ok) {
-      throw new Error(`HTTP ${r.status}: ${r.statusText}`);
-    }
-    
+    if(!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+
     const rows = await r.json();
-    console.log('Received data:', rows);
-    
-    if(!Array.isArray(rows)) {
-      throw new Error('回應格式錯誤:不是陣列');
-    }
+    if(!Array.isArray(rows)) throw new Error('回應格式錯誤:不是陣列');
 
     if(rows.length===0){
       listBody.innerHTML = `<tr><td colspan="5">
@@ -730,7 +709,7 @@ async function loadToday(){
       </td></tr>`;
       return;
     }
-    
+
     listBody.innerHTML = rows.map(r=>{
       const type = r.clock_out ? '下班' : '上班';
       const time = r.clock_out || r.clock_in || '';
@@ -744,10 +723,8 @@ async function loadToday(){
         <td>${badge(r.status)}</td>
       </tr>`;
     }).join('');
-    
-    console.log('Table updated with', rows.length, 'records');
-    
-  }catch(e){
+
+  } catch(e) {
     console.error('Load error:', e);
     listBody.innerHTML = `<tr><td colspan="5">
       <div class="empty-state text-danger">
@@ -765,53 +742,73 @@ function showMsg(ok, text){
   setTimeout(()=> msg.innerHTML='', 3000);
 }
 
-async function punch(action){
-  const emp_code = (empInput.value||'').trim();
-  if(!emp_code){ 
-    empInput.focus(); 
-    return showMsg(false,'請輸入員工編號'); 
-  }
-  
-  try{
+// ✅ 通用打卡函數（支援員工編號 & 臉部辨識）
+async function punch(emp_code, action){
+  emp_code = (emp_code || '').trim();
+  if(!emp_code) return showMsg(false,'員工編號缺失');
+
+  try {
     console.log('Punching:', action, 'for employee:', emp_code);
-    
-    const r = await fetch(API_SAVE, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+
+    // 取 DEVICE_TOKEN（先使用伺服器注入的全域常數，沒有再從 localStorage）
+    const token = (typeof DEVICE_TOKEN !== 'undefined' && DEVICE_TOKEN) 
+                  ? DEVICE_TOKEN 
+                  : (localStorage.getItem('device_token') || '');
+    if(!token) throw new Error('裝置 token 必填');
+
+    // ✅ 使用整合 API 的 punch action
+    const r = await fetch(`${API_BASE}?action=punch`, { 
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json',
+        'X-Device-Token': token
+      },
       body: JSON.stringify({ emp_code, action }),
-      credentials:'include'
+      credentials: 'include'
     });
-    
-    console.log('Punch response status:', r.status);
-    
-    const resp = await r.json();
-    console.log('Punch response data:', resp);
-    
-    if(!r.ok || resp.error) {
-      throw new Error(resp.error || resp.detail || ('HTTP '+r.status));
-    }
-    
-    showMsg(true, `${resp.message}:${resp.emp?.name || emp_code}`);
+
+    let resp;
+    try { resp = await r.json(); } 
+    catch(e) { throw new Error('非 JSON 回傳: '+await r.text()); }
+
+    console.log('Punch response:', resp);
+    if(!r.ok || resp.error) throw new Error(resp.error || resp.detail || ('HTTP '+r.status));
+
+    showMsg(true, `${resp.message || '打卡成功'}: ${resp.emp?.name || emp_code}`);
     empInput.value='';
-    
-    // 等待一下讓資料庫有時間寫入
-    setTimeout(() => loadToday(), 300);
-    
-  }catch(err){
+
+    setTimeout(()=> loadToday(), 300);
+
+  } catch(err){
     console.error('Punch error:', err);
-    showMsg(false, '打卡失敗:'+err.message);
+    showMsg(false, '打卡失敗: '+err.message);
   }
 }
 
-document.getElementById('btnIn').addEventListener('click', ()=>punch('in'));
-document.getElementById('btnOut').addEventListener('click', ()=>punch('out'));
-empInput.addEventListener('keydown', e=>{ if(e.key==='Enter') punch('in'); });
+// 綁定手動輸入打卡按鈕
+document.getElementById('btnIn').addEventListener('click', ()=>punch(empInput.value,'in'));
+document.getElementById('btnOut').addEventListener('click', ()=>punch(empInput.value,'out'));
 
-// 頁面載入時立即載入今日記錄
+// Enter 鍵快速打卡：Shift+Enter 下班，Enter 上班
+empInput.addEventListener('keydown', e=>{
+  if(e.key==='Enter') {
+    e.preventDefault();
+    punch(empInput.value, e.shiftKey ? 'out' : 'in');
+  }
+});
+
+// ✅ 臉部辨識打卡範例（只要有 emp_code 就可呼叫 punch）
+async function punchFace(emp_code, action){
+  // emp_code 從臉部辨識結果取得
+  await punch(emp_code, action);
+}
+
+// 初次載入今日打卡
 loadToday();
 
-// 每30秒自動刷新一次
+// 每30秒自動刷新
 setInterval(loadToday, 30000);
 </script>
+
 </body>
 </html>

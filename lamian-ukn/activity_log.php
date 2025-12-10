@@ -205,273 +205,311 @@ $totalPages = max(1, ceil($total / $PER_PAGE));
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
-      --border-radius: 20px;
-      --transition: all .3s cubic-bezier(.4,0,.2,1);
-    }
-    *{transition:var(--transition)}
-    body{
-      background:linear-gradient(135deg,#fff 0%,#fff 100%);
-      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-      min-height:100vh
-    }
-    .sb-topnav{
-      background:var(--dark-bg)!important;
-      border:none;
-      box-shadow:var(--card-shadow);
-      backdrop-filter:blur(10px)
-    }
-    .navbar-brand{
-      font-weight:700;
-      font-size:1.5rem;
-      background:linear-gradient(45deg,#fff,#fff);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      -webkit-text-fill-color:transparent
-    }
+<style>
+/* ================== 基本顏色 & 共用設定 ================== */
+:root {
+  --text-main: #0f172a;
+  --text-dark: #1f2937;
+  --text-subtle: #6b7280;
 
-    .sb-sidenav{
-      background:linear-gradient(180deg,#fbb97ce4 0%,#ff00006a 100%)!important;
-      box-shadow:var(--card-shadow);
-      backdrop-filter:blur(10px)
-    }
-    .sb-sidenav-menu-heading{
-      color:rgba(255,255,255,.7)!important;
-      font-weight:600;
-      font-size:.85rem;
-      text-transform:uppercase;
-      letter-spacing:1px;
-      padding:20px 15px 10px!important;
-      margin-top:15px
-    }
-    .sb-sidenav .nav-link{
-      border-radius:15px;
-      margin:5px 15px;
-      padding:12px 15px;
-      position:relative;
-      overflow:hidden;
-      color:rgba(255,255,255,.9)!important;
-      font-weight:500;
-      backdrop-filter:blur(10px)
-    }
-    .sb-sidenav .nav-link:hover{
-      background:rgba(255,255,255,.15)!important;
-      transform:translateX(8px);
-      box-shadow:0 8px 25px rgba(0,0,0,.2);
-      color:#fff!important
-    }
-    .sb-sidenav .nav-link.active{
-      background:rgba(255,255,255,.2)!important;
-      color:#fff!important;
-      font-weight:600;
-      box-shadow:0 8px 25px rgba(0,0,0,.15)
-    }
-    .sb-sidenav .nav-link::before{
-      content:'';
-      position:absolute;
-      left:0;
-      top:0;
-      height:100%;
-      width:4px;
-      background:linear-gradient(45deg,#fff,#fff);
-      transform:scaleY(0);
-      border-radius:0 10px 10px 0
-    }
-    .sb-sidenav .nav-link:hover::before,
-    .sb-sidenav .nav-link.active::before{
-      transform:scaleY(1)
-    }
-    .sb-sidenav .nav-link i{
-      width:20px;
-      text-align:center;
-      margin-right:10px;
-      font-size:1rem
-    }
-    .sb-sidenav-menu-nested .nav-link{
-      padding-left:45px;
-      font-size:.9rem;
-      background:rgba(255,255,255,.05)!important;
-      margin:2px 15px;
-      border-radius:10px
-    }
-    .sb-sidenav-menu-nested .nav-link:hover{
-      background:rgba(255,255,255,.1)!important;
-      transform:translateX(5px);
-      padding-left:50px
-    }
-    .sb-sidenav-footer{
-      background:rgba(255,255,255,.1)!important;
-      color:#fff!important;
-      border-top:1px solid rgba(255,255,255,.2);
-      padding:20px 15px;
-      margin-top:20px
-    }
-    .sb-sidenav-footer .small{
-      color:rgba(255,255,255,.7)!important;
-      font-size:.8rem
-    }
+  --card-bg: rgba(255, 255, 255, 0.96);
+  --card-radius: 22px;
 
-    .container-fluid{padding:30px!important}
-    h1{
-      background:var(--primary-gradient);
-      -webkit-background-clip:text;
-      background-clip:text;
-      -webkit-text-fill-color:transparent;
-      font-weight:700;
-      font-size:2.5rem;
-      margin-bottom:30px
-    }
-    .breadcrumb{
-      background:rgba(255,255,255,.8);
-      border-radius:var(--border-radius);
-      padding:15px 20px;
-      box-shadow:var(--card-shadow);
-      backdrop-filter:blur(10px)
-    }
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+  --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
 
-    .card{
-      border:none;
-      border-radius:var(--border-radius);
-      box-shadow:var(--card-shadow);
-      backdrop-filter:blur(10px);
-      background:rgba(255,255,255,.95);
-      overflow:hidden;
-      position:relative
-    }
-    .card::before{
-      content:'';
-      position:absolute;
-      top:0;
-      left:0;
-      right:0;
-      height:4px;
-      background:var(--primary-gradient)
-    }
-    .card-header{
-      border-bottom:none;
-      background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.8));
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-radius: var(--border-radius) var(--border-radius) 0 0;
-      padding: 20px 25px;
-    }
-    .card-header h5{
-      margin:0;
-      font-weight:700;
-      color:#333;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .card-header h5 i{ color:#ff6b6b; }
-    .card-body{ padding:25px; }
+  --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+}
 
-    .filter-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:15px;
-      align-items:flex-end;
-      margin-bottom:20px;
-    }
-    .filter-row .form-label{
-      font-size:0.85rem;
-      font-weight:600;
-      color:#555;
-    }
-    .filter-row .form-control,
-    .filter-row .form-select{
-      border-radius:12px;
-      border:1px solid #e0e0e0;
-      font-size:0.9rem;
-    }
-    .filter-row .btn{
-      border-radius:999px;
-      padding:8px 18px;
-      font-size:0.9rem;
-    }
+* {
+  transition: var(--transition-main);
+}
 
-    .badge-feature{
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:0.75rem;
-      font-weight:600;
-    }
-    .badge-feature.daily{ background:#fff3cd; color:#856404; }
-    .badge-feature.attendance{ background:#e2f0ff; color:#004085; }
-    .badge-feature.payroll{ background:#e2f7e2; color:#155724; }
-    .badge-feature.profile{ background:#f8d7da; color:#721c24; }
-    .badge-feature.inventory{ background:#d1ecf1; color:#0c5460; }
+body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(56, 189, 248, .24), transparent 55%),
+    radial-gradient(circle at 100% 0%, rgba(244, 114, 182, .24), transparent 55%),
+    linear-gradient(135deg, #f8fafc, #e0f2fe 30%, #f5e9ff 100%);
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-main);
+}
 
-    .table thead th{
-      background:#f8f9fa;
-      border-bottom:2px solid #e9ecef;
-      font-size:0.85rem;
-      text-transform:uppercase;
-      letter-spacing:0.03em;
-    }
-    .table tbody td{
-      font-size:0.9rem;
-      vertical-align:middle;
-    }
-    .table tbody tr:hover{
-      background:rgba(251,185,124,0.07);
-    }
+/* ================== 上方導覽列 ================== */
+.sb-topnav {
+  background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .35);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, .42);
+  backdrop-filter: blur(18px);
+}
 
-    .text-muted-small{ font-size:0.8rem; color:#888; }
+.navbar-brand {
+  font-weight: 800;
+  color: #f9fafb !important;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
 
-    .pagination{
-      margin:0;
-    }
-    .pagination .page-link{
-      border-radius:999px!important;
-      margin:0 3px;
-      font-size:0.85rem;
-    }
+/* 讓右側帳號區跟首頁一樣靠最右邊 */
+.sb-topnav .navbar-nav {
+  margin-left: auto;
+}
 
-    /* Modal */
-    .modal-content{
-      border:none;
-      border-radius:20px;
-      box-shadow:0 15px 35px rgba(0,0,0,0.2);
-      overflow:hidden;
-    }
-    .modal-header{
-      background:var(--primary-gradient);
-      color:#fff;
-      border-bottom:none;
-      border-radius: var(--border-radius) var(--border-radius) 0 0;
-      padding: 20px 25px;
-    }
-    .modal-title{ font-weight: 700; }
-    .btn-close{ filter: brightness(0) invert(1); }
-    .modal-body{ padding: 25px; }
-    
-    pre{
-      white-space:pre-wrap; 
-      word-break:break-word;
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
+/* 帳號 dropdown：頭像在左、名字在右（跟首頁一樣） */
+.navbar-nav .nav-link.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .user-avatar{border:2px solid rgba(255,255,255,.5)}
-    @media (max-width:768px){
-      .container-fluid{padding:15px!important}
-      h1{font-size:2rem}
-    }
-  </style>
+.navbar-nav .nav-link.dropdown-toggle .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.7);
+  box-shadow: 0 8px 18px rgba(15,23,42,.35);
+  margin-right: 4px;
+}
+
+/* 保證順序：頭像在前，文字在後 */
+.navbar-nav .nav-link.dropdown-toggle .user-avatar {
+  order: 0 !important;
+}
+.navbar-nav .nav-link.dropdown-toggle span {
+  order: 1 !important;
+}
+
+/* ================== 側邊欄 ================== */
+.sb-sidenav {
+  background:
+    radial-gradient(circle at 40% 0%, rgba(56, 189, 248, .38), transparent 65%),
+    radial-gradient(circle at 80% 100%, rgba(147, 197, 253, .34), transparent 70%),
+    linear-gradient(180deg, rgba(220, 235, 255, .92), rgba(185, 205, 255, .9));
+  border-right: 1px solid rgba(255, 255, 255, .55);
+  backdrop-filter: blur(22px);
+}
+
+.sb-sidenav-menu-heading {
+  color: var(--text-dark) !important;
+  opacity: .8;
+  font-size: .78rem;
+  letter-spacing: .18em;
+  margin: 20px 0 8px 16px;
+}
+
+/* 膠囊按鈕 + 白框 */
+.sb-sidenav .nav-link {
+  color: var(--text-dark) !important;
+  font-weight: 600;
+  border-radius: 18px;
+  padding: 12px 18px;
+  margin: 10px 12px;
+  border: 2px solid rgba(255, 255, 255, .9);
+  background: linear-gradient(135deg, rgba(255, 255, 255, .80), rgba(241, 248, 255, .95));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, .12);
+}
+
+.sb-nav-link-icon {
+  margin-right: 10px;
+  color: var(--text-dark) !important;
+  opacity: .9;
+}
+
+/* icon & 箭頭顏色加深 */
+.sb-sidenav .nav-link svg,
+.sb-sidenav .nav-link svg path,
+.sb-sidenav .nav-link i,
+.sb-sidenav .nav-link::after {
+  color: var(--text-dark) !important;
+  fill: var(--text-dark) !important;
+  stroke: var(--text-dark) !important;
+  opacity: .9 !important;
+}
+
+.sb-sidenav .nav-link:hover {
+  border-color: #ffffff;
+  box-shadow: 0 14px 30px rgba(59, 130, 246, .4);
+  transform: translateY(-1px);
+}
+
+/* active 狀態 */
+.sb-sidenav .nav-link.active {
+  background: linear-gradient(135deg, #4f8bff, #7b6dff);
+  border-color: #ffffff;
+  color: #ffffff !important;
+  box-shadow: 0 18px 36px rgba(59, 130, 246, .6);
+}
+
+.sb-sidenav .nav-link.active .sb-nav-link-icon,
+.sb-sidenav .nav-link.active i {
+  color: #e0f2fe !important;
+}
+
+/* footer */
+.sb-sidenav-footer {
+  background: linear-gradient(135deg, rgba(255, 255, 255, .9), rgba(226, 232, 255, .95)) !important;
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(148, 163, 184, .5);
+  padding: 16px 20px;
+  color: var(--text-dark) !important;
+  font-size: .95rem;
+}
+
+.sb-sidenav-footer .small {
+  color: #6b7280 !important;
+}
+
+/* ================== 主內容區 ================== */
+.container-fluid {
+  padding: 26px 28px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  background: linear-gradient(120deg, #0f172a, #2563eb);
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+
+/* 麵包屑「修改紀錄」那條保持左邊，不再亂動對齊 */
+.breadcrumb {
+  background: rgba(255, 255, 255, .85);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: .8rem;
+  border: 1px solid rgba(148, 163, 184, .4);
+}
+
+/* ================== 卡片共用樣式 ================== */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid rgba(226, 232, 240, .95);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.card-header {
+  background: rgba(248, 250, 252, .96);
+  border-bottom: 1px solid rgba(226, 232, 240, .95);
+  font-weight: 600;
+  font-size: .95rem;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-body {
+  padding: 18px 20px 20px;
+}
+
+/* 如果修改紀錄列表上方有「共幾筆」之類的小字，靠右就好 */
+.card-header .text-muted-small {
+  margin-left: auto;
+  font-size: .82rem;
+  color: var(--text-subtle);
+  text-align: right;
+}
+
+/* ================== 篩選條件：橫向排列 ================== */
+/* 假設篩選表單是 card-body 裡第一個 .row（Bootstrap 的 row g-3 align-items-end）*/
+.card-body .row.g-3.align-items-end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  align-items: flex-end;
+}
+
+/* 每一個 col 給固定最小寬度，讓它們能排成一橫排 */
+.card-body .row.g-3.align-items-end > [class^="col-"],
+.card-body .row.g-3.align-items-end > [class*=" col-"] {
+  flex: 0 0 auto;
+  min-width: 220px;
+}
+
+/* 放查詢 / 重置按鈕的那格可以窄一點 */
+.card-body .row.g-3.align-items-end > .col-auto,
+.card-body .row.g-3.align-items-end > .col-md-1 {
+  min-width: 130px;
+}
+
+/* 視窗變窄時改回直向排列，不要擠爆 */
+@media (max-width: 992px) {
+  .card-body .row.g-3.align-items-end {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-body .row.g-3.align-items-end > [class^="col-"],
+  .card-body .row.g-3.align-items-end > [class*=" col-"] {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ================== 表格（修改紀錄列表） ================== */
+.table {
+  font-size: .87rem;
+  color: var(--text-main);
+}
+
+.table > :not(caption) > * > * {
+  padding: 9px 12px;
+  vertical-align: middle;
+}
+
+.table thead {
+  background: rgba(248, 250, 252, .96);
+  border-bottom: 1px solid rgba(226, 232, 240, .9);
+}
+
+.table thead th {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(248, 250, 252, .85);
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: rgba(219, 234, 254, .8);
+}
+
+/* ================== footer ================== */
+footer {
+  background: transparent;
+  border-top: 1px solid rgba(148, 163, 184, .35);
+  margin-top: 24px;
+  padding-top: 14px;
+  font-size: .8rem;
+  color: var(--text-subtle);
+}
+
+/* ================== RWD ================== */
+@media (max-width: 992px) {
+  .container-fluid {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 16px 12px;
+  }
+  h1 {
+    font-size: 1.6rem;
+  }
+}
+</style>
+
 </head>
 <body class="sb-nav-fixed">
   <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">

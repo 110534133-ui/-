@@ -43,156 +43,356 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
-      --border-radius: 20px;
-      --transition: all .3s cubic-bezier(.4,0,.2,1);
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+    --text-main: #0f172a;
+    --text-subtle: #64748b;
+
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-radius: 22px;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+    --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  * {
+    transition: var(--transition-main);
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+      var(--bg-gradient);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+  }
+
+  /* ====== Top navbar ====== */
+  .sb-topnav {
+    background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(18px);
+  }
+
+  .navbar-brand {
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #f9fafb !important;
+  }
+
+  .navbar-nav .nav-link {
+    color: #e5e7eb !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .container-fluid {
+    padding: 26px 28px;
+  }
+
+  /* ====== Sidebar 背景：淡藍漸層延伸 ====== */
+  .sb-sidenav {
+    background:
+      radial-gradient(circle at 40% 0%, rgba(56, 189, 248, 0.38), transparent 65%),
+      radial-gradient(circle at 80% 100%, rgba(147, 197, 253, 0.34), transparent 70%),
+      linear-gradient(180deg, rgba(220, 235, 255, 0.92), rgba(185, 205, 255, 0.9));
+    backdrop-filter: blur(22px);
+    border-right: 1px solid rgba(255, 255, 255, 0.55);
+  }
+
+  /* ====== Sidebar 標題（CORE / PAGES / ADDONS） ====== */
+  .sb-sidenav-menu-heading {
+    color: #1e293b !important;
+    opacity: 0.75;
+    font-size: 0.78rem;
+    letter-spacing: .18em;
+    margin: 20px 0 8px 16px;
+  }
+
+  /* ====== Sidebar 按鈕（膠囊卡片，文字與框都更明顯） ====== */
+  .sb-sidenav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin: 8px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.80),
+      rgba(241, 248, 255, 0.95)
+    );
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* 左邊 icon 顏色加深 */
+  .sb-sidenav .nav-link .sb-nav-link-icon {
+    margin-right: 10px;
+    color: #1e293b !important;
+    opacity: 0.9 !important;
+    font-size: 1.05rem;
+  }
+
+  /* 右邊箭頭顏色加深 */
+  .sb-sidenav .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link i.fa-chevron-right {
+    color: #1e293b !important;
+    opacity: 0.85 !important;
+  }
+
+  .sb-sidenav .nav-link:hover {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .sb-sidenav .nav-link:hover .sb-nav-link-icon,
+  .sb-sidenav .nav-link:hover .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link:hover i.fa-chevron-right {
+    color: #0f172a !important;
+    opacity: 1 !important;
+  }
+
+  .sb-sidenav .nav-link.active {
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    border-color: rgba(255, 255, 255, 0.98);
+    color: #ffffff !important;
+    box-shadow: 0 18px 36px rgba(59, 130, 246, 0.6);
+  }
+
+  .sb-sidenav .nav-link.active .sb-nav-link-icon,
+  .sb-sidenav .nav-link.active .sb-sidenav-collapse-arrow i {
+    color: #e0f2fe !important;
+  }
+
+  /* ====== Sidebar footer（Logged in as） ====== */
+  .sb-sidenav-footer {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(226, 232, 255, 0.95)
+    ) !important;
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(148, 163, 184, 0.5);
+    padding: 16px 20px;
+    color: #111827 !important;
+    box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.10);
+    font-size: 0.95rem;
+  }
+
+  .sb-sidenav-footer .small {
+    color: #6b7280 !important;
+  }
+
+  /* ====== 標題 & 麵包屑 ====== */
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    background: linear-gradient(120deg, #0f172a, #2563eb);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .breadcrumb {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    color: #9ca3af;
+  }
+
+  /* ====== 系統通知 ====== */
+  #alertBox {
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 18px 24px;
+    border: 1.8px solid rgba(148, 163, 184, 0.55);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.15);
+  }
+
+   /* ====== KPI cards（縮小高度版本） ====== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px 24px;
+    margin: 18px 0 22px;
+  }
+
+  .stats-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+
+  .stats-card::after {
+    content: "";
+    position: absolute;
+    right: -30px;
+    bottom: -40px;
+    width: 150px;
+    height: 90px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 20% 0, rgba(148, 163, 184, 0.18), transparent 65%);
+    opacity: 0.8;
+  }
+
+  .stats-card .stats-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+  }
+
+  .stats-number {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+    line-height: 1.1;
+  }
+
+  .stats-label {
+    font-size: 0.78rem;
+    color: var(--text-subtle);
+  }
+
+  /* 每一張卡片加一點色彩背景 */
+  .stats-card.primary {
+    background:
+      radial-gradient(circle at 0 0, rgba(96, 165, 250, 0.20), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.primary .stats-icon {
+    background: rgba(96, 165, 250, 0.16);
+    color: #2563eb;
+  }
+
+  .stats-card.secondary {
+    background:
+      radial-gradient(circle at 0 0, rgba(248, 113, 113, 0.22), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.secondary .stats-icon {
+    background: rgba(248, 113, 113, 0.18);
+    color: #db2777;
+  }
+
+  .stats-card.success {
+    background:
+      radial-gradient(circle at 0 0, rgba(52, 211, 153, 0.22), transparent 60%),
+      var(--card-bg);
+  }
+
+  .stats-card.success .stats-icon {
+    background: rgba(52, 211, 153, 0.20);
+    color: #16a34a;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* ====== 一般卡片 / 表格 ====== */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-top: 14px;
+    padding-bottom: 10px;
+  }
+
+  .card-body {
+    padding: 18px 20px 20px;
+  }
+
+  footer {
+    background: transparent;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    margin-top: 24px;
+    padding-top: 14px;
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+  }
+
+  /* ====== RWD ====== */
+  @media (max-width: 992px) {
+    .container-fluid {
+      padding: 20px 16px;
     }
-    *{transition:var(--transition)}
-    body{background:linear-gradient(135deg,#fff 0%,#fff 100%);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh}
-    .sb-topnav{background:var(--dark-bg)!important;border:none;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .navbar-brand{font-weight:700;font-size:1.5rem;background:linear-gradient(45deg,#fff,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-    
-    /* 美化搜尋區域 */
-    .search-container-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
-    }
-    .search-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 50px;
-      padding: 4px 4px 4px 20px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      border: 2px solid transparent;
-    }
-    .search-container:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-    .search-container:focus-within {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #fff;
-      font-weight: 500;
-    }
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 400;
-    }
-    .search-btn {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-      border: none;
-      border-radius: 40px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      position: relative;
-      overflow: hidden;
-    }
-    .search-btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(251, 185, 124, 0.3);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    .search-btn:hover::before {
-      width: 80px;
-      height: 80px;
-    }
-    .search-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    }
-    .search-btn:active {
-      transform: scale(0.95);
-    }
-    .search-btn i {
-      color: #ff6b6b;
-      font-size: 16px;
-      position: relative;
-      z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 16px 12px;
     }
 
-    .sb-sidenav{background:linear-gradient(180deg,#fbb97ce4 0%,#ff00006a 100%)!important;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .sb-sidenav-menu-heading{color:rgba(255,255,255,.7)!important;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;padding:20px 15px 10px!important;margin-top:15px}
-    .sb-sidenav .nav-link{border-radius:15px;margin:5px 15px;padding:12px 15px;position:relative;overflow:hidden;color:rgba(255,255,255,.9)!important;font-weight:500;backdrop-filter:blur(10px)}
-    .sb-sidenav .nav-link:hover{background:rgba(255,255,255,.15)!important;transform:translateX(8px);box-shadow:0 8px 25px rgba(0,0,0,.2);color:#fff!important}
-    .sb-sidenav .nav-link.active{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:600;box-shadow:0 8px 25px rgba(0,0,0,.15)}
-    .sb-sidenav .nav-link::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:linear-gradient(45deg,#fff,#fff);transform:scaleY(0);border-radius:0 10px 10px 0}
-    .sb-sidenav .nav-link:hover::before,.sb-sidenav .nav-link.active::before{transform:scaleY(1)}
-    .sb-sidenav .nav-link i{width:20px;text-align:center;margin-right:10px;font-size:1rem}
-    .sb-sidenav-menu-nested .nav-link{padding-left:45px;font-size:.9rem;background:rgba(255,255,255,.05)!important;margin:2px 15px;border-radius:10px}
-    .sb-sidenav-menu-nested .nav-link:hover{background:rgba(255,255,255,.1)!important;transform:translateX(5px);padding-left:50px}
-    .sb-sidenav-footer{background:rgba(255,255,255,.1)!important;color:#fff!important;border-top:1px solid rgba(255,255,255,.2);padding:20px 15px;margin-top:20px}
-    .sb-sidenav-footer .small{color:rgba(255,255,255,.7)!important;font-size:.8rem}
-    .container-fluid{padding:30px!important}
-    h1{background:var(--primary-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:2.5rem;margin-bottom:30px}
-    .alert{border:none;border-radius:var(--border-radius);background:var(--warning-gradient);color:#fff;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .card{border:none;border-radius:var(--border-radius);box-shadow:var(--card-shadow);backdrop-filter:blur(10px);background:rgba(255,255,255,.9);overflow:hidden;position:relative}
-    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
-    .card:hover{transform:translateY(-10px);box-shadow:var(--hover-shadow)}
-    .card-header{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7));border:none;padding:20px;font-weight:600;border-radius:var(--border-radius) var(--border-radius) 0 0!important}
-    .card-body{padding:25px}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;margin:30px 0}
-    .stats-card{background:#fff;border-radius:var(--border-radius);padding:25px;box-shadow:var(--card-shadow);position:relative;overflow:hidden}
-    .stats-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
-    .stats-card.primary::before{background:var(--primary-gradient)}
-    .stats-card.success::before{background:var(--success-gradient)}
-    .stats-card.warning::before{background:var(--warning-gradient)}
-    .stats-card.secondary::before{background:var(--secondary-gradient)}
-    .stats-icon{width:60px;height:60px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:15px;font-size:24px;color:#fff}
-    .stats-card.primary .stats-icon{background:var(--primary-gradient)}
-    .stats-card.success .stats-icon{background:var(--success-gradient)}
-    .stats-card.warning .stats-icon{background:var(--warning-gradient)}
-    .stats-card.secondary .stats-icon{background:var(--secondary-gradient)}
-    .stats-number{font-size:2rem;font-weight:700;color:#000;margin-bottom:5px;min-height:2.4rem}
-    .stats-label{color:#7f8c8d;font-size:.9rem;font-weight:500}
-    .table{border-radius:var(--border-radius);overflow:hidden;background:#fff;box-shadow:var(--card-shadow)}
-    .table thead th{background:var(--primary-gradient);color:#000;border:none;font-weight:600;padding:15px}
-    .table tbody td{padding:15px;vertical-align:middle;border-color:rgba(0,0,0,.05)}
-    .table tbody tr:hover{background:rgba(227,23,111,.05);transform:scale(1.01)}
-    .breadcrumb{background:rgba(255,255,255,.8);border-radius:var(--border-radius);padding:15px 20px;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    footer{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7))!important;border-top:1px solid rgba(0,0,0,.1);backdrop-filter:blur(10px)}
-    .loading-shimmer{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .user-avatar{border:2px solid rgba(255,255,255,.5)}
-    @media (max-width:768px){.container-fluid{padding:15px!important}.stats-grid{grid-template-columns:1fr;gap:15px}h1{font-size:2rem}}
-  </style>
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .stats-grid {
+      margin: 20px 0;
+      gap: 22px;
+    }
+  }
+  /* ====== 修正側邊欄箭頭（SVG / ::after / background-image 全吃） ====== */
+.sb-sidenav .nav-link svg,
+.sb-sidenav .nav-link svg path,
+.sb-sidenav .nav-link i,
+.sb-sidenav .nav-link::after {
+    stroke: #1e293b !important;
+    color: #1e293b !important;
+    fill: #1e293b !important;
+    opacity: 0.9 !important;
+}
+
+.sb-sidenav .nav-link:hover svg,
+.sb-sidenav .nav-link:hover svg path,
+.sb-sidenav .nav-link:hover i,
+.sb-sidenav .nav-link:hover::after {
+    stroke: #0f172a !important;
+    color: #0f172a !important;
+    fill: #0f172a !important;
+    opacity: 1 !important;
+}
+
+</style>
 </head>
 
 <body class="sb-nav-fixed">
@@ -200,16 +400,7 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
     <a class="navbar-brand ps-3" href="index.php">員工管理系統</a>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-      <div class="search-container-wrapper">
-        <div class="search-container">
-          <input class="search-input" type="text" placeholder="搜尋員工、班表、薪資..." aria-label="Search" />
-          <button class="search-btn" id="btnNavbarSearch" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
 
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
       <li class="nav-item dropdown">
@@ -271,9 +462,10 @@ $DATA_BASE_URL = '/lamian-ukn/首頁';
                 </div>
 
                 <a class="nav-link" href="日報表.php"><div class="sb-nav-link-icon"><i class="fas fa-file-invoice-dollar"></i></div>日報表</a>
+
+                <a class="nav-link" href="activity_log.php"><div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>修改紀錄</a>
               </nav>
             </div>
-
           
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseWebsite" aria-expanded="false">
               <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>網站管理

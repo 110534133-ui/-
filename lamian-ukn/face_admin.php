@@ -7,262 +7,454 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+    --text-main: #0f172a;
+    --text-subtle: #64748b;
+
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-radius: 22px;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.10);
+    --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+    --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  * {
+    box-sizing: border-box;
+    transition: var(--transition-main);
+  }
+
+  body {
+    min-height: 100vh;
+    padding: 40px 16px;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.22), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.20), transparent 55%),
+      var(--bg-gradient);
+  }
+
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* 頁面抬頭下方小字 */
+  .wrap > .text-center p.text-muted {
+    color: var(--text-subtle) !important;
+  }
+
+  /* 統計卡片區（延續 index 的 stats-card 感覺） */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: 26px;
+    padding: 24px 26px;
+    text-align: left;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    bottom: -60px;
+    width: 220px;
+    height: 150px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 20% 0, rgba(148, 163, 184, 0.22), transparent 65%);
+    opacity: 0.9;
+  }
+
+  .stat-card i {
+    font-size: 32px;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    background: rgba(59, 130, 246, 0.12);
+    color: #2563eb;
+  }
+
+  .stat-card .stat-number {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 4px;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.82rem;
+    color: var(--text-subtle);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 主列表卡片外框（panel） */
+  .panel {
+    background: var(--card-bg);
+    border-radius: 28px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .panel-h {
+    padding: 20px 28px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .panel-h-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .panel-h-left i {
+    font-size: 1.25rem;
+    color: #2563eb;
+  }
+
+  .panel-b {
+    padding: 22px 24px 26px;
+  }
+
+  /* 重新整理按鈕：藍色描邊膠囊 */
+  .btn-refresh {
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1.5px solid #3b82f6;
+    background: #ffffff;
+    color: #1d4ed8;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-refresh:hover {
+    background: linear-gradient(135deg, #3b82f6, #4f46e5);
+    color: #ffffff;
+    box-shadow: 0 10px 26px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
+  }
+
+  /* 表格樣式：淡藍 header + 乾淨的列 */
+  .table-responsive {
+    border-radius: 22px;
+    overflow: hidden;
+    background: #f9fafb;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .table {
+    margin-bottom: 0;
+    color: var(--text-main);
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  }
+
+  .table thead th {
+    border: none;
+    padding: 16px 18px;
+    font-weight: 700;
+    color: #1f2933;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid rgba(191, 219, 254, 0.9);
+  }
+
+  .table tbody td {
+    padding: 18px 18px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    color: #111827;
+    font-size: 0.95rem;
+    background: #ffffff;
+    vertical-align: middle;
+  }
+
+  .table tbody tr:hover td {
+    background: rgba(239, 246, 255, 0.85);
+  }
+
+  /* 員工編號 code 樣式微調，改成藍色系 */
+  td code {
+    background: linear-gradient(135deg, rgba(191, 219, 254, 0.4), rgba(219, 234, 254, 0.8));
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: #1d4ed8;
+    font-size: 0.85rem;
+  }
+
+  /* 頭像樣式 */
+  .avatar-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 2px solid rgba(191, 219, 254, 0.9);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+  }
+
+  .avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    border: 2px solid rgba(191, 219, 254, 0.9);
+  }
+
+  /* 註冊狀態 badge */
+ .badge-registered {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border: 1px solid #22c55e;
+  color: #166534;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;   /* <<< 不換行 */
+}
+
+  /* 刪除按鈕：紅色膠囊 */
+  .btn-delete {
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    background: linear-gradient(135deg, #f97373, #ef4444);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 10px 24px rgba(248, 113, 113, 0.45);
+  }
+
+  .btn-delete:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(239, 68, 68, 0.6);
+  }
+
+  /* 空狀態 */
+  .empty-state {
+    text-align: center;
+    padding: 56px 20px;
+    color: var(--text-subtle);
+  }
+
+  .empty-state i {
+    font-size: 2.8rem;
+    color: #cbd5f5;
+    margin-bottom: 18px;
+    display: block;
+  }
+
+  /* 返回連結 */
+  .wrap > .text-center:last-child a {
+    color: var(--text-subtle);
+  }
+  .wrap > .text-center:last-child a:hover {
+    color: #2563eb;
+  }
+
+  /* modal */
+  .modal-content {
+    border-radius: 24px;
+    border: none;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+    border-bottom: 1px solid rgba(191, 219, 254, 0.95);
+    border-radius: 24px 24px 0 0;
+    padding: 18px 24px;
+  }
+
+  .modal-title {
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .modal-body {
+    padding: 24px;
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.6;
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 16px 24px;
+  }
+
+  @media (max-width: 768px) {
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #fff9f5 0%, #ffe8dc 50%, #ffd4c4 100%);
-      min-height: 100vh;
-      padding: 40px 20px;
+      padding: 24px 10px;
     }
-    
-    .wrap {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .panel {
-      background: white;
-      border-radius: 36px;
-      margin-bottom: 32px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-    }
-    
-    .panel-h {
-      padding: 36px 48px;
-      font-weight: 800;
-      font-size: 28px;
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.12), rgba(255, 90, 90, 0.08));
-      border-bottom: 3px solid rgba(251, 185, 124, 0.2);
-      color: #333;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .panel-h-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-    
-    .panel-h i {
-      font-size: 32px;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    
     .panel-b {
-      padding: 48px;
+      padding: 16px 14px 20px;
     }
-    
-    .table-responsive {
-      border-radius: 20px;
-      overflow: hidden;
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
+    .panel-h {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
-    
-    .table {
-      margin-bottom: 0;
-      color: #333;
-    }
-    
-    .table thead {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.15), rgba(255, 90, 90, 0.1));
-    }
-    
-    .table thead th {
-      border: none;
-      padding: 24px 28px;
-      font-weight: 800;
-      color: #333;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 3px solid rgba(251, 185, 124, 0.3);
-    }
-    
-    .avatar-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid rgba(251, 185, 124, 0.3);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .avatar-placeholder {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 20px;
-      border: 3px solid rgba(251, 185, 124, 0.3);
-    }
-    
-    .table tbody td {
-      padding: 28px;
-      border-bottom: 2px solid #e9ecef;
-      color: #444;
-      font-size: 16px;
-      font-weight: 600;
-      background: white;
-      vertical-align: middle;
-    }
-    
-    .table tbody tr:hover {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.08), rgba(255, 90, 90, 0.05)) !important;
-    }
-    
-    .table tbody tr:hover td {
-      background: transparent;
-    }
-    
-    .btn-delete {
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      border: none;
-      background: linear-gradient(135deg, #dc3545, #c82333);
-      color: white;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-delete:hover {
-      box-shadow: 0 8px 24px rgba(220, 53, 69, 0.4);
-      transform: translateY(-2px);
-    }
-    
-    .btn-refresh {
-      padding: 14px 28px;
-      border-radius: 16px;
-      font-size: 16px;
-      font-weight: 700;
-      border: 2px solid #fbb97c;
-      background: white;
-      color: #ff5a5a;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-refresh:hover {
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
-      color: white;
-      transform: translateY(-2px);
-    }
-    
-    .badge-registered {
-      background: linear-gradient(135deg, #d4f4dd, #c1f2d0);
-      border: 2px solid #20c997;
-      color: #0a5a3e;
-      padding: 8px 16px;
-      border-radius: 50px;
-      font-weight: 800;
-      font-size: 12px;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-    
-    .stat-card {
-      background: white;
-      border-radius: 24px;
-      padding: 32px;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-    }
-    
-    .stat-card i {
-      font-size: 48px;
-      background: linear-gradient(135deg, #fbb97c, #ff5a5a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 16px;
-      display: block;
-    }
-    
-    .stat-card .stat-number {
-      font-size: 36px;
-      font-weight: 900;
-      color: #333;
-      margin-bottom: 8px;
-    }
-    
-    .stat-card .stat-label {
-      font-size: 14px;
-      color: #666;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .empty-state {
-      text-align: center;
-      padding: 72px 20px;
-      color: #999;
-    }
-    
-    .empty-state i {
-      font-size: 72px;
-      color: #ddd;
-      margin-bottom: 24px;
-      display: block;
-    }
-    
-    .modal-content {
-      border-radius: 24px;
-      border: none;
-    }
-    
-    .modal-header {
-      background: linear-gradient(135deg, rgba(251, 185, 124, 0.15), rgba(255, 90, 90, 0.1));
-      border-bottom: 2px solid rgba(251, 185, 124, 0.3);
-      border-radius: 24px 24px 0 0;
-      padding: 24px 32px;
-    }
-    
-    .modal-title {
-      font-weight: 800;
-      color: #333;
-    }
-    
-    .modal-body {
-      padding: 32px;
-      font-size: 16px;
-      color: #555;
-      line-height: 1.7;
-    }
-    
-    .modal-footer {
-      border-top: 2px solid #e9ecef;
-      padding: 24px 32px;
-    }
-  </style>
+  }
+/* ==== 頁首 hero 卡片（模仿打卡頁） ==== */
+.hero-card {
+  position: relative;
+  margin-bottom: 32px;
+  padding: 26px 32px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #f9fbff 0%, #ffffff 50%, #f4f4ff 100%);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  overflow: hidden;
+}
+
+/* 上方那條彩色進度條 */
+.hero-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #6366f1, #3b82f6, #0ea5e9);
+}
+
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.hero-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* 左側大 icon 方塊 */
+.hero-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 40px;
+  box-shadow: 0 18px 40px rgba(59, 130, 246, 0.45);
+}
+
+/* 中間標題 + 小標 */
+.hero-title {
+  margin: 0 0 6px;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #1f2937;
+}
+
+.hero-subtitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-subtle);
+}
+
+/* 小螢幕排版調整 */
+@media (max-width: 768px) {
+  .hero-card {
+    padding: 20px 18px;
+  }
+  .hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .hero-title {
+    font-size: 30px;
+  }
+  .hero-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+}
+
+  
+</style>
+
 </head>
 <body>
 <div class="wrap">
-  <div class="text-center mb-4">
-    <h1 style="font-size: 48px; font-weight: 900; background: linear-gradient(135deg, #fbb97c 0%, #ff5a5a 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">
-      <i class="fa-solid fa-user-gear me-3"></i>人臉資料管理
-    </h1>
-    <p class="text-muted" style="font-size: 18px; font-weight: 600; margin-top: 12px;">
-      管理員工的人臉註冊資料
-    </p>
+  <div class="hero-card">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-icon">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <div>
+        <h1 class="hero-title">人臉識別資料管理</h1>
+        <p class="hero-subtitle">管理員工的人臉註冊資料</p>
+      </div>
+    </div>
+    <!-- 右邊你如果之後想放日期或其他資訊可以加在這裡 -->
   </div>
+</div>
+
+
 
   <div class="stats-grid" id="statsGrid">
     <div class="stat-card">
@@ -326,7 +518,7 @@
   </div>
 
   <div class="text-center">
-    <a href="face_clock.php" class="text-muted" style="text-decoration: none; font-weight: 600;">
+    <a href="face_clock_with_liveness.php" class="text-muted" style="text-decoration: none; font-weight: 600;">
       <i class="fa-solid fa-arrow-left me-2"></i>返回打卡頁面
     </a>
   </div>
@@ -378,7 +570,7 @@ async function loadFaceData() {
   tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><div>載入中...</div></div></td></tr>';
   
   try {
-    const response = await fetch(`${API_BASE}/face_list.php`, {
+    const response = await fetch(`${API_BASE}/face_api.php?action=list`, {
       credentials: 'include'
     });
     
@@ -463,7 +655,7 @@ async function confirmDelete() {
   if (!deleteUserId) return;
   
   try {
-    const response = await fetch(`${API_BASE}/face_delete.php`, {
+    const response = await fetch(`${API_BASE}/face_api.php?action=delete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: deleteUserId }),

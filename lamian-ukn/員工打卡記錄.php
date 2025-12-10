@@ -20,90 +20,391 @@ $userId = $_SESSION['uid'] ?? '';
   <title>我的打卡記錄 - 員工管理系統</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <!-- ✅ 加上 xlsx，用來匯出 Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <style>
     :root {
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --border-radius: 20px;
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+      --text-main: #0f172a;
+      --text-subtle: #64748b;
+
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-radius: 22px;
+
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+      --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
     }
+
+    * {
+      transition: var(--transition-main);
+    }
+
     body {
-      background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+        var(--bg-gradient);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
     }
+
+    /* ====== Top navbar：藍色漸層 ====== */
     .sb-topnav {
-      background: var(--dark-bg) !important;
-      border: none;
-      box-shadow: var(--card-shadow);
+      background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(18px);
     }
+
     .navbar-brand {
-      font-weight: 700;
-      font-size: 1.5rem;
-      background: linear-gradient(45deg, #ffffff, #ffffff);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #f9fafb !important;
     }
+
+    .navbar-nav .nav-link {
+      color: #e5e7eb !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ffffff !important;
+    }
+
+    .user-avatar {
+      border: 2px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .container-fluid {
+      padding: 26px 28px !important;
+    }
+
+    /* ====== Sidebar：同一套風格 ====== */
     .sb-sidenav {
-      background: linear-gradient(180deg, #fbb97ce4 0%, #ff00006a 100%) !important;
-      box-shadow: var(--card-shadow);
+      background:
+        radial-gradient(circle at 40% 0%, rgba(56, 189, 248, 0.38), transparent 65%),
+        radial-gradient(circle at 80% 100%, rgba(147, 197, 253, 0.34), transparent 70%),
+        linear-gradient(180deg, rgba(220, 235, 255, 0.92), rgba(185, 205, 255, 0.9));
+      backdrop-filter: blur(22px);
+      border-right: 1px solid rgba(255, 255, 255, 0.55);
     }
+
+    .sb-sidenav-menu-heading {
+      color: #1e293b !important;
+      opacity: 0.75;
+      font-size: 0.78rem;
+      letter-spacing: .18em;
+      margin: 20px 0 8px 16px;
+    }
+
     .sb-sidenav .nav-link {
-      border-radius: 15px;
-      margin: 5px 15px;
-      padding: 12px 15px;
-      color: rgba(255,255,255,.9) !important;
-      font-weight: 500;
+      color: #0f172a !important;
+      font-weight: 600;
+      border-radius: 18px;
+      padding: 12px 18px;
+      margin: 8px 12px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.80),
+        rgba(241, 248, 255, 0.95)
+      );
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      display: flex;
+      align-items: center;
     }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      margin-right: 10px;
+      color: #1e293b !important;
+      opacity: 0.9 !important;
+      font-size: 1.05rem;
+    }
+
     .sb-sidenav .nav-link:hover {
-      background: rgba(255,255,255,.15) !important;
-      transform: translateX(8px);
-      color: #fff !important;
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
     }
-    .container-fluid { padding: 30px !important; }
+
+    .sb-sidenav .nav-link.active {
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
+      border-color: rgba(255, 255, 255, 0.98);
+      color: #ffffff !important;
+      box-shadow: 0 18px 36px rgba(59, 130, 246, 0.6);
+    }
+
+    .sb-sidenav .nav-link.active .sb-nav-link-icon {
+      color: #e0f2fe !important;
+    }
+
+    .sb-sidenav-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(226, 232, 255, 0.95)
+      ) !important;
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 16px 20px;
+      color: #111827 !important;
+      box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.10);
+      font-size: 0.95rem;
+    }
+
+    .sb-sidenav-footer .small {
+      color: #6b7280 !important;
+    }
+
+    /* 修正側欄箭頭顏色（SVG / icon） */
+    .sb-sidenav .nav-link svg,
+    .sb-sidenav .nav-link svg path,
+    .sb-sidenav .nav-link i,
+    .sb-sidenav .nav-link::after {
+      stroke: #1e293b !important;
+      color: #1e293b !important;
+      fill: #1e293b !important;
+      opacity: 0.9 !important;
+    }
+    .sb-sidenav .nav-link:hover svg,
+    .sb-sidenav .nav-link:hover svg path,
+    .sb-sidenav .nav-link:hover i,
+    .sb-sidenav .nav-link:hover::after {
+      stroke: #0f172a !important;
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      opacity: 1 !important;
+    }
+
+    /* ====== 標題 & 麵包屑 ====== */
     h1 {
-      background: var(--primary-gradient);
-      background-clip: text;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      background: linear-gradient(120deg, #0f172a, #2563eb);
       -webkit-background-clip: text;
       color: transparent;
-      font-weight: 700;
-      font-size: 2.2rem;
+      margin-bottom: 8px;
     }
+
+    .breadcrumb {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+      color: #9ca3af;
+    }
+
+    /* ====== 卡片 / 表格 ====== */
     .card {
-      border: none;
-      border-radius: var(--border-radius);
-      box-shadow: var(--card-shadow);
-      background: #fff;
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: var(--shadow-soft);
     }
+
     .card-header {
-      background: linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7));
+      background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+      border-bottom: 1px solid rgba(226, 232, 240, 0.95);
       font-weight: 600;
+      font-size: 0.95rem;
+      padding-top: 14px;
+      padding-bottom: 10px;
     }
+
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    .table {
+      margin-bottom: 0;
+      background-color: #ffffff;
+    }
+
     .table thead th {
-      background: var(--primary-gradient);
-      color: #000;
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
+      color: #fff;
       border: none;
       font-weight: 600;
-      padding: 12px;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
     }
-    .badge-status { border-radius: 999px; padding: .35rem .6rem; }
-    .badge-normal { background: rgba(25,135,84,.15); color: #0f5132; }
-    .badge-ot { background: rgba(13,110,253,.15); color: #084298; }
-    .badge-missing { background: rgba(220,53,69,.15); color: #842029; }
+
+    .table tbody td {
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .table tbody tr:hover {
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    /* ===== User info 卡片 ===== */
     .user-info-card {
-      background: var(--primary-gradient);
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
       color: white;
-      padding: 20px;
-      border-radius: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
       margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(251,185,124,.3);
+      box-shadow: 0 16px 40px rgba(59, 130, 246, 0.45);
+    }
+
+    .user-info-card .small {
+      opacity: .9;
+    }
+
+    /* ===== KPI 四張統計卡 ===== */
+    .kpi-card {
+      border-radius: 26px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+      overflow: hidden;
+      position: relative;
+      color: #0f172a;
+    }
+    .kpi-card .card-body {
+      position: relative;
+      z-index: 1;
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      bottom: -80px;
+      width: 260px;
+      height: 180px;
+      border-radius: 55% 0 0 0;
+      background: radial-gradient(circle at 0 0, #e5e7eb, transparent 60%);
+      opacity: 0.9;
+    }
+    .kpi-card .icon-pill {
+      width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 10px 25px rgba(15,23,42,0.16);
+      background: rgba(255,255,255,0.9);
+    }
+
+    .kpi-hours {
+      background: linear-gradient(135deg, #b1f9caff, #22c55e4d) !important;
+    }
+    .kpi-count {
+      background: linear-gradient(135deg, #acc6f6ff, #818cf859) !important;
+    }
+    .kpi-missing {
+      background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+    }
+    .kpi-ot {
+      background: linear-gradient(135deg, #bce4ffff, #38bdf84d) !important;
+    }
+
+    /* ===== 狀態 badge ===== */
+    .badge-status {
+      border-radius: 999px;
+      padding: .35rem .9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge-normal {
+      background: rgba(22, 163, 74, 0.12);
+      color: #166534;
+    }
+    .badge-ot {
+      background: rgba(37, 99, 235, 0.12);
+      color: #1d4ed8;
+    }
+    .badge-missing {
+      background: rgba(220, 38, 38, 0.12);
+      color: #b91c1c;
+    }
+
+    /* 篩選區按鈕 chip 風格 */
+    .btn-chip {
+      --h: 40px;
+      --px: 16px;
+      height: var(--h);
+      padding: 0 var(--px);
+      border-radius: 999px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    .btn-chip .ic {
+      font-size: 15px;
+      line-height: 1;
+    }
+    .btn-chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .12);
+    }
+    .btn-chip:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
+    }
+    .btn-primary-lite {
+      background: linear-gradient(135deg, #4f8bff 0%, #7b6dff 100%);
+      color: #fff;
+      border-color: rgba(59, 130, 246, .25);
+    }
+    .btn-secondary-lite {
+      background: #ffffff;
+      color: #1f2937;
+      border-color: rgba(148, 163, 184, .6);
+    }
+    .btn-success-lite {
+      background: linear-gradient(135deg, #34d399 0%, #22c55e 100%);
+      color: #fff;
+      border-color: rgba(34, 197, 94, .25);
+    }
+
+    footer {
+      background: transparent !important;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      margin-top: 24px;
+      padding-top: 14px;
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+    }
+
+    @media (max-width: 992px) {
+      .container-fluid {
+        padding: 20px 16px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container-fluid {
+        padding: 16px 12px !important;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .btn-chip { --h: 38px; --px: 12px; }
     }
   </style>
 </head>
@@ -111,16 +412,12 @@ $userId = $_SESSION['uid'] ?? '';
 <body class="sb-nav-fixed">
   <!-- Navbar -->
   <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand ps-3" href="index.html">員工管理系統</a>
+    <a class="navbar-brand ps-3" href="indexC.php">員工管理系統</a>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" type="button">
       <i class="fas fa-bars"></i>
     </button>
 
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-      <div class="input-group">
-        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" />
-        <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-      </div>
     </form>
 
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
@@ -137,7 +434,8 @@ $userId = $_SESSION['uid'] ?? '';
       </li>
     </ul>
   </nav>
-<div id="layoutSidenav">
+
+  <div id="layoutSidenav">
     <!-- Side Nav -->
     <div id="layoutSidenav_nav">
       <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -146,26 +444,24 @@ $userId = $_SESSION['uid'] ?? '';
             <div class="sb-sidenav-menu-heading">Core</div>
             <a class="nav-link" href="indexC.php">
               <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                首頁
+              首頁
             </a>
 
             <div class="sb-sidenav-menu-heading">Pages</div>
-            <!-- ✅ 直接平鋪的按鈕：不使用 collapse -->
             <a class="nav-link" href="新增班表.php">
               <div class="sb-nav-link-icon"><i class="fas fa-calendar-days"></i></div>班表
             </a>
             <a class="nav-link" href="新增請假申請.php">
               <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>請假申請
             </a>
-                        <a class="nav-link" href="員工薪資記錄.php">
+            <a class="nav-link" href="員工薪資記錄.php">
               <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>薪資記錄
             </a>
-            <a class="nav-link" href="員工打卡記錄.php">
+            <a class="nav-link active" href="員工打卡記錄.php">
               <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>打卡記錄
             </a>
           </div>
         </div>
-
 
         <div class="sb-sidenav-footer">
           <div class="small">Logged in as:</div>
@@ -177,7 +473,17 @@ $userId = $_SESSION['uid'] ?? '';
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid">
-          <h1 class="mb-4">我的打卡記錄</h1>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="mb-0">我的打卡記錄</h1>
+            <div class="text-muted small">
+              <i class="fas fa-id-card me-2"></i>員工編號：<?php echo htmlspecialchars($userId); ?>
+            </div>
+          </div>
+
+          <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="indexC.php" class="text-decoration-none">首頁</a></li>
+            <li class="breadcrumb-item active">打卡記錄</li>
+          </ol>
 
           <!-- 用戶資訊卡片 -->
           <div class="user-info-card">
@@ -185,61 +491,69 @@ $userId = $_SESSION['uid'] ?? '';
               <i class="fas fa-user-circle fa-3x me-3"></i>
               <div>
                 <div class="fw-bold fs-5"><?php echo htmlspecialchars($userName); ?></div>
-                <div class="small opacity-90">員工編號：<?php echo htmlspecialchars($userId); ?></div>
+                <div class="small">員工編號：<?php echo htmlspecialchars($userId); ?></div>
               </div>
             </div>
           </div>
 
           <!-- 統計卡片 -->
           <div class="row mb-4">
-            <div class="col-md-3">
-              <div class="card text-white" style="background: var(--success-gradient);">
+            <div class="col-md-3 mb-3">
+              <div class="card kpi-card kpi-hours">
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <div class="small">總工時（小時）</div>
-                      <div class="h5" id="sum_hours">0.00</div>
+                      <div class="small text-muted">總工時（小時）</div>
+                      <div class="h5 mb-0" id="sum_hours">0.00</div>
                     </div>
-                    <i class="fas fa-clock fa-2x opacity-50"></i>
+                    <div class="icon-pill">
+                      <i class="fas fa-clock"></i>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card text-white" style="background: var(--primary-gradient);">
+            <div class="col-md-3 mb-3">
+              <div class="card kpi-card kpi-count">
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <div class="small">出勤筆數</div>
-                      <div class="h5" id="sum_records">0</div>
+                      <div class="small text-muted">出勤筆數</div>
+                      <div class="h5 mb-0" id="sum_records">0</div>
                     </div>
-                    <i class="fas fa-list-check fa-2x opacity-50"></i>
+                    <div class="icon-pill">
+                      <i class="fas fa-list-check"></i>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card text-white" style="background: var(--warning-gradient);">
+            <div class="col-md-3 mb-3">
+              <div class="card kpi-card kpi-missing">
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <div class="small">缺卡筆數</div>
-                      <div class="h5" id="sum_missing">0</div>
+                      <div class="small text-muted">缺卡筆數</div>
+                      <div class="h5 mb-0" id="sum_missing">0</div>
                     </div>
-                    <i class="fas fa-triangle-exclamation fa-2x opacity-50"></i>
+                    <div class="icon-pill">
+                      <i class="fas fa-triangle-exclamation"></i>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="card text-white" style="background: var(--secondary-gradient);">
+            <div class="col-md-3 mb-3">
+              <div class="card kpi-card kpi-ot">
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between align-items-center">
                     <div>
-                      <div class="small">加班（小時）</div>
-                      <div class="h5" id="sum_ot">0.00</div>
+                      <div class="small text-muted">加班（小時）</div>
+                      <div class="h5 mb-0" id="sum_ot">0.00</div>
                     </div>
-                    <i class="fas fa-bolt fa-2x opacity-50"></i>
+                    <div class="icon-pill">
+                      <i class="fas fa-bolt"></i>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -267,15 +581,19 @@ $userId = $_SESSION['uid'] ?? '';
                     <option value="加班">加班</option>
                   </select>
                 </div>
-                <div class="col-12 text-end">
-                  <button class="btn btn-primary" id="btnSearch">
-                    <i class="fas fa-search me-1"></i>查詢
+                <div class="col-12 text-end mt-2">
+                  <button class="btn-chip btn-primary-lite me-2" id="btnSearch">
+                    <span class="ic"><i class="fas fa-search"></i></span>
+                    <span class="tx">查詢</span>
                   </button>
-                  <button class="btn btn-secondary" id="btnClear">
-                    <i class="fas fa-eraser me-1"></i>清除
+                  <button class="btn-chip btn-secondary-lite me-2" id="btnClear">
+                    <span class="ic"><i class="fas fa-eraser"></i></span>
+                    <span class="tx">清除</span>
                   </button>
-                  <button class="btn btn-success" id="btnExport">
-                    <i class="fas fa-file-export me-1"></i>匯出CSV
+                  <!-- ✅ 改成匯出 Excel，但保留同一個 id -->
+                  <button class="btn-chip btn-success-lite" id="btnExport">
+                    <span class="ic"><i class="fas fa-file-excel"></i></span>
+                    <span class="tx">匯出 Excel</span>
                   </button>
                 </div>
               </div>
@@ -311,7 +629,14 @@ $userId = $_SESSION['uid'] ?? '';
       <footer class="py-4 bg-light mt-auto">
         <div class="container-fluid px-4">
           <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; Xxing0625</div>
+            <div class="text-muted">© 2025 拉麵店經營系統 - ukn</div>
+            <div>
+              <a href="#" class="text-decoration-none">隱私政策</a>
+              <span class="mx-2">•</span>
+              <a href="#" class="text-decoration-none">使用條款</a>
+              <span class="mx-2">•</span>
+              <a href="#" class="text-decoration-none">技術支援</a>
+            </div>
           </div>
         </div>
       </footer>
@@ -319,6 +644,7 @@ $userId = $_SESSION['uid'] ?? '';
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
     // ===== 設定：從 PHP 傳入當前用戶 ID =====
     const CURRENT_USER_ID = <?php echo json_encode($userId); ?>;
@@ -383,8 +709,8 @@ $userId = $_SESSION['uid'] ?? '';
 
       if(s) params.set('start_date', s);
       if(e) params.set('end_date', e);
-      
-      // ⭐ 關鍵：自動帶入當前用戶 ID 進行篩選
+
+      // ⭐ 自動帶入當前用戶 ID 進行篩選
       params.set('q', CURRENT_USER_ID);
 
       const url = `${API_LIST}?${params.toString()}`;
@@ -429,7 +755,7 @@ $userId = $_SESSION['uid'] ?? '';
 
     function applyFilter() {
       const st = document.getElementById('status_filter').value;
-      
+
       FILTERED = RAW.filter(x => {
         if(!st) return true;
         const mins = minutesBetween(x.clock_in, x.clock_out);
@@ -442,7 +768,7 @@ $userId = $_SESSION['uid'] ?? '';
 
     function render() {
       const tbody = document.getElementById('attTableBody');
-      
+
       if(!FILTERED.length) {
         tbody.innerHTML = `
           <tr>
@@ -456,14 +782,14 @@ $userId = $_SESSION['uid'] ?? '';
       }
 
       let total=0, miss=0, otMin=0;
-      
+
       tbody.innerHTML = FILTERED.map(row => {
         const mins = minutesBetween(row.clock_in, row.clock_out);
         const st = inferStatus(row.clock_in, row.clock_out, mins);
         total += (mins||0);
         if(st==='缺卡') miss++;
         if(st==='加班' && mins) otMin += (mins-480);
-        
+
         return `
           <tr>
             <td><strong>${row.date ?? ''}</strong></td>
@@ -490,35 +816,35 @@ $userId = $_SESSION['uid'] ?? '';
       document.getElementById('sum_ot').textContent = ot;
     }
 
-    function exportCSV() {
+    // ✅ 匯出 Excel（.xlsx）
+    function exportExcel() {
       if(!FILTERED.length) {
         alert('目前沒有可匯出的資料');
         return;
       }
-      
-      const headers = ['日期','上班時間','下班時間','工時','狀態','備註'];
+
+      const headers = ['日期','上班時間','下班時間','工時（小時）','狀態','備註'];
+
       const rows = FILTERED.map(r => {
         const mins = minutesBetween(r.clock_in, r.clock_out);
         const st = inferStatus(r.clock_in, r.clock_out, mins);
         return [
-          r.date||'', r.clock_in||'', r.clock_out||'',
-          hr2(mins), st, r.note||''
+          r.date || '',
+          r.clock_in || '',
+          r.clock_out || '',
+          hr2(mins),
+          st,
+          r.note || ''
         ];
       });
-      
-      const csv = [headers, ...rows].map(cols =>
-        cols.map(v => `"${String(v??'').replace(/"/g,'""')}"`).join(',')
-      ).join('\r\n');
 
-      const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = '我的打卡記錄_'+(new Date().toISOString().slice(0,10))+'.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const aoa = [headers, ...rows];
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '打卡記錄');
+
+      const today = new Date().toISOString().slice(0,10);
+      XLSX.writeFile(wb, `我的打卡記錄_${today}.xlsx`);
     }
 
     // ===== 初始化 =====
@@ -533,9 +859,9 @@ $userId = $_SESSION['uid'] ?? '';
         loadAttendance();
       });
       document.getElementById('status_filter').addEventListener('change', applyFilter);
-      document.getElementById('btnExport').addEventListener('click', exportCSV);
+      document.getElementById('btnExport').addEventListener('click', exportExcel);
     });
   </script>
-    <script src="js/user-avatar-loader.js"></script>
+  <script src="js/user-avatar-loader.js"></script>
 </body>
 </html>

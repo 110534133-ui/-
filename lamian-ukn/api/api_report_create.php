@@ -1,5 +1,5 @@
 <?php    
-// 🔥 修正版：api_report_create.php
+// 🔥 完整修正版：api_report_create.php
 header('Content-Type: application/json');
 
 // 🔥 修正：引入標準設定檔和權限檢查
@@ -31,7 +31,7 @@ try {
     }
 
     // ===== utilities_month 重複檢查 =====
-    if (!empty($data['utilities_month'])) {
+    if (!empty($data['utilities_month']) && !empty($data['enable_utilities'])) {
         $utilities_month = trim($data['utilities_month']);
         $reportYear = date('Y', strtotime($data['report_date']));
 
@@ -50,17 +50,48 @@ try {
         }
     }
 
-    // ===== daily_report 資料表欄位對應 =====
+    // ===== 🔥 完整的 daily_report 資料表欄位對應 =====
     $fields = [
         'report_date', 'weekday', 'filled_by',
         'cash_income', 'linepay_income', 'uber_income', 'other_income', 'total_income',
-        'expense_salary', 'expense_utilities', 'utilities_month', 'expense_rent',
-        'expense_food', 'expense_delivery', 'expense_misc',
+        'total_expense', // 🔥 新增
         'cash_1000', 'cash_500', 'cash_100', 'cash_50', 'cash_10', 'cash_5', 'cash_1', 'cash_total',
-        'deposit_to_bank', 'created_at' // ✅ 新增 created_at 欄位
+        'deposit_to_bank',
+        'expense_food', 'expense_salary', 'expense_utilities', 'utilities_month',
+        'utility_term', // 🔥 新增
+        'expense_delivery', 'expense_misc', 'expense_note', // 🔥 新增 expense_note
+        'expense_rent', 'enable_rent', // 🔥 新增 enable_rent
+        'rent_setting',
+        'enable_utilities', // 🔥 新增
+        'created_at'
     ];
 
+    // 自動填入建立時間
     $data['created_at'] = date('Y-m-d H:i:s');
+
+    // 🔥 確保數值欄位有預設值
+    $numeric_fields = [
+        'cash_income', 'linepay_income', 'uber_income', 'other_income', 'total_income',
+        'total_expense', // 🔥 新增
+        'expense_salary', 'expense_utilities', 'expense_rent', 'expense_food', 
+        'expense_delivery', 'expense_misc',
+        'cash_1000', 'cash_500', 'cash_100', 'cash_50', 'cash_10', 'cash_5', 'cash_1', 
+        'cash_total', 'deposit_to_bank'
+    ];
+    
+    foreach ($numeric_fields as $field) {
+        if (!isset($data[$field]) || !is_numeric($data[$field])) {
+            $data[$field] = 0;
+        }
+    }
+    
+    // 🔥 確保布林欄位有預設值
+    if (!isset($data['enable_utilities'])) {
+        $data['enable_utilities'] = 0;
+    }
+    if (!isset($data['enable_rent'])) {
+        $data['enable_rent'] = 0;
+    }
 
     $columns = implode(", ", $fields);
     $placeholders = ":" . implode(", :", $fields);
@@ -68,15 +99,20 @@ try {
     $sql = "INSERT INTO daily_report ($columns) VALUES ($placeholders)";
     $stmt = $pdo->prepare($sql);
 
+    // 🔥 綁定所有欄位的值
     foreach ($fields as $field) {
         $value = isset($data[$field]) ? $data[$field] : null;
-        if (in_array($field, [
-            'cash_income','linepay_income','uber_income','other_income','total_income',
-            'expense_salary','expense_utilities','expense_rent','expense_food','expense_delivery','expense_misc',
-            'cash_1000','cash_500','cash_100','cash_50','cash_10','cash_5','cash_1','cash_total','deposit_to_bank'
-        ])) {
+        
+        // 數值欄位處理
+        if (in_array($field, $numeric_fields)) {
             $value = is_numeric($value) ? $value : 0;
         }
+        
+        // 布林欄位處理
+        if (in_array($field, ['enable_utilities', 'enable_rent'])) {
+            $value = $value ? 1 : 0;
+        }
+        
         $stmt->bindValue(":$field", $value);
     }
 
@@ -84,7 +120,7 @@ try {
     $stmt->execute();
 
     // ===== 若有租金設定且租金總額大於 0，才寫入 rent_setting =====
-    if (!empty($data['rent_setting'])) {
+    if (!empty($data['rent_setting']) && !empty($data['enable_rent'])) {
         $rent = json_decode($data['rent_setting'], true);
         $rent_total = isset($data['expense_rent']) ? floatval($data['expense_rent']) : 0;
 

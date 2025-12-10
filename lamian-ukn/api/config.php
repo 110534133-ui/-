@@ -42,6 +42,8 @@ function pdo(){
       $pdo = new PDO($dsn, DB_USER, DB_PASS, [
           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
           PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+          PDO::ATTR_EMULATE_PREPARES => false,      // 🔥 關鍵修正：不模擬預處理
+          PDO::ATTR_STRINGIFY_FETCHES => false,     // 🔥 關鍵修正：不將數字轉字串
           PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
       ]);
   } catch (PDOException $e) {
@@ -163,4 +165,3 @@ if (!function_exists('send_email')) {
     }
 }
 ?>
-

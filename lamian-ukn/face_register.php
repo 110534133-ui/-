@@ -8,271 +8,450 @@
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
   <!-- Face-API.js - 同步載入確保庫可用 -->
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      padding: 40px 20px;
-    }
-    
-    .container {
-      max-width: 1200px;
-    }
-    
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+    --text-main: #0f172a;
+    --text-subtle: #64748b;
+
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-radius: 24px;
+
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.10);
+    --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+    --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+
+    /* 主色調（跟參考檔相同藍色系） */
+    --primary-from: #3b82f6;
+    --primary-to: #4f46e5;
+  }
+
+  * {
+    box-sizing: border-box;
+    transition: var(--transition-main);
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    padding: 40px 16px;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+    background:
+      radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.22), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.20), transparent 55%),
+      var(--bg-gradient);
+  }
+
+  .container {
+    max-width: 1200px;
+  }
+
+  /* ===== 頁首 hero 表頭 ===== */
+  .header {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 26px 32px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #f9fbff 0%, #ffffff 40%, #f4f4ff 100%);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    overflow: hidden;
+  }
+
+  /* 上方彩色細長條 */
+  .header::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #6366f1, #3b82f6, #0ea5e9);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* 左邊方形圖示 */
+  .header-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 40px;
+    box-shadow: 0 18px 40px rgba(59, 130, 246, 0.45);
+  }
+
+  /* 標題 + 說明文字 */
+  .header-title {
+    margin: 0 0 6px;
+    font-size: 40px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: #1f2937;
+  }
+
+  .header-subtitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-subtle);
+  }
+
+  /* 小螢幕調整 */
+  @media (max-width: 768px) {
     .header {
-      background: white;
-      border-radius: 24px;
-      padding: 32px;
-      margin-bottom: 32px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 20px 18px;
     }
-    
-    .header h1 {
-      font-size: 36px;
-      font-weight: 800;
-      color: #2c3e50;
-      margin-bottom: 8px;
-    }
-    
-    .header p {
-      color: #7f8c8d;
-      font-size: 16px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 24px;
-      padding: 32px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-      border: none;
-    }
-    
-    .card h3 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #2c3e50;
-      margin-bottom: 24px;
-      display: flex;
+    .header-inner {
+      flex-direction: row;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
-    
-    .form-label {
-      font-weight: 600;
-      color: #2c3e50;
-      margin-bottom: 8px;
+    .header-icon {
+      width: 64px;
+      height: 64px;
+      font-size: 32px;
     }
-    
-    .form-control, .form-select {
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 15px;
-      transition: all 0.3s ease;
+    .header-title {
+      font-size: 30px;
     }
-    
-    .form-control:focus, .form-select:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+  }
+
+  /* ===== 共用卡片樣式（表單區 / 已註冊清單） ===== */
+  .card {
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+  }
+
+  .card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card h3 i {
+    color: #2563eb;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+  }
+
+  .form-control,
+  .form-select {
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  small.text-muted {
+    color: var(--text-subtle) !important;
+    font-size: 13px;
+  }
+
+  /* ===== 主按鈕區（開始拍攝 + 拍照 + 取消） ===== */
+
+  /* 開始拍攝 / 主按鈕：藍色膠囊（跟參考檔同色系） */
+  .btn-start,
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-from) 0%, var(--primary-to) 100%);
+    border: none;
+    border-radius: 999px;
+    height: 56px;
+    padding: 0 32px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #ffffff;
+    box-shadow: 0 18px 40px rgba(37, 99, 235, 0.45);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-start:hover,
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 拍照註冊：一樣改成藍色主色調，不再用綠色 */
+  .btn-success {
+    background: linear-gradient(135deg, var(--primary-from) 0%, var(--primary-to) 100%);
+    border: none;
+    border-radius: 999px;
+    height: 52px;
+    padding: 0 28px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #ffffff;
+    box-shadow: 0 16px 36px rgba(37, 99, 235, 0.45);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 取消：紅色膠囊 */
+  .btn-danger {
+    background: linear-gradient(135deg, #f97373 0%, #ef4444 100%) !important;
+    border: none;
+    border-radius: 999px;
+    height: 52px;
+    padding: 0 24px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #ffffff;
+    box-shadow: 0 16px 36px rgba(239, 68, 68, 0.45);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* ===== 相機區 ===== */
+  .camera-section {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .camera-section.active {
+    display: block;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto 24px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #020617;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.65);
+  }
+
+  #video {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  #canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .detection-status {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+  }
+
+  .detection-status.detected {
+    background: rgba(22, 163, 74, 0.95);
+    color: #ffffff;
+  }
+
+  .detection-status.no-face {
+    background: rgba(248, 113, 113, 0.95);
+    color: #ffffff;
+  }
+
+/* ===== 已註冊人臉卡片（faceGallery） ===== */
+.face-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);   /* 一排兩個 */
+  gap: 32px;                               /* 卡片間距 */
+  margin-top: 24px;
+}
+
+/* 單一卡片 */
+.face-card {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.10);
+  transition: all 0.25s ease;
+}
+
+.face-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18);
+}
+
+/* 頭像 */
+.face-card img {
+  width: 100%;
+  height: 220px;         /* 改小一點更好看 */
+  object-fit: cover;
+  display: block;
+}
+
+/* 內容區 */
+.face-card-body {
+  padding: 16px 20px;
+}
+
+.face-card-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.face-card-subtitle {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.face-card-date {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* 刪除按鈕 */
+.face-card .btn-danger {
+  width: 100%;
+  height: 48px;
+  font-size: 14px;
+  margin-top: 12px;
+  border-radius: 999px;
+}
+
+/* ===== 手機版改回一排一個 ===== */
+@media (max-width: 768px) {
+  .face-gallery {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .face-card img {
+    height: 200px;
+  }
+}
+
+  /* ===== 訊息 / 空狀態 / loading ===== */
+  .alert {
+    border-radius: 16px;
+    border: none;
+    padding: 14px 18px;
+    font-weight: 500;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid #4f46e5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-subtle);
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    margin-bottom: 16px;
+    display: block;
+    color: #cbd5f5;
+  }
+
+  /* RWD 微調 */
+  @media (max-width: 768px) {
+    body {
+      padding: 24px 10px;
     }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      padding: 12px 32px;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: all 0.3s ease;
+    .header {
+      padding: 20px 18px;
     }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    .card {
+      padding: 20px 18px;
+      border-radius: 24px;
     }
-    
-    .btn-success {
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      border: none;
-      padding: 12px 32px;
-      border-radius: 12px;
-      font-weight: 600;
+    .header h1 {
+      font-size: 26px;
     }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
-    .video-container {
-      position: relative;
-      width: 100%;
-      max-width: 640px;
-      margin: 0 auto 24px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #000;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-    
-    #video {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    
-    #canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    
-    .detection-status {
-      position: absolute;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 14px;
-      backdrop-filter: blur(10px);
-      z-index: 10;
-    }
-    
-    .detection-status.detected {
-      background: rgba(17, 153, 142, 0.9);
-      color: white;
-    }
-    
-    .detection-status.no-face {
-      background: rgba(235, 51, 73, 0.9);
-      color: white;
-    }
-    
-    .face-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: 24px;
-    }
-    
-    .face-card {
-      background: #f8f9fa;
-      border-radius: 16px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      border: 2px solid #e0e0e0;
-    }
-    
-    .face-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      border-color: #667eea;
-    }
-    
-    .face-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
-    
-    .face-card-body {
-      padding: 16px;
-    }
-    
-    .face-card-title {
-      font-weight: 700;
-      font-size: 16px;
-      color: #2c3e50;
-      margin-bottom: 4px;
-    }
-    
-    .face-card-subtitle {
-      color: #7f8c8d;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-    
-    .face-card-date {
-      color: #95a5a6;
-      font-size: 12px;
-    }
-    
-    .alert {
-      border-radius: 12px;
-      border: none;
-      padding: 16px 20px;
-      font-weight: 500;
-    }
-    
-    .camera-section {
-      display: none;
-    }
-    
-    .camera-section.active {
-      display: block;
-    }
-    
-    .loading-spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid #f0f0f0;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #95a5a6;
-    }
-    
-    .empty-state i {
-      font-size: 64px;
-      margin-bottom: 16px;
-      display: block;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1><i class="fa-solid fa-face-smile me-3"></i>人臉註冊管理</h1>
-    <p>為員工註冊人臉數據,用於打卡系統識別</p>
+    <div class="header-inner">
+      <div class="header-icon">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <div>
+        <h1 class="header-title">人臉註冊管理</h1>
+        <p class="header-subtitle">為員工註冊人臉數據，用於打卡系統識別</p>
+      </div>
+    </div>
   </div>
 
   <div class="card">
     <h3><i class="fa-solid fa-user-plus"></i>註冊新人臉</h3>
     
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 align-items-center">
       <div class="col-md-6">
         <label class="form-label">員工編號</label>
         <input type="text" class="form-control" id="employeeInput" placeholder="請輸入員工編號 (例如: 1002)">
         <small class="text-muted">請輸入「員工基本資料.id」欄位的值</small>
       </div>
-      <div class="col-md-6 d-flex align-items-end">
-        <button class="btn btn-primary w-100" id="btnStartCamera">
+      <div class="col-md-6 d-flex align-items-center justify-content-md-end">
+        <button class="btn btn-primary w-100 btn-start" id="btnStartCamera">
           <i class="fa-solid fa-camera me-2"></i>開始拍攝
         </button>
       </div>
@@ -301,15 +480,16 @@
   </div>
 
   <div class="card">
-    <h3><i class="fa-solid fa-users"></i>已註冊人臉</h3>
-    
-    <div id="faceGallery">
-      <div class="text-center py-5">
-        <div class="loading-spinner"></div>
-        <p class="mt-3 text-muted">載入中...</p>
-      </div>
+  <h3><i class="fa-solid fa-users"></i>已註冊人臉</h3>
+  
+  <div id="faceGallery" class="face-gallery">
+    <div class="text-center py-5">
+      <div class="loading-spinner"></div>
+      <p class="mt-3 text-muted">載入中...</p>
     </div>
   </div>
+</div>
+
 </div>
 
 <script>
@@ -347,7 +527,6 @@ async function loadModels() {
   }
 }
 
-// Load Employees
 // Start Camera
 async function startCamera() {
   const empId = (employeeInput.value || '').trim();

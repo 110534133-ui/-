@@ -70,174 +70,660 @@ $pageTitle = '班表管理 - 員工管理系統';
   <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
   <link href="css/styles.css" rel="stylesheet" />
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <!-- ✅ 下載班表圖片要用 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
 
   <style>
-    :root {
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --hover-shadow: 0 25px 50px rgba(0,0,0,.15);
-      --border-radius: 20px;
-      --transition: all .3s cubic-bezier(.4,0,.2,1);
-    }
-    *{transition:var(--transition)}
-    body{background:linear-gradient(135deg,#fff 0%,#fff 100%);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;min-height:100vh}
-    .sb-topnav{background:var(--dark-bg)!important;border:none;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .navbar-brand{font-weight:700;font-size:1.5rem;background:linear-gradient(45deg,#fff,#fff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-    
-    /* 搜尋框 */
-    .search-container-wrapper { position: relative; width: 100%; max-width: 400px; }
-    .search-container { position: relative; display: flex; align-items: center; background: rgba(255, 255, 255, 0.15); border-radius: 50px; padding: 4px 4px 4px 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px); border: 2px solid transparent; }
-    .search-container:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); }
-    .search-container:focus-within { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.5); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
-    .search-input { flex: 1; border: none; outline: none; background: transparent; padding: 10px 12px; font-size: 14px; color: #fff; font-weight: 500; }
-    .search-input::placeholder { color: rgba(255, 255, 255, 0.7); font-weight: 400; }
-    .search-btn { background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%); border: none; border-radius: 40px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; }
-    .search-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(251, 185, 124, 0.3); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
-    .search-btn:hover::before { width: 80px; height: 80px; }
-    .search-btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
-    .search-btn:active { transform: scale(0.95); }
-    .search-btn i { color: #ff6b6b; font-size: 16px; position: relative; z-index: 1; }
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+    --text-main: #0f172a;
+    --text-subtle: #64748b;
 
-    /* Sidenav */
-    .sb-sidenav{background:linear-gradient(180deg,#fbb97ce4 0%,#ff00006a 100%)!important;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    .sb-sidenav-menu-heading{color:rgba(255,255,255,.7)!important;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;padding:20px 15px 10px!important;margin-top:15px}
-    .sb-sidenav .nav-link{border-radius:15px;margin:5px 15px;padding:12px 15px;position:relative;overflow:hidden;color:rgba(255,255,255,.9)!important;font-weight:500;backdrop-filter:blur(10px)}
-    .sb-sidenav .nav-link:hover{background:rgba(255,255,255,.15)!important;transform:translateX(8px);box-shadow:0 8px 25px rgba(0,0,0,.2);color:#fff!important}
-    .sb-sidenav .nav-link.active{background:rgba(255,255,255,.2)!important;color:#fff!important;font-weight:600;box-shadow:0 8px 25px rgba(0,0,0,.15)}
-    .sb-sidenav .nav-link::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;background:linear-gradient(45deg,#fff,#fff);transform:scaleY(0);border-radius:0 10px 10px 0}
-    .sb-sidenav .nav-link:hover::before,.sb-sidenav .nav-link.active::before{transform:scaleY(1)}
-    .sb-sidenav .nav-link i{width:20px;text-align:center;margin-right:10px;font-size:1rem}
-    .sb-sidenav-menu-nested .nav-link{padding-left:45px;font-size:.9rem;background:rgba(255,255,255,.05)!important;margin:2px 15px;border-radius:10px}
-    .sb-sidenav-menu-nested .nav-link:hover{background:rgba(255,255,255,.1)!important;transform:translateX(5px);padding-left:50px}
-    .sb-sidenav-footer{background:rgba(255,255,255,.1)!important;color:#fff!important;border-top:1px solid rgba(255,255,255,.2);padding:20px 15px;margin-top:20px}
-    .sb-sidenav-footer .small{color:rgba(255,255,255,.7)!important;font-size:.8rem}
-    .user-avatar{border:2px solid rgba(255,255,255,.5)}
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-radius: 22px;
 
-    /* 內容區 */
-    .container-fluid{padding:30px!important}
-    h1{background:var(--primary-gradient);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;font-size:2.5rem;margin-bottom:30px}
-    .card{border:none;border-radius:var(--border-radius);box-shadow:var(--card-shadow);backdrop-filter:blur(10px);background:rgba(255,255,255,.9);overflow:hidden;position:relative}
-    .card:hover{transform:translateY(-10px);box-shadow:var(--hover-shadow)}
-    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--primary-gradient)}
-    .card-header{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7));border:none;padding:20px;font-weight:600;border-radius:var(--border-radius) var(--border-radius) 0 0!important}
-    .card-body{padding:25px}
-    
-    .table{border-radius:var(--border-radius);overflow:hidden;background:#fff}
-    .table thead th{background:var(--primary-gradient);color:#000;border:none;font-weight:600;padding:15px;text-align:center;vertical-align:middle;white-space:nowrap}
-    .table tbody td{padding:15px;vertical-align:middle;border-color:rgba(0,0,0,.05);text-align:center;white-space:nowrap}
-    .table tbody tr:hover{background:rgba(227,23,111,.05)}
-    
-    .breadcrumb{background:rgba(255,255,255,.8);border-radius:var(--border-radius);padding:15px 20px;box-shadow:var(--card-shadow);backdrop-filter:blur(10px)}
-    footer{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.7))!important;border-top:1px solid rgba(0,0,0,.1);backdrop-filter:blur(10px)}
-    
-    /* 按鈕 */
-    .btn-primary { background: var(--primary-gradient); border: none; border-radius: 25px; padding: 0.5rem 1.25rem; color: #fff; }
-    .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(209, 209, 209, 0.976); background: var(--primary-gradient); color: #fff; }
-    .btn-outline-secondary { border-radius: 25px; padding: 0.5rem 1.25rem; }
-    .form-control { border-radius: 12px; }
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
 
-    /* Gantt */
-    .gantt-toolbar { gap: .5rem; flex-wrap: wrap; }
-    .gantt-toolbar .btn-day { min-width: 96px; }
-    .gantt-legend { font-size: .9rem; opacity: .75; }
-    .gantt { background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:12px; box-shadow: var(--card-shadow); overflow:hidden; }
-    .gantt-header, .gantt-row { display:grid; grid-template-columns: 140px 1fr; }
-    .gantt-header { background:#f8f9fa; border-bottom:1px solid rgba(0,0,0,.06); }
-    .gantt-header .times { position:relative; padding:10px 8px; border-left:1px solid rgba(0,0,0,.06); }
-    .gantt-header .scale { display:grid; grid-template-columns: repeat(15, 1fr); font-size:.85rem; text-align:center; }
-    .gantt-header .scale div { border-left:1px dashed rgba(0,0,0,.07); padding:2px 0; }
-    .gantt-row + .gantt-row { border-top:1px solid rgba(0,0,0,.06); }
-    .gantt-row .name { padding:10px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:#fff; }
-    .gantt-row .track { position:relative; padding:12px 8px; border-left:1px solid rgba(0,0,0,.06); background:linear-gradient(180deg,#fff,#fff); }
-    .gantt-grid { position:absolute; inset:12px 8px; display:grid; grid-template-columns: repeat(15, 1fr); }
-    .gantt-grid div { border-left:1px dashed rgba(0,0,0,.06); }
-    .gantt-bar { 
-      position:absolute; 
-      height:28px; 
-      border-radius:8px; 
-      background: var(--success-gradient); 
-      display:flex; 
-      align-items:center; 
-      padding:0 10px; 
-      box-shadow: 0 6px 16px rgba(0,0,0,.12); 
-      font-size:.9rem; 
-      color:#fff; 
-      white-space:nowrap; 
-      cursor:pointer;
-      transition: all 0.3s ease;
-      user-select: none;
+    --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  * {
+    transition: var(--transition-main);
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+      radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+      var(--bg-gradient);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text-main);
+  }
+
+  /* =========================
+   員工可排時段 (日檢視) 專用
+   ========================= */
+
+  .gantt-card {
+    overflow: visible;
+  }
+
+  .gantt-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gantt-header {
+    background: #e5edff;
+    border-bottom: 1px solid #93a3c7;
+  }
+
+  .gantt-header .name {
+    padding: 12px 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    border-right: 1px solid rgba(148,163,184,.6);
+  }
+
+  .gantt-row .name {
+    padding: 18px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #f8fbff;
+    border-right: 1px solid rgba(148,163,184,.35);
+    white-space: nowrap;
+  }
+
+  .gantt-row {
+    border-top: 1px solid rgba(148,163,184,.3);
+  }
+
+  .gantt-header .scale div {
+    border-left: 1px solid rgba(148,163,184,.7);
+    font-size: 0.9rem;
+    color: #111827;
+  }
+
+  .gantt-row:nth-child(odd) .track {
+    background: linear-gradient(180deg, #ffffff, #f3f6ff);
+  }
+  .gantt-row:nth-child(even) .track {
+    background: linear-gradient(180deg, #f9fafb, #edf2ff);
+  }
+
+  .gantt-grid div {
+    border-left: 1px dashed rgba(148,163,184,.6);
+  }
+
+  /* ====== Top navbar ====== */
+  .sb-topnav {
+    background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.42);
+    backdrop-filter: blur(18px);
+  }
+
+  .navbar-brand {
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #f9fafb !important;
+  }
+
+  .navbar-nav .nav-link {
+    color: #e5e7eb !important;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .container-fluid {
+    padding: 26px 28px;
+  }
+
+  /* ====== 搜尋框 ====== */
+  .search-container-wrapper { position: relative; width: 100%; max-width: 400px; }
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    padding: 4px 4px 4px 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid transparent;
+  }
+  .search-container:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  }
+  .search-container:focus-within {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+  }
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #f9fafb;
+    font-weight: 500;
+  }
+  .search-input::placeholder {
+    color: rgba(241, 245, 249, 0.9);
+    font-weight: 400;
+  }
+  .search-btn {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(226, 232, 255, 0.95));
+    border: none;
+    border-radius: 40px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .search-btn i {
+    color: #2563eb;
+    font-size: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ====== Sidebar 背景 ====== */
+  .sb-sidenav {
+    background:
+      radial-gradient(circle at 40% 0%, rgba(56, 189, 248, 0.38), transparent 65%),
+      radial-gradient(circle at 80% 100%, rgba(147, 197, 253, 0.34), transparent 70%),
+      linear-gradient(180deg, rgba(220, 235, 255, 0.92), rgba(185, 205, 255, 0.9));
+    backdrop-filter: blur(22px);
+    border-right: 1px solid rgba(255, 255, 255, 0.55);
+  }
+
+  .sb-sidenav-menu-heading {
+    color: #1e293b !important;
+    opacity: 0.75;
+    font-size: 0.78rem;
+    letter-spacing: .18em;
+    margin: 20px 0 8px 16px;
+  }
+
+  .sb-sidenav .nav-link {
+    color: #0f172a !important;
+    font-weight: 600;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin: 8px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.80),
+      rgba(241, 248, 255, 0.95)
+    );
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sb-sidenav .nav-link .sb-nav-link-icon {
+    margin-right: 10px;
+    color: #1e293b !important;
+    opacity: 0.9 !important;
+    font-size: 1.05rem;
+  }
+
+  .sb-sidenav .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link i.fa-chevron-right {
+    color: #1e293b !important;
+    opacity: 0.85 !important;
+  }
+
+  .sb-sidenav .nav-link:hover {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .sb-sidenav .nav-link:hover .sb-nav-link-icon,
+  .sb-sidenav .nav-link:hover .sb-sidenav-collapse-arrow i,
+  .sb-sidenav .nav-link:hover i.fa-chevron-right {
+    color: #0f172a !important;
+    opacity: 1 !important;
+  }
+
+  .sb-sidenav .nav-link.active {
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    border-color: rgba(255, 255, 255, 0.98);
+    color: #ffffff !important;
+    box-shadow: 0 18px 36px rgba(59, 130, 246, 0.6);
+  }
+
+  .sb-sidenav .nav-link.active .sb-nav-link-icon,
+  .sb-sidenav .nav-link.active .sb-sidenav-collapse-arrow i {
+    color: #e0f2fe !important;
+  }
+
+  .sb-sidenav-footer {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(226, 232, 255, 0.95)
+    ) !important;
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(148, 163, 184, 0.5);
+    padding: 16px 20px;
+    color: #111827 !important;
+    box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.10);
+    font-size: 0.95rem;
+  }
+
+  .sb-sidenav-footer .small {
+    color: #6b7280 !important;
+  }
+
+  .user-avatar {
+    border: 2px solid rgba(255, 255, 255, .5);
+  }
+
+  .sb-sidenav .nav-link svg,
+  .sb-sidenav .nav-link svg path,
+  .sb-sidenav .nav-link i,
+  .sb-sidenav .nav-link::after {
+      stroke: #1e293b !important;
+      color: #1e293b !important;
+      fill: #1e293b !important;
+      opacity: 0.9 !important;
+  }
+  .sb-sidenav .nav-link:hover svg,
+  .sb-sidenav .nav-link:hover svg path,
+  .sb-sidenav .nav-link:hover i,
+  .sb-sidenav .nav-link:hover::after {
+      stroke: #0f172a !important;
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      opacity: 1 !important;
+  }
+
+  /* ====== 標題 & 麵包屑 ====== */
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    background: linear-gradient(120deg, #0f172a, #2563eb);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .breadcrumb {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+  }
+
+  .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    color: #9ca3af;
+  }
+
+  /* ====== 一般卡片 / 表格 ====== */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+    border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-top: 14px;
+    padding-bottom: 10px;
+  }
+
+  .card-body {
+    padding: 18px 20px 20px;
+  }
+
+  footer {
+    background: transparent;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    margin-top: 24px;
+    padding-top: 14px;
+    font-size: 0.8rem;
+    color: var(--text-subtle);
+  }
+
+  .form-control, .form-select {
+    border-radius: 12px;
+    border-color: rgba(148, 163, 184, 0.6);
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  }
+
+  /* ====== 按鈕 ====== */
+  .btn-primary {
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    border: none;
+    border-radius: 999px;
+    padding: 0.45rem 1.3rem;
+    font-weight: 600;
+    box-shadow: 0 10px 22px rgba(59, 130, 246, 0.45);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.55);
+    background: linear-gradient(135deg, #436ff0, #6a5bff);
+  }
+  .btn-outline-secondary {
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    border-color: rgba(148, 163, 184, 0.8);
+    color: #4b5563;
+    background: rgba(255,255,255,0.9);
+  }
+  .btn-outline-secondary:hover {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  /* ====== Gantt 區域 ====== */
+  .gantt-toolbar {
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .gantt-toolbar .btn-day {
+    min-width: 96px;
+    border-radius: 999px;
+  }
+  .gantt-legend {
+    font-size: .9rem;
+    opacity: .75;
+  }
+
+  .gantt {
+    display:inline-block;
+    min-width:1600px;
+    background:#fff;
+    border:1px solid rgba(148,163,184,.4);
+    border-radius:18px;
+    box-shadow: var(--shadow-soft);
+    overflow:hidden;
+  }
+
+  .gantt-header,
+  .gantt-row {
+    display:grid;
+    grid-template-columns: 140px 1fr;
+  }
+  .gantt-header {
+    background:#f1f5f9;
+    border-bottom:1px solid rgba(148,163,184,.4);
+  }
+  .gantt-header .times {
+    position:relative;
+    padding:10px 8px;
+    border-left:1px solid rgba(148,163,184,.4);
+  }
+  .gantt-header .scale {
+    display:grid;
+    grid-template-columns: repeat(15, 1fr);
+    font-size:.85rem;
+    text-align:center;
+  }
+  .gantt-header .scale div {
+    padding:2px 0;
+  }
+  .gantt-row + .gantt-row {
+    border-top:1px solid rgba(148,163,184,.35);
+  }
+  .gantt-row .track {
+    position:relative;
+    padding:12px 8px;
+    border-left:1px solid rgba(148,163,184,.35);
+    background:linear-gradient(180deg,#ffffff,#f8fafc);
+  }
+  .gantt-grid {
+    position:absolute;
+    inset:12px 8px;
+    display:grid;
+    grid-template-columns: repeat(15, 1fr);
+  }
+  .gantt-grid div {
+    border-left:1px dashed rgba(148,163,184,.3);
+  }
+  .gantt-bar {
+    position:absolute;
+    height:28px;
+    border-radius:9px;
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    font-size:.9rem;
+    color:#f9fafb;
+    white-space:nowrap;
+    cursor:pointer;
+    user-select:none;
+  }
+  .gantt-bar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, .5);
+    z-index: 5;
+  }
+
+  .pulse-highlight {
+    animation: pulseBg 1.4s ease-out 1;
+  }
+  @keyframes pulseBg {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, .7); }
+    100% { box-shadow: 0 0 0 18px rgba(59, 130, 246, 0); }
+  }
+
+  .chip-highlight {
+    animation: highlight-chip 1.5s ease;
+  }
+
+  @keyframes highlight-chip {
+    0% {
+      background-color: #bfdbfe !important;
+      transform: scale(1.15);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
     }
-    
-    .gantt-bar:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      z-index: 10;
+    50% {
+      background-color: #bfdbfe !important;
+      transform: scale(1.08);
     }
-    
-    .gantt-bar:active {
-      transform: scale(0.98);
+    100% {
+      background-color: #2563eb !important;
+      transform: scale(1);
+      box-shadow: none;
+    }
+  }
+
+  .cell-flash {
+    animation: flash-cell 1.5s ease;
+  }
+  @keyframes flash-cell {
+    0% {
+      background-color: #dbeafe;
+      box-shadow: inset 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+    100% {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  .assign-chip {
+    font-size: 0.9rem;
+    padding: 6px 6px 6px 10px;
+    border-radius: 999px;
+    background-color: #2563eb;
+    color: #f9fafb;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .assign-chip .chip-btn {
+    padding: 0;
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    line-height: 18px;
+    border-radius: 50%;
+    opacity: 0.8;
+    border: none;
+  }
+  .assign-chip .chip-btn:hover {
+    opacity: 1;
+  }
+
+  .table {
+    border-radius: 18px;
+    overflow: hidden;
+    background:#ffffff;
+  }
+  .table thead th {
+    background: linear-gradient(135deg, #e5edff, #dbeafe);
+    border-bottom: 1px solid rgba(148,163,184,.5);
+    color: #1e293b;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    padding: 12px 10px;
+  }
+  .table tbody td, .table tbody th {
+    padding: 12px 10px;
+    vertical-align: middle;
+    border-color: rgba(148,163,184,.25);
+    text-align: center;
+  }
+  .table tbody tr:hover {
+    background: rgba(219, 234, 254, 0.6);
+  }
+
+  /* ===== 本週班表預覽（當前週班表）===== */
+  .weekly-preview-table {
+    border-radius: 18px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+  .weekly-preview-table thead th {
+    background: linear-gradient(135deg, #4f8bff, #7b6dff);
+    border-bottom: none;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 10px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  .weekly-preview-table thead .preview-name-header {
+    text-align: left;
+    padding-left: 18px;
+  }
+  .weekly-preview-table .preview-name-cell {
+    background: #f8fbff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: left;
+    padding: 10px 14px;   /* 🔹縮小高度 */
+    min-width: 110px;     /* 🔹縮窄寬度 */
+    max-width: 140px;     /* 🔹避免字太長撐開 */
+    border-right: 1px solid rgba(148,163,184,.35);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 🔹字太長用 ... */
+  }
+
+  .weekly-preview-table tbody td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 14px 10px;
+    border-color: rgba(148,163,184,.25);
+    color: #4b5563;
+  }
+  .weekly-preview-table tbody tr:nth-child(odd) td {
+    background: #ffffff;
+  }
+  .weekly-preview-table tbody tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+  .weekly-preview-table tbody tr:hover td,
+  .weekly-preview-table tbody tr:hover .preview-name-cell {
+    background: rgba(219,234,254,.7);
+  }
+
+  /* 🔹 班次 badge：沿用新增班表的樣式 */
+  .badge-shift {
+    display: inline-block;
+    min-width: 70px;
+    padding: 4px 10px;
+    border-radius: 18px;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.35);
+    color: #1d4ed8;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+
+  .badge-off {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    background: rgba(148,163,184,0.22);
+    border: 1px dashed rgba(148,163,184,0.9);
+    color: #374151;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  /* ====== RWD ====== */
+  @media (max-width: 992px) {
+    .container-fluid {
+      padding: 20px 16px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 16px 12px;
     }
 
-    .pulse-highlight { animation: pulseBg 1.4s ease-out 1; }
-    @keyframes pulseBg {
-      0% { box-shadow: 0 0 0 0 rgba(79,172,254,.6); }
-      100% { box-shadow: 0 0 0 18px rgba(79,172,254,0); }
+    h1 {
+      font-size: 1.6rem;
     }
-    
-    /* 新添加員工的高亮動畫 */
-    .chip-highlight {
-      animation: highlight-chip 1.5s ease;
-    }
-    
-    @keyframes highlight-chip {
-      0% { 
-        background-color: #ffc107 !important;
-        transform: scale(1.15);
-        box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
-      }
-      50% {
-        background-color: #ffc107 !important;
-        transform: scale(1.1);
-      }
-      100% { 
-        background-color: #0d6efd !important;
-        transform: scale(1);
-        box-shadow: none;
-      }
-    }
-    
-    /* 表格單元格閃爍效果 */
-    .cell-flash {
-      animation: flash-cell 1.5s ease;
-    }
-    
-    @keyframes flash-cell {
-      0% { 
-        background-color: #fff3cd;
-        box-shadow: inset 0 0 15px rgba(255, 193, 7, 0.5);
-      }
-      100% { 
-        background-color: transparent;
-        box-shadow: none;
-      }
-    }
-    
-    .assign-chip { font-size: 0.9rem; padding: 6px 6px 6px 10px; }
-    .assign-chip .chip-btn {
-        padding: 0;
-        margin: 0;
-        width: 18px;
-        height: 18px;
-        font-size: 11px;
-        line-height: 18px;
-        border-radius: 50%;
-        opacity: 0.7;
-    }
-    .assign-chip .chip-btn:hover { opacity: 1; }
+  }
+  
   </style>
 </head>
 
@@ -246,20 +732,12 @@ $pageTitle = '班表管理 - 員工管理系統';
     <a class="navbar-brand ps-3" href="index.php">員工管理系統</a>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-      <div class="search-container-wrapper">
-        <div class="search-container">
-          <input class="search-input" type="text" placeholder="搜尋員工、班表、薪資..." aria-label="Search" />
-          <button class="search-btn" id="btnNavbarSearch" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
 
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <!-- 預設先用 pravatar，稍後 JS 會用 API 頭像覆蓋 -->
           <img class="user-avatar rounded-circle me-1" src="https://i.pravatar.cc/40?u=<?php echo urlencode($userName); ?>" width="28" height="28" alt="User Avatar" style="vertical-align:middle;">
           <span id="navUserName"><?php echo htmlspecialchars($userName); ?></span>
         </a>
@@ -287,16 +765,30 @@ $pageTitle = '班表管理 - 員工管理系統';
               <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>人事管理
               <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
             </a>
-            <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
-              <nav class="sb-sidenav-menu-nested nav">
-                <a class="nav-link" href="員工資料表.php">員工資料表</a>
-                <a class="nav-link" href="班表管理.php">班表管理</a>
-                <a class="nav-link" href="日報表記錄.php">日報表記錄</a>
-                <a class="nav-link" href="假別管理.php">假別管理</a>
-                <a class="nav-link" href="打卡管理.php">打卡管理</a>
-                <a class="nav-link" href="薪資管理.php">薪資管理</a>
-              </nav>
-            </div>
+<div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
+  <nav class="sb-sidenav-menu-nested nav">
+
+    <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="員工資料表.php">員工資料表</a>
+    <?php endif; ?>
+
+    <a class="nav-link" href="班表管理.php">班表管理</a>
+     <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="日報表記錄.php">日報表記錄</a>
+    <?php endif; ?>   
+    <a class="nav-link" href="假別管理.php">假別管理</a>
+    <a class="nav-link" href="打卡管理.php">打卡管理</a>
+
+    <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="薪資管理.php">薪資管理</a>
+    <?php endif; ?>
+
+  </nav>
+</div>
+
 
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="false">
               <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>營運管理
@@ -381,34 +873,60 @@ $pageTitle = '班表管理 - 員工管理系統';
             等級: <?php echo htmlspecialchars($userLevel); ?>級
           </div>
 
-          <!-- 日期選擇與週切換 -->
-          <div class="card mb-4">
+          <!-- 本週班表預覽（跟新增班表的當前週班表一樣） -->
+          <div class="card mb-4" id="scheduleViewCard">
             <div class="card-header">
-              <i class="fas fa-calendar me-2"></i>選擇週期
-            </div>
-            <div class="card-body">
-              <div class="row g-3 align-items-center">
-                <div class="col-md-3">
-                  <label class="form-label">選擇日期</label>
-                  <input type="date" class="form-control" id="dateSelect" />
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <div class="d-flex align-items-center me-auto">
+                  <i class="fas fa-calendar-alt me-2"></i>
+                  <span>當前週班表(唯讀)</span>
                 </div>
-                <div class="col-md-auto">
-                  <label class="form-label d-block">&nbsp;</label>
-                  <button class="btn btn-primary" id="btnQuery"><i class="fas fa-search me-1"></i>查詢</button>
+
+                <!-- 週切換按鈕：上週 / 本週 / 下週 -->
+                <div class="btn-group me-2" role="group" aria-label="week switch">
+                  <button class="btn btn-outline-secondary" id="btnPrevWeek">
+                    <i class="fas fa-chevron-left me-1"></i>上週
+                  </button>
+                  <button class="btn btn-outline-secondary" id="btnNextWeek">
+                    本週
+                  </button>
+                  <button class="btn btn-outline-secondary" id="btnNextNextWeek">
+                    下週<i class="fas fa-chevron-right ms-1"></i>
+                  </button>
                 </div>
-                <div class="col-md-auto ms-auto">
-                  <label class="form-label d-block">&nbsp;</label>
-                  <strong id="weekRangeText" class="text-primary"></strong>
+
+                <!-- 右邊：週期 + 下載班表圖片 -->
+                <div class="d-flex align-items-center gap-2">
+                  <span class="text-muted">週期:</span>
+                  <strong id="weekRangeText">--</strong>
+                  <button class="btn btn-primary ms-2" id="btnDownloadPng">
+                    <i class="fas fa-image me-2"></i>下載班表圖片
+                  </button>
                 </div>
               </div>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table weekly-preview-table text-center align-middle">
+                  <thead>
+                    <tr id="previewHeaderRow">
+                      <th class="preview-name-header">員工</th>
+                      <!-- JS 動態加 7 天 -->
+                    </tr>
+                  </thead>
+                  <tbody id="previewBody"></tbody>
+                </table>
+              </div>
+              <div class="small text-muted" id="previewHint">※ 本區塊僅供瀏覽,不可編輯。</div>
             </div>
           </div>
 
           <!-- 員工可排時段總覽 (日檢視) -->
-          <div class="card mb-4">
+          <div class="card mb-4 gantt-card">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span>
-                <i class="fas fa-users-clock me-2"></i>員工可排時段 (日檢視)
+                <i class="fas fa-users-clock me-2"></i>員工可排時段 
                 <span class="badge bg-primary ms-2" style="font-size: 0.75rem;">點擊藍色條 → 快速添加</span>
               </span>
               <div class="gantt-toolbar d-flex" id="ganttDayButtons">
@@ -420,8 +938,11 @@ $pageTitle = '班表管理 - 員工管理系統';
                 <i class="fas fa-lightbulb me-2"></i>
                 <strong>使用提示:</strong>直接點擊藍色時間條,該員工會立即出現在下方編輯班表中!
               </div>
-              <div id="ganttChart" class="gantt">
-                <!-- 動態生成 Gantt 圖 -->
+
+              <div class="gantt-scroll">
+                <div id="ganttChart" class="gantt">
+                  <!-- 動態生成 Gantt 圖 -->
+                </div>
               </div>
             </div>
           </div>
@@ -520,11 +1041,47 @@ $pageTitle = '班表管理 - 員工管理系統';
   
   <script>
     // 🔥 注入 PHP 變數
-    const PHP_USER_NAME = <?php echo json_encode($userName, JSON_UNESCAPED_UNICODE); ?>;
-    const PHP_USER_ID = <?php echo json_encode($userId, JSON_UNESCAPED_UNICODE); ?>;
-    const PHP_USER_LEVEL = <?php echo json_encode($userLevel, JSON_UNESCAPED_UNICODE); ?>;
-    
+    const PHP_USER_NAME   = <?php echo json_encode($userName,   JSON_UNESCAPED_UNICODE); ?>;
+    const PHP_USER_ID     = <?php echo json_encode($userId,     JSON_UNESCAPED_UNICODE); ?>;
+    const PHP_USER_LEVEL  = <?php echo json_encode($userLevel,  JSON_UNESCAPED_UNICODE); ?>;
+    const API_BASE        = <?php echo json_encode($API_BASE_URL,  JSON_UNESCAPED_SLASHES); ?>;
+    const DATA_BASE       = <?php echo json_encode($DATA_BASE_URL, JSON_UNESCAPED_SLASHES); ?>;
+
     console.log('✅ 班表管理頁面載入:', PHP_USER_NAME, 'ID:', PHP_USER_ID, 'Level:', PHP_USER_LEVEL);
+
+    // ===== 載入登入者資訊 & 頭像 =====
+    async function loadLoggedInUser() {
+      const userName = PHP_USER_NAME;
+      const userId   = PHP_USER_ID;
+
+      console.log('✅ 班表管理 - 已登入:', userName, 'ID:', userId);
+
+      // 更新右下角 Logged in as
+      const loggedAs = document.getElementById('loggedAs');
+      if (loggedAs) loggedAs.textContent = userName;
+
+      // 更新右上角名字
+      const navName = document.getElementById('navUserName');
+      if (navName) navName.textContent = userName;
+
+      // 從 /api/me.php 抓真正的頭像
+      try {
+        const r = await fetch(API_BASE + '/me.php', { credentials: 'include' });
+        if (r.ok) {
+          const data = await r.json();
+          if (data.avatar_url) {
+            const avatarUrl = data.avatar_url + (data.avatar_url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+            const avatarImg = document.querySelector('.navbar .user-avatar');
+            if (avatarImg) {
+              avatarImg.src = avatarUrl;
+              console.log('✅ 班表管理頭像已更新:', avatarUrl);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('班表管理載入頭像失敗:', e);
+      }
+    }
 
     // ===== 基本設定 =====
     const PERIODS = ['上午', '晚上'];
@@ -543,11 +1100,11 @@ $pageTitle = '班表管理 - 員工管理系統';
     }
 
     function fmt(d) {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
     function addDays(d, n) {
       const x = new Date(d);
@@ -559,20 +1116,43 @@ $pageTitle = '班表管理 - 員工管理系統';
       return Array.from({ length: 7 }, (_, i) => addDays(monday, i));
     }
 
-    function selectedDate() {
-      return new Date(document.getElementById('dateSelect').value);
-    }
-
+    // ✅ 週期顯示：與新增班表一致，YYYY/MM/DD - YYYY/MM/DD
     function renderWeekHeader(monday) {
       const sun = addDays(monday, 6);
-      document.getElementById('weekRangeText').textContent = 
-        `${fmt(monday)} ~ ${fmt(sun)}`;
+      const s = `${monday.getFullYear()}/${String(monday.getMonth()+1).padStart(2,'0')}/${String(monday.getDate()).padStart(2,'0')}`;
+      const e = `${sun.getFullYear()}/${String(sun.getMonth()+1).padStart(2,'0')}/${String(sun.getDate()).padStart(2,'0')}`;
+      
+      const el1 = document.getElementById('weekRangeText');
+      if (el1) el1.textContent = `${s} - ${e}`;
+
+      const el2 = document.getElementById('weekRangeTextTop');
+      if (el2) el2.textContent = `${s} - ${e}`;
     }
 
-    function initDateSelectors() {
-      const nextWeek = new Date();
-      nextWeek.setDate(nextWeek.getDate() + 7);
-      document.getElementById('dateSelect').value = fmt(nextWeek);
+    // ✅ 下載當前週班表圖片
+    async function downloadSchedulePng(){
+      const el = document.getElementById('scheduleViewCard');
+      if (!el) return;
+
+      if (typeof html2canvas === 'undefined') {
+        alert('html2canvas 未載入,無法下載圖片');
+        return;
+      }
+
+      try {
+        const canvas = await html2canvas(el, {
+          scale: 2,
+          backgroundColor: '#ffffff'
+        });
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `班表_${document.getElementById('weekRangeText').textContent}.png`;
+        a.click();
+      } catch (err) {
+        console.error('下載圖片失敗:', err);
+        alert('下載圖片失敗: ' + err.message);
+      }
     }
 
     // ===== API 請求 =====
@@ -697,6 +1277,112 @@ $pageTitle = '班表管理 - 員工管理系統';
       });
       
       console.log('✅ 載入已確認班表');
+    }
+
+    // ===== 最上方「本週班表預覽」（左邊是員工姓名） =====
+    function renderPreviewHeader(monday) {
+      const headRow = document.getElementById('previewHeaderRow');
+      if (!headRow) return;
+
+      headRow.querySelectorAll('th:nth-child(n+2)').forEach(th => th.remove());
+
+      const labels = ['一', '二', '三', '四', '五', '六', '日'];
+      daysOfWeek(monday).forEach((d, i) => {
+        const th = document.createElement('th');
+        th.innerHTML = `${d.getMonth() + 1}/${d.getDate()}<br>星期${labels[i]}`;
+        headRow.appendChild(th);
+      });
+    }
+
+    function renderPreviewBody(monday) {
+      const tbody = document.getElementById('previewBody');
+      const hint  = document.getElementById('previewHint');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      let names = [];
+
+      // 🔹優先用「所有員工名單」來當左側列表
+      if (Array.isArray(allEmployees) && allEmployees.length > 0) {
+        names = allEmployees
+          .map(emp => emp.name)
+          .filter(Boolean);
+      } else {
+        // 🔹如果沒載到員工名單，就從已儲存班表抓名字
+        const nameSet = new Set();
+        Object.keys(scheduleAssignedMap).forEach(ds => {
+          PERIODS.forEach(period => {
+            (scheduleAssignedMap[ds]?.[period] || []).forEach(x => {
+              if (x.name) nameSet.add(x.name);
+            });
+          });
+        });
+        names = Array.from(nameSet);
+      }
+
+      // 排序一下名字，讓列表穩定
+      names.sort();
+
+      if (names.length === 0) {
+        if (hint) {
+          hint.textContent = '尚未有已儲存班表，請在下方「編輯班表」設定後按下「儲存班表」。';
+        }
+        return;
+      }
+
+      names.forEach(name => {
+        const tr = document.createElement('tr');
+
+        // 左邊：員工姓名
+        const th = document.createElement('th');
+        th.className = 'preview-name-cell';
+        th.textContent = name;
+        tr.appendChild(th);
+
+        // 右邊：本週 7 天
+        daysOfWeek(monday).forEach(d => {
+          const ds = fmt(d);
+          const td = document.createElement('td');
+          td.style.whiteSpace = 'nowrap';
+          td.style.verticalAlign = 'top';
+
+          const lines = [];
+
+          // 查這個員工在這一天上午/晚上有沒有被排到班
+          PERIODS.forEach(period => {
+            const list = (scheduleAssignedMap[ds]?.[period]) || [];
+            list
+              .filter(x => x.name === name)
+              .forEach(x => {
+                const label = x.time ? `${period} ${x.time}` : period;
+                lines.push(label);
+              });
+          });
+
+          // 🔹改成「新增班表」的 badge 樣式
+          if (lines.length > 0) {
+            td.innerHTML = lines
+              .map(label => `<span class="badge-shift">${label}</span>`)
+              .join('<br>');
+          } else {
+            td.innerHTML = '<span class="badge-off">休</span>';
+          }
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      if (hint) {
+        hint.textContent = '左側為員工姓名，右側為本週已儲存的班表，若需調整請在下方「編輯班表」修改後再儲存。';
+      }
+    }
+
+    function renderPreview(monday) {
+      renderPreviewHeader(monday);
+      renderPreviewBody(monday);
     }
 
     // ===== Gantt 圖 (日檢視) =====
@@ -845,21 +1531,18 @@ $pageTitle = '班表管理 - 員工管理系統';
           
           console.log('🖱️ 點擊甘特圖:', { date, period, name, time });
           
-          // 檢查是否已經在編輯區
           if (inDraft(date, period, name)) {
             console.log('⚠️ 已存在於編輯區');
             
-            // 已存在,給予提示
             bar.style.opacity = '0.6';
             const originalBg = bar.style.background;
-            bar.style.background = 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)';
+            bar.style.background = 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)';
             
             setTimeout(() => {
               bar.style.opacity = '1';
               bar.style.background = originalBg;
             }, 800);
             
-            // 滾動到編輯區並高亮
             const td = document.querySelector(
               `#editorBody td[data-ds="${date}"][data-period="${period}"]`
             );
@@ -873,16 +1556,13 @@ $pageTitle = '班表管理 - 員工管理系統';
             return;
           }
           
-          // 添加到編輯區
           console.log('✅ 添加到編輯區:', { date, period, name, time });
-          addToDraft(date, period, name, time, true);  // true = 顯示高亮動畫
+          addToDraft(date, period, name, time, true);
           
-          // 視覺反饋 - 藍色條變綠色並縮放
           const originalBg = bar.style.background;
-          bar.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+          bar.style.background = 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)';
           bar.style.transform = 'scale(1.08)';
           
-          // 添加勾選圖示
           const originalHtml = bar.innerHTML;
           bar.innerHTML = `<i class="fas fa-check-circle me-1"></i>` + originalHtml;
           
@@ -892,7 +1572,6 @@ $pageTitle = '班表管理 - 員工管理系統';
             bar.innerHTML = originalHtml;
           }, 1500);
           
-          // 滾動到編輯區
           const td = document.querySelector(
             `#editorBody td[data-ds="${date}"][data-period="${period}"]`
           );
@@ -900,19 +1579,6 @@ $pageTitle = '班表管理 - 員工管理系統';
           if (td) {
             td.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        });
-        
-        // 添加 hover 效果提示
-        bar.addEventListener('mouseenter', function() {
-          this.style.transform = 'scale(1.05)';
-          this.style.boxShadow = '0 8px 20px rgba(0,0,0,0.25)';
-        });
-        
-        bar.addEventListener('mouseleave', function() {
-          if (!this.style.transform.includes('1.08')) {
-            this.style.transform = 'scale(1)';
-          }
-          this.style.boxShadow = '0 6px 16px rgba(0,0,0,.12)';
         });
       });
     }
@@ -941,7 +1607,6 @@ $pageTitle = '班表管理 - 員工管理系統';
         console.log('✅ 成功添加到草稿:', { ds, period, name, time });
         console.log('📊 更新後的列表:', draftAssignedMap[ds][period]);
         
-        // ⭐ 關鍵修改:先檢查 td 是否存在
         const td = document.querySelector(
           `#editorBody td[data-ds="${ds}"][data-period="${period}"]`
         );
@@ -950,7 +1615,6 @@ $pageTitle = '班表管理 - 員工管理系統';
           renderEditorCell(ds, period, showHighlight);
         } else {
           console.warn('⚠️ 表格尚未渲染該日期,稍後會自動顯示:', ds);
-          // 數據已經加到 draftAssignedMap,當表格渲染時會自動顯示
         }
       } else {
         console.log('⚠️ 該員工已存在於草稿中');
@@ -1047,7 +1711,6 @@ $pageTitle = '班表管理 - 員工管理系統';
         console.log('📋 當前週一:', fmt(currentMonday));
         console.log('📅 嘗試渲染的日期:', ds);
         
-        // 檢查日期是否在當前週範圍內
         const monday = currentMonday;
         const weekDates = daysOfWeek(monday).map(d => fmt(d));
         console.log('📆 當前週的日期範圍:', weekDates);
@@ -1089,7 +1752,6 @@ $pageTitle = '班表管理 - 員工管理系統';
         
         wrap.appendChild(chip);
         
-        // 如果是新添加的(最後一個),添加高亮動畫
         if (highlightNew && index === list.length - 1) {
           console.log('✨ 添加高亮動畫');
           chip.classList.add('chip-highlight');
@@ -1099,7 +1761,6 @@ $pageTitle = '班表管理 - 員工管理系統';
         }
       });
       
-      // 讓表格單元格也閃一下
       if (highlightNew) {
         console.log('✨ 單元格閃爍動畫');
         td.classList.add('cell-flash');
@@ -1184,6 +1845,7 @@ $pageTitle = '班表管理 - 員工管理系統';
         
         if (result && result.success) {
           await loadSchedulePreview(currentMonday);
+          renderPreview(currentMonday);   // 儲存後更新上方預覽
           alert('班表已確認並儲存!');
         } else {
           alert('儲存失敗: ' + (result?.error || '未知錯誤'));
@@ -1205,27 +1867,25 @@ $pageTitle = '班表管理 - 員工管理系統';
       
       renderWeekHeader(currentMonday);
       renderEditorHeader(currentMonday);
-      
+
+      // 先載入已儲存班表 → 給預覽 & 編輯區用
       await loadSchedulePreview(currentMonday);
+
+      // 更新最上面的「本週班表預覽」
+      renderPreview(currentMonday);
+
+      // 編輯區一開始以「已儲存班表」為草稿
       draftAssignedMap = JSON.parse(JSON.stringify(scheduleAssignedMap));
-      
-      // ⭐ 先渲染編輯表格
       renderEditorGrid(currentMonday);
       
+      // 可排時段 + 日檢視甘特圖
       await loadAvailability(currentMonday);
-      
-      // ⭐ 再渲染 Gantt 圖和按鈕
       renderDayButtons(currentMonday);
       
       console.log('✅ 所有數據刷新完成');
     }
 
     // ===== 事件綁定 =====
-    document.getElementById('btnQuery').addEventListener('click', async () => {
-      currentMonday = getMonday(selectedDate());
-      await refreshAll();
-    });
-
     document.getElementById('btnSaveDraft').addEventListener('click', () => 
       saveDraft(currentMonday)
     );
@@ -1236,13 +1896,11 @@ $pageTitle = '班表管理 - 員工管理系統';
       renderEditorGrid(currentMonday);
     });
 
-    // 側欄開關
     document.getElementById('sidebarToggle')?.addEventListener('click', e => {
       e.preventDefault();
       document.body.classList.toggle('sb-sidenav-toggled');
     });
 
-    // 今日日期
     const dateEl = document.getElementById('currentDate');
     if (dateEl) {
       dateEl.textContent = new Date().toLocaleDateString('zh-TW', {
@@ -1253,11 +1911,32 @@ $pageTitle = '班表管理 - 員工管理系統';
       });
     }
 
-    // ===== 頁面初始化 =====
     window.addEventListener('DOMContentLoaded', async () => {
+      // 先更新登入者資訊 & 頭像
+      await loadLoggedInUser();
+
+      // 再載員工清單 + 班表資料
       await loadEmployeeList();
-      initDateSelectors();
       await refreshAll();
+
+      // ✅ 上週 / 本週 / 下週 的事件
+      document.getElementById('btnPrevWeek')?.addEventListener('click', async () => {
+        currentMonday = addDays(currentMonday, -7);
+        await refreshAll();
+      });
+
+      document.getElementById('btnNextWeek')?.addEventListener('click', async () => {
+        currentMonday = getMonday(new Date());
+        await refreshAll();
+      });
+
+      document.getElementById('btnNextNextWeek')?.addEventListener('click', async () => {
+        currentMonday = addDays(currentMonday, 7);
+        await refreshAll();
+      });
+
+      // ✅ 下載圖片按鈕
+      document.getElementById('btnDownloadPng')?.addEventListener('click', downloadSchedulePng);
     });
   </script>
 </body>

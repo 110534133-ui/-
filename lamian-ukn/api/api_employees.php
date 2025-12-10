@@ -151,139 +151,143 @@ try {
     }
 
     // ==================== POST：新增員工 ====================
-    if ($method === 'POST') {
-        $data = read_json();
-        if (!$data || !is_array($data)) {
-            $data = $_POST;
-        }
+if ($method === 'POST') {
+    $data = read_json();
+    if (!$data || !is_array($data)) {
+        $data = $_POST;
+    }
 
-        $name        = trim($data['name'] ?? '');
-        $birth_date  = trim($data['birth_date'] ?? '');
-        $role        = trim($data['role'] ?? '');
-        $position    = trim($data['position'] ?? $data['Position'] ?? '');
-        $base_salary = isset($data['base_salary']) ? (floatval($data['base_salary']) > 0 ? floatval($data['base_salary']) : null) : null;
-        $hourly_rate = isset($data['hourly_rate']) ? (floatval($data['hourly_rate']) > 0 ? floatval($data['hourly_rate']) : null) : null;
-        $telephone   = trim($data['telephone'] ?? $data['Telephone'] ?? '');
-        $email       = trim($data['email'] ?? '');
-        $address     = trim($data['address'] ?? '');
-        $id_card     = strtoupper(trim($data['id_card'] ?? $data['ID_card'] ?? ''));
+    $name        = trim($data['name'] ?? '');
+    $birth_date  = trim($data['birth_date'] ?? '');
+    $role        = trim($data['role'] ?? '');
+    $position    = trim($data['position'] ?? $data['Position'] ?? '');
+    $base_salary = isset($data['base_salary']) ? (floatval($data['base_salary']) > 0 ? floatval($data['base_salary']) : null) : null;
+    $hourly_rate = isset($data['hourly_rate']) ? (floatval($data['hourly_rate']) > 0 ? floatval($data['hourly_rate']) : null) : null;
+    $telephone   = trim($data['telephone'] ?? $data['Telephone'] ?? '');
+    $email       = trim($data['email'] ?? '');
+    $address     = trim($data['address'] ?? '');
+    $id_card     = strtoupper(trim($data['id_card'] ?? $data['ID_card'] ?? ''));
 
-        $missing = [];
-        if (!$name) $missing[] = 'name';
-        if (!$birth_date) $missing[] = 'birth_date';
-        if (!$role) $missing[] = 'role';
-        if (!$position) $missing[] = 'position';
-        if (!$telephone) $missing[] = 'telephone';
-        if (!$address) $missing[] = 'address';
-        if (!$id_card) $missing[] = 'id_card';
-        
-        if ($missing) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => '資料不完整，缺少：' . implode(', ', $missing)
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-        if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Email 格式不正確'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth_date)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => '出生年月日格式錯誤，應為 YYYY-MM-DD'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        list($year, $month, $day) = explode('-', $birth_date);
-        if (!checkdate($month, $day, $year)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => '日期無效'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        if (!validateIdCard($id_card)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => '身份證格式或檢查碼錯誤'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        if (!preg_match('/^09\d{8}$/', $telephone)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => '電話格式錯誤，應為 09XXXXXXXX'
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-        $pdo->beginTransaction();
-        try {
-            $checkStmt = $pdo->prepare("SELECT id FROM `$table` WHERE ID_card=?");
-            $checkStmt->execute([$id_card]);
-            if ($checkStmt->fetch()) {
-                throw new Exception('身份證號碼已存在');
-            }
-
-            if (!empty($email)) {
-                $checkEmailStmt = $pdo->prepare("SELECT id FROM `$table` WHERE email=?");
-                $checkEmailStmt->execute([$email]);
-                if ($checkEmailStmt->fetch()) {
-                    throw new Exception('Email 已被使用');
-                }
-            }
-
-            $new_employee_id = generateNewEmployeeID($pdo, $table, $role);
-
-            $sql = "INSERT INTO `$table` 
-                    (id, name, birth_date, role, Position, base_salary, hourly_rate, 
-                     Telephone, email, address, ID_card)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            
-            $stmt = $pdo->prepare($sql);
-            
-            $default_password = substr($id_card, -4);
-            
-            $stmt->execute([
-                $new_employee_id,
-                $name, $birth_date, $role, $position, $base_salary, $hourly_rate,
-                $telephone, $email, $address, $id_card
-            ]);
-
-            $pdo->commit();
-
-            echo json_encode([
-                'success' => true,
-                'message' => '新增成功',
-                'data' => [
-                    'employee_id' => $new_employee_id,
-                    'account' => $id_card,
-                    'default_password' => $default_password
-                ]
-            ], JSON_UNESCAPED_UNICODE);
-            
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            
-            http_response_code($e instanceof PDOException ? 500 : 400);
-            echo json_encode([
-                'success' => false,
-                'message' => '新增失敗：' . $e->getMessage()
-            ], JSON_UNESCAPED_UNICODE);
-        }
+    $missing = [];
+    if (!$name) $missing[] = 'name';
+    if (!$birth_date) $missing[] = 'birth_date';
+    if (!$role) $missing[] = 'role';
+    if (!$position) $missing[] = 'position';
+    if (!$telephone) $missing[] = 'telephone';
+    if (!$address) $missing[] = 'address';
+    if (!$id_card) $missing[] = 'id_card';
+    
+    if ($missing) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => '資料不完整，缺少：' . implode(', ', $missing)
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
+
+    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Email 格式不正確'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth_date)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => '出生年月日格式錯誤，應為 YYYY-MM-DD'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    list($year, $month, $day) = explode('-', $birth_date);
+    if (!checkdate($month, $day, $year)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => '日期無效'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if (!validateIdCard($id_card)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => '身份證格式或檢查碼錯誤'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    if (!preg_match('/^09\d{8}$/', $telephone)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => '電話格式錯誤，應為 09XXXXXXXX'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $pdo->beginTransaction();
+    try {
+        $checkStmt = $pdo->prepare("SELECT id FROM `$table` WHERE ID_card=?");
+        $checkStmt->execute([$id_card]);
+        if ($checkStmt->fetch()) {
+            throw new Exception('身份證號碼已存在');
+        }
+
+        if (!empty($email)) {
+            $checkEmailStmt = $pdo->prepare("SELECT id FROM `$table` WHERE email=?");
+            $checkEmailStmt->execute([$email]);
+            if ($checkEmailStmt->fetch()) {
+                throw new Exception('Email 已被使用');
+            }
+        }
+
+        $new_employee_id = generateNewEmployeeID($pdo, $table, $role);
+
+        // 🔥 修正：產生預設密碼並加密
+        $default_password = substr($id_card, -4);
+        $password_hash = password_hash($default_password, PASSWORD_DEFAULT);
+
+        // 🔥 修正：SQL 中加入 password_hash 欄位
+        $sql = "INSERT INTO `$table` 
+                (id, name, birth_date, role, Position, base_salary, hourly_rate, 
+                 Telephone, email, address, ID_card, password_hash)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $pdo->prepare($sql);
+        
+        // 🔥 修正：execute 中加入 password_hash 參數
+        $stmt->execute([
+            $new_employee_id,
+            $name, $birth_date, $role, $position, $base_salary, $hourly_rate,
+            $telephone, $email, $address, $id_card, $password_hash
+        ]);
+
+        $pdo->commit();
+
+        echo json_encode([
+            'success' => true,
+            'message' => '新增成功',
+            'data' => [
+                'employee_id' => $new_employee_id,
+                'account' => $id_card,
+                'default_password' => $default_password
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        
+        http_response_code($e instanceof PDOException ? 500 : 400);
+        echo json_encode([
+            'success' => false,
+            'message' => '新增失敗：' . $e->getMessage()
+        ], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
 
     // ==================== PUT：更新員工 ====================
     if ($method === 'PUT') {

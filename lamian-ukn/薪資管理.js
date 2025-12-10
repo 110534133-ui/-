@@ -1,6 +1,121 @@
+// ==================== 全域變數 ====================
+let monthPicker, keywordInput, loadSalaryData;
+
+// ==================== 全域函數(必須在最外層) ====================
+
+// 查詢功能
+window.filterSalaries = function() {
+  const month = monthPicker.value;
+  const keyword = keywordInput.value.trim();
+  loadSalaryData(month, keyword);
+};
+
+// 清除篩選
+window.clearFilters = function() {
+  const now = new Date();
+  const yyyyMM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  monthPicker.value = yyyyMM;
+  keywordInput.value = "";
+  loadSalaryData(yyyyMM);
+};
+
+// 匯出到 Excel
+window.exportToExcel = async function() {
+  try {
+    const month = monthPicker.value;
+    const keyword = keywordInput.value.trim();
+    
+    const res = await fetch("薪資管理_api.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "fetch", month, keyword })
+    });
+    const data = await res.json();
+    
+    if (!data.success || !data.records || data.records.length === 0) {
+      alert("無資料可匯出");
+      return;
+    }
+
+    // 準備匯出資料
+    const exportData = data.records.map(rec => ({
+      "員工ID": rec.id,
+      "姓名": rec.name,
+      "月份": rec.salary_month,
+      "薪資類型": rec.salary_type,
+      "底薪/時薪": rec.base_salary > 0 ? rec.base_salary : rec.hourly_rate,
+      "本月工時": rec.hours,
+      "獎金": rec.bonus,
+      "扣款": rec.deductions,
+      "實領": rec.total_salary
+    }));
+
+    // 使用 XLSX 庫匯出
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "薪資資料");
+    XLSX.writeFile(wb, `薪資管理_${month}.xlsx`);
+    
+  } catch (err) {
+    console.error(err);
+    alert("匯出失敗:" + err.message);
+  }
+};
+
+// 顯示詳情功能
+window.showDetail = async function(id, month) {
+  try {
+    const res = await fetch("薪資管理_api.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "detail", id, month })
+    });
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message);
+    
+    const rec = data.record;
+    const detailModal = new bootstrap.Modal(document.getElementById("detailModal"));
+    const detailBody = document.getElementById("detailBody");
+    
+    const payType = rec.salary_type || (rec.base_salary ? "月薪" : "時薪");
+    const payValue = rec.base_salary > 0 ? rec.base_salary : rec.hourly_rate;
+    
+    detailBody.innerHTML = `
+      <div class="row mb-3">
+        <div class="col-6"><strong>員工ID:</strong> ${rec.id}</div>
+        <div class="col-6"><strong>姓名:</strong> ${rec.name}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6"><strong>發薪月份:</strong> ${rec.salary_month}</div>
+        <div class="col-6"><strong>薪資類型:</strong> <span class="badge bg-info">${payType}</span></div>
+      </div>
+      <hr>
+      <div class="row mb-3">
+        <div class="col-6"><strong>底薪/時薪:</strong> ${payValue}</div>
+        <div class="col-6"><strong>本月工時:</strong> ${rec.hours}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6"><strong>獎金:</strong> ${rec.bonus}</div>
+        <div class="col-6"><strong>扣款:</strong> ${rec.deductions}</div>
+      </div>
+      <hr>
+      <div class="alert alert-success">
+        <h5 class="mb-0">實領薪資: <strong>${rec.total_salary}</strong></h5>
+      </div>
+    `;
+    
+    detailModal.show();
+    
+  } catch (err) {
+    alert("載入詳情失敗:" + err.message);
+  }
+};
+
+// ==================== DOMContentLoaded ====================
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* -------------------- Modal 元件：必須放在最前面 -------------------- */
+  /* -------------------- Modal 元件:必須放在最前面 -------------------- */
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
 
   const edit_user_id = document.getElementById("edit_user_id");
@@ -82,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("input", recalcEditTotal);
   });
 
-  // ====== 儲存修改（加入確認訊息） ======
+  // ====== 儲存修改(加入確認訊息) ======
   async function submitEdit(event) {
     event.preventDefault();
 
@@ -94,22 +209,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 工時比對
     if (new_hours !== editOriginal.working_hours) {
-      confirmMsg += `➡ 工時：${editOriginal.working_hours} ➜ ${new_hours}\n`;
+      confirmMsg += `➡ 工時:${editOriginal.working_hours} ➜ ${new_hours}\n`;
     }
 
     // 獎金比對
     if (new_bonus !== editOriginal.bonus) {
-      confirmMsg += `➡ 獎金：${editOriginal.bonus} ➜ ${new_bonus}\n`;
+      confirmMsg += `➡ 獎金:${editOriginal.bonus} ➜ ${new_bonus}\n`;
     }
 
     // 扣款比對
     if (new_deductions !== editOriginal.deductions) {
-      confirmMsg += `➡ 扣款：${editOriginal.deductions} ➜ ${new_deductions}\n`;
+      confirmMsg += `➡ 扣款:${editOriginal.deductions} ➜ ${new_deductions}\n`;
     }
 
-    // 如果有任何變動，跳出確認
+    // 如果有任何變動,跳出確認
     if (confirmMsg !== "") {
-      const userConfirm = confirm(`確認要修改以下內容嗎？\n\n${confirmMsg}`);
+      const userConfirm = confirm(`確認要修改以下內容嗎?\n\n${confirmMsg}`);
       if (!userConfirm) return;  // 使用者取消 → 不送出
     }
 
@@ -138,16 +253,16 @@ document.addEventListener("DOMContentLoaded", () => {
       loadSalaryData(monthPicker.value, keywordInput.value);
 
     } catch (err) {
-      alert("儲存失敗：" + err.message);
+      alert("儲存失敗:" + err.message);
     }
   }
 
   window.submitEdit = submitEdit;
   window.openEditModal = openEditModal;
 
-  /* -------------------- 原本你的程式碼（完全未更動） -------------------- */
-  const monthPicker = document.getElementById("monthPicker");
-  const keywordInput = document.getElementById("keyword");
+  /* -------------------- 主要元件初始化 -------------------- */
+  monthPicker = document.getElementById("monthPicker");
+  keywordInput = document.getElementById("keyword");
   const salaryTableBody = document.getElementById("salaryTableBody");
   const noDataRow = document.getElementById("noDataRow");
   const currentDateEl = document.getElementById("currentDate");
@@ -167,9 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
   currentDateEl.textContent = now.toLocaleDateString("zh-TW");
   monthPicker.value = yyyyMM;
 
-  loadSalaryData(yyyyMM);
-
-  async function loadSalaryData(month, keyword = "") {
+  // ===== 定義 loadSalaryData 函數 =====
+  loadSalaryData = async function(month, keyword = "") {
     showLoading(true);
     try {
       const res = await fetch("薪資管理_api.php", {
@@ -189,7 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       showLoading(false);
     }
-  }
+  };
+
+  // 初始載入
+  loadSalaryData(yyyyMM);
 
   function updateSummary(records) {
     if (!Array.isArray(records)) return;
@@ -272,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const action = btn.dataset.action;
 
     if (action === 'detail') {
-      showDetail(btn.dataset.id, btn.dataset.month);
+      window.showDetail(btn.dataset.id, btn.dataset.month);
     } else if (action === 'edit') {
       window.openEditModal(
         btn.dataset.id,
@@ -290,9 +407,22 @@ document.addEventListener("DOMContentLoaded", () => {
   function showLoading(show) {
     loadingIndicator.classList.toggle("d-none", !show);
   }
+  
   function showError(show, msg = "") {
     errorAlert.classList.toggle("d-none", !show);
     if (show) errorMessage.textContent = msg;
   }
+
+  // Enter 鍵觸發查詢
+  keywordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      window.filterSalaries();
+    }
+  });
+
+  // 月份變更時自動查詢
+  monthPicker.addEventListener('change', () => {
+    window.filterSalaries();
+  });
 
 });

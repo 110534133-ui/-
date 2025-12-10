@@ -33,46 +33,306 @@ $API_BASE_URL  = '/lamian-ukn/api';
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
   <style>
-    :root{
-      --primary-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff0000cb 100%);
-      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --success-gradient: linear-gradient(135deg, #4facfe 0%, #54bcc1 100%);
-      --warning-gradient: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --dark-bg: linear-gradient(135deg, #fbb97ce4 0%, #ff00006a 100%);
-      --card-shadow: 0 15px 35px rgba(0,0,0,.1);
-      --border-radius: 20px;
-      --transition: all .3s cubic-bezier(.4,0,.2,1);
+    /* ====== 整體風格：跟 日報表記錄 / 薪資管理 一樣 ====== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 30%, #f5e9ff 100%);
+      --text-main: #0f172a;
+      --text-subtle: #64748b;
+
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-radius: 22px;
+
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --shadow-hover: 0 22px 60px rgba(15, 23, 42, 0.18);
+
+      --transition-main: all .25s cubic-bezier(.4, 0, .2, 1);
     }
-    *{ transition: var(--transition); }
-    body{ background:#fff; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height:100vh; }
 
-    .sb-topnav{ background: var(--dark-bg) !important; border:none; box-shadow:var(--card-shadow); backdrop-filter: blur(10px); }
-    .navbar-brand{ font-weight:700; font-size:1.5rem; background: linear-gradient(45deg,#ffffff,#ffffff);
-      -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+    * {
+      transition: var(--transition-main);
+    }
 
-    .sb-sidenav{ background: linear-gradient(180deg,#fbb97ce4 0%, #ff00006a 100%) !important; box-shadow: var(--card-shadow); backdrop-filter: blur(10px); }
-    .sb-sidenav-menu-heading{ color: rgba(255,255,255,.7) !important; font-weight:600; font-size:.85rem; text-transform:uppercase; letter-spacing:1px; padding:20px 15px 10px 15px !important; margin-top:15px; }
-    .sb-sidenav .nav-link{ border-radius:15px; margin:5px 15px; padding:12px 15px; position:relative; overflow:hidden; color:rgba(255,255,255,.9)!important; font-weight:500; backdrop-filter: blur(10px); }
-    .sb-sidenav .nav-link:hover{ background:rgba(255,255,255,.15)!important; transform:translateX(8px); box-shadow:0 8px 25px rgba(0,0,0,.2); color:#fff!important; }
-    .sb-sidenav .nav-link.active{ background:rgba(255,255,255,.2)!important; color:#fff!important; font-weight:600; box-shadow:0 8px 25px rgba(0,0,0,.15); }
-    .sb-sidenav .nav-link::before{ content:''; position:absolute; left:0; top:0; height:100%; width:4px; background: linear-gradient(45deg,#ffffff,#ffffff); transform:scaleY(0); border-radius:0 10px 10px 0; }
-    .sb-sidenav .nav-link:hover::before, .sb-sidenav .nav-link.active::before{ transform: scaleY(1); }
-    .sb-sidenav .nav-link i{ width:20px; text-align:center; margin-right:10px; font-size:1rem; }
-    .sb-sidenav-footer{ background: rgba(255,255,255,.1) !important; color:#fff !important; border-top:1px solid rgba(255,255,255,.2); padding:20px 15px; margin-top:20px; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.24), transparent 55%),
+        radial-gradient(circle at 100% 0%, rgba(222, 114, 244, 0.24), transparent 55%),
+        var(--bg-gradient);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
+    }
 
-    .container-fluid{ padding:30px !important; }
-    h1{ background: var(--primary-gradient); -webkit-background-clip:text; background-clip:text;
-      color:transparent; -webkit-text-fill-color:transparent; font-weight:700; font-size:2.5rem; margin-bottom:30px; }
-    .breadcrumb{ background: rgba(255,255,255,.8); border-radius: var(--border-radius); padding: 15px 20px; box-shadow: var(--card-shadow); backdrop-filter: blur(10px); }
 
-    .card{ border:none; border-radius: var(--border-radius); box-shadow: var(--card-shadow); background:#fff; overflow:hidden; }
-    .card-header{ background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.7)); font-weight:600; }
+    /* ====== Top navbar：藍色漸層 ====== */
+    .sb-topnav {
+      background: linear-gradient(120deg, #1e3a8a, #3658ff) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(18px);
+    }
 
-    .table{ border-radius: var(--border-radius); overflow:hidden; background:#fff; box-shadow: var(--card-shadow); }
-    .table thead th{ background: var(--primary-gradient); color:#000; border:none; font-weight:600; padding:15px; }
-    .table tbody td{ padding:15px; vertical-align:middle; border-color: rgba(0,0,0,.05); }
-    .table-hover tbody tr:hover{ background: rgba(227,23,111,.05); transform: scale(1.01); }
+    .navbar-brand {
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #f9fafb !important;
+    }
 
+    .navbar-nav .nav-link {
+      color: #e5e7eb !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ffffff !important;
+    }
+
+    .container-fluid {
+      padding: 26px 28px;
+    }
+    /* ====== Sidebar：跟日報表記錄一樣 ====== */
+   .sb-sidenav {
+      background:
+        radial-gradient(circle at 40% 0%, rgba(56, 189, 248, 0.38), transparent 65%),
+        radial-gradient(circle at 80% 100%, rgba(147, 197, 253, 0.34), transparent 70%),
+        linear-gradient(180deg, rgba(220, 235, 255, 0.92), rgba(185, 205, 255, 0.9));
+      backdrop-filter: blur(22px);
+      border-right: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .sb-sidenav-menu-heading {
+      color: #1e293b !important;
+      opacity: 0.75;
+      font-size: 0.78rem;
+      letter-spacing: .18em;
+      margin: 20px 0 8px 16px;
+    }
+
+    .sb-sidenav .nav-link {
+      color: #0f172a !important;
+      font-weight: 600;
+      border-radius: 18px;
+      padding: 12px 18px;
+      margin: 8px 12px;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.80),
+        rgba(241, 248, 255, 0.95)
+      );
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sb-sidenav .nav-link .sb-nav-link-icon {
+      margin-right: 10px;
+      color: #1e293b !important;
+      opacity: 0.9 !important;
+      font-size: 1.05rem;
+    }
+
+    .sb-sidenav .sb-sidenav-collapse-arrow i,
+    .sb-sidenav .nav-link i.fa-chevron-right {
+      color: #1e293b !important;
+      opacity: 0.85 !important;
+    }
+
+    .sb-sidenav .nav-link:hover {
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .sb-sidenav .nav-link:hover .sb-nav-link-icon,
+    .sb-sidenav .nav-link:hover .sb-sidenav-collapse-arrow i,
+    .sb-sidenav .nav-link:hover i.fa-chevron-right {
+      color: #0f172a !important;
+      opacity: 1 !important;
+    }
+
+    .sb-sidenav .nav-link.active {
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
+      border-color: rgba(255, 255, 255, 0.98);
+      color: #ffffff !important;
+      box-shadow: 0 18px 36px rgba(59, 130, 246, 0.6);
+    }
+
+    .sb-sidenav .nav-link.active .sb-nav-link-icon,
+    .sb-sidenav .nav-link.active .sb-sidenav-collapse-arrow i {
+      color: #e0f2fe !important;
+    }
+
+    .sb-sidenav-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(226, 232, 255, 0.95)
+      ) !important;
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 16px 20px;
+      color: #111827 !important;
+      box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.10);
+      font-size: 0.95rem;
+    }
+
+    .sb-sidenav-footer .small {
+      color: #6b7280 !important;
+    }
+
+
+    /* 修正側欄箭頭顏色 */
+    .sb-sidenav .nav-link svg,
+    .sb-sidenav .nav-link svg path,
+    .sb-sidenav .nav-link i,
+    .sb-sidenav .nav-link::after {
+      stroke: #1e293b !important;
+      color: #1e293b !important;
+      fill: #1e293b !important;
+      opacity: 0.9 !important;
+    }
+    .sb-sidenav .nav-link:hover svg,
+    .sb-sidenav .nav-link:hover svg path,
+    .sb-sidenav .nav-link:hover i,
+    .sb-sidenav .nav-link:hover::after {
+      stroke: #0f172a !important;
+      color: #0f172a !important;
+      fill: #0f172a !important;
+      opacity: 1 !important;
+    }
+
+    /* ====== 標題 & 麵包屑 ====== */
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      background: linear-gradient(120deg, #0f172a, #2563eb);
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .breadcrumb {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+      color: #9ca3af;
+    }
+
+    /* ====== 卡片 / 表格 ====== */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+      border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding-top: 14px;
+      padding-bottom: 10px;
+    }
+
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    .table {
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, #4f8bff, #7b6dff);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      padding: 12px 10px;
+    }
+
+    .table tbody td {
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+      padding: 12px 10px;
+      border-color: rgba(148, 163, 184, .25);
+    }
+
+    .table-hover tbody tr:hover {
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    footer {
+      background: transparent;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      margin-top: 24px;
+      padding-top: 14px;
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+    }
+
+    @media (max-width: 992px) {
+      .container-fluid {
+        padding: 20px 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container-fluid {
+        padding: 16px 12px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* ====== 查詢 / 清除按鈕：做成 pill 感覺 ====== */
+    .btn-primary {
+      background: linear-gradient(135deg, #4f8bff 0%, #7b6dff 100%);
+      color: #fff;
+      border-color: rgba(59, 130, 246, .25);
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.03);
+      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-secondary {
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      border-color: rgba(148, 163, 184, 0.7);
+      color: #1d4ed8;
+      background-color: #ffffff;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+    }
+    .btn-outline-secondary:hover {
+      background-color: #eff6ff;
+      color: #1d4ed8;
+      border-color: rgba(59, 130, 246, .6);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, .12);
+      transform: translateY(-1px);
+    }
+
+    /* ====== Navbar 搜尋列（沿用你原本設計，顏色調整後仍能用） ====== */
     .search-container-wrapper { position: relative; width: 100%; max-width: 400px; }
     .search-container {
         position: relative; display: flex; align-items: center;
@@ -94,12 +354,15 @@ $API_BASE_URL  = '/lamian-ukn/api';
         cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     .search-btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
-    .search-btn i { color: #ff6b6b; font-size: 16px; }
-    .user-avatar{border:2px solid rgba(255,255,255,.5)}
+    .search-btn i { color: #2563eb; font-size: 16px; }
 
-    .btn-primary{ background: var(--primary-gradient); border:none; border-radius:25px; }
-    .btn-primary:hover{ transform:scale(1.05); box-shadow:0 10px 25px rgba(209,209,209,.976); }
-    .form-select, .form-control{ border-radius:12px; }
+    .user-avatar {
+      border: 2px solid rgba(255, 255, 255, .5);
+    }
+
+    .form-select, .form-control{
+      border-radius: 12px;
+    }
   </style>
 </head>
 
@@ -108,16 +371,7 @@ $API_BASE_URL  = '/lamian-ukn/api';
       <a class="navbar-brand ps-3" href="index.php">員工管理系統</a>
       <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
 
-      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-          <div class="search-container-wrapper">
-              <div class="search-container">
-                  <input class="search-input" type="text" placeholder="搜尋員工、班表、薪資..." aria-label="Search" />
-                  <button class="search-btn" id="btnNavbarSearch" type="button">
-                      <i class="fas fa-search"></i>
-                  </button>
-              </div>
-          </div>
-      </form>
+      <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
 
       <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
           <li class="nav-item dropdown">
@@ -151,14 +405,26 @@ $API_BASE_URL  = '/lamian-ukn/api';
             </a>
             <div class="collapse" id="collapseLayouts" data-bs-parent="#sidenavAccordion">
               <nav class="sb-sidenav-menu-nested nav">
-                <a class="nav-link" href="員工資料表.php">員工資料表</a>
-                <a class="nav-link" href="班表管理.php">班表管理</a>
-                <a class="nav-link" href="日報表記錄.php">日報表記錄</a>
-                <a class="nav-link" href="假別管理.php">假別管理</a>
-                <a class="nav-link" href="打卡管理.php">打卡管理</a>
-                <a class="nav-link" href="薪資管理.php">薪資管理</a>
-              </nav>
-            </div>
+    <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="員工資料表.php">員工資料表</a>
+    <?php endif; ?>
+
+    <a class="nav-link" href="班表管理.php">班表管理</a>
+     <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="日報表記錄.php">日報表記錄</a>
+    <?php endif; ?>   
+    <a class="nav-link" href="假別管理.php">假別管理</a>
+    <a class="nav-link" href="打卡管理.php">打卡管理</a>
+
+    <?php if ($userLevel === 'A'): ?>
+      <!-- 只有 A 級（老闆）可以看到 -->
+      <a class="nav-link" href="薪資管理.php">薪資管理</a>
+    <?php endif; ?>
+
+  </nav>
+</div>
 
             <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOperation" aria-expanded="true">
               <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>營運管理
@@ -233,7 +499,7 @@ $API_BASE_URL  = '/lamian-ukn/api';
               <div class="row g-3">
                 <div class="col-md-4">
                   <label class="form-label">關鍵字</label>
-                  <input type="text" class="form-control" id="keywordInput" placeholder="輸入品名 / 編號 / 單位 / 類別 / 經手人 / 時間...">
+                  <input type="text" class="form-control" id="keywordInput" placeholder="輸入品名">
                 </div>
                 <div class="col-md-3">
                   <label class="form-label">類別</label>
