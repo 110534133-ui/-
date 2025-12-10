@@ -3,12 +3,12 @@ header('Content-Type: application/json; charset=utf-8');
 session_start();
 include 'config.php';
 
-if (!isset($_SESSION['member_phone'])) {
+if (!isset($_SESSION['member_id'])) {
     echo json_encode(['success' => false, 'message' => '尚未登入，請先登入帳號']);
     exit;
 }
 
-$phone = $_SESSION['member_phone'];
+$memberId = $_SESSION['member_id'];
 
 if (!isset($_POST['優惠券編號'])) {
     echo json_encode(['success' => false, 'message' => '缺少優惠券編號']);
@@ -31,17 +31,28 @@ try {
 
     $neededPoints = intval($reward['需要點數']);
 
-    // 2️⃣ 計算會員總點數
-    $stmt = $conn->prepare("SELECT 會員點數 FROM ramen_members WHERE 電話 = ?");
+    // 2️⃣ 計算會員總點數（會員點數 + 訂單累積點數）
+    // 抓會員原始點數
+    $stmt = $conn->prepare("SELECT 會員點數, 電話 FROM ramen_members WHERE id = ?");
+    $stmt->bind_param("i", $memberId);
+    $stmt->execute();
+    $memberData = $stmt->get_result()->fetch_assoc();
+    $memberPoints = intval($memberData['會員點數'] ?? 0);
+    $phone = $memberData['電話'];
+
+    // 抓會員訂單累積點數
+    $stmt = $conn->prepare("SELECT IFNULL(SUM(獲得點數),0) AS totalEarnedPoints FROM ramen_orders WHERE 電話 = ?");
     $stmt->bind_param("s", $phone);
     $stmt->execute();
-    $member = $stmt->get_result()->fetch_assoc();
-    $memberPoints = intval($member['會員點數'] ?? 0);
+    $orderData = $stmt->get_result()->fetch_assoc();
+    $orderPoints = intval($orderData['totalEarnedPoints'] ?? 0);
 
-    if ($memberPoints < $neededPoints) {
+    $totalPoints = $memberPoints + $orderPoints;
+
+    if ($totalPoints < $neededPoints) {
         echo json_encode([
             'success' => false,
-            'message' => "點數不足，無法兌換！需要 {$neededPoints} 點，您目前有 {$memberPoints} 點"
+            'message' => "點數不足，無法兌換！需要 {$neededPoints} 點，您目前有 {$totalPoints} 點"
         ]);
         exit;
     }
@@ -49,9 +60,10 @@ try {
     // 3️⃣ 開始事務
     $conn->begin_transaction();
 
-    // 扣點數
-    $stmt = $conn->prepare("UPDATE ramen_members SET 會員點數 = 會員點數 - ? WHERE 電話 = ?");
-    $stmt->bind_param("is", $neededPoints, $phone);
+    // 扣掉點數（這裡直接從會員點數扣，如果你要扣總點數，也可以調整）
+    // ⚠️ 如果想扣掉訂單累積點數，需要自己寫邏輯分配扣哪部分
+    $stmt = $conn->prepare("UPDATE ramen_members SET 會員點數 = 會員點數 - ? WHERE id = ?");
+    $stmt->bind_param("ii", $neededPoints, $memberId);
     $stmt->execute();
 
     // 寫入優惠券
@@ -68,9 +80,11 @@ try {
 
     $conn->commit();
 
+    // 4️⃣ 回傳扣完點數後的總點數給前端
     echo json_encode([
         'success' => true,
         'message' => '兌換成功！優惠券已加入您的帳號',
+        'memberPoints' => $totalPoints - $neededPoints,
         'coupon' => [
             '優惠券名稱' => $couponName,
             '狀態' => '未使用',
